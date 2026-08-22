@@ -1,15 +1,38 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// This is your Prisma schema file
+datasource db {
+  provider = "sqlite"
+}
 
 generator client {
   provider = "prisma-client"
   output   = "../app/generated/prisma"
 }
 
-datasource db {
-  provider = "postgresql"
+model Coin {
+  id             String          @id @default(cuid())
+  symbol         String          @unique
+  name           String
+  subtext        String
+  rank           Int
+  iconUrl        String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  priceSnapshots PriceSnapshot[]
+  watchlistItems WatchlistItem[]
+}
+
+model PriceSnapshot {
+  id           String   @id @default(cuid())
+  coinId       String
+  coin         Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
+  priceInr     Float
+  change24hPct Float
+  volume24h    String
+  marketCap    String
+  sparkline7d  String   // JSON stringified numbers array for 7-day trend
+  recordedAt   DateTime @default(now())
+
+  @@index([coinId, recordedAt])
 }
 
 model User {

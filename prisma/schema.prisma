@@ -35,21 +35,22 @@ model PriceSnapshot {
   @@index([coinId, recordedAt])
 }
 
-model Watchlist {
-  id        String          @id @default(cuid())
-  name      String          @default("My Watchlist")
-  createdAt DateTime        @default(now())
-  items     WatchlistItem[]
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  watchlist WatchlistItem[]
 }
 
 model WatchlistItem {
-  id          String    @id @default(cuid())
-  watchlistId String
-  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
-  coinId      String
-  coin        Coin      @relation(fields: [coinId], references: [id], onDelete: Cascade)
-  addedAt     DateTime  @default(now())
+  id        String   @id @default(cuid())
+  coinId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([watchlistId, coinId])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, coinId])
 }
-

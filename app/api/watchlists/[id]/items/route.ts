@@ -29,7 +29,11 @@ export async function POST(
       update: {},
     });
 
-    return NextResponse.json({ success: true, item });
+    const count = await prisma.watchlistItem.count({
+      where: { watchlistId },
+    });
+
+    return NextResponse.json({ success: true, item, totalTracked: count, coinId });
   } catch (error) {
     console.error("Error adding watchlist item:", error);
     return NextResponse.json(
@@ -54,7 +58,7 @@ export async function DELETE(
         const body = await request.json();
         coinId = body.coinId;
       } catch {
-        // body might be empty if passed in query string
+        // body might be empty
       }
     }
 
@@ -69,7 +73,11 @@ export async function DELETE(
       },
     });
 
-    return NextResponse.json({ success: true });
+    const count = await prisma.watchlistItem.count({
+      where: { watchlistId },
+    });
+
+    return NextResponse.json({ success: true, totalTracked: count, coinId });
   } catch (error) {
     console.error("Error removing watchlist item:", error);
     return NextResponse.json(

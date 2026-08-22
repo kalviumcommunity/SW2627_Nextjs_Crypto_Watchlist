@@ -20,6 +20,10 @@ export interface WatchlistResponseDTO {
   totalVolume: string;
   btcDominance: string;
   items: CoinDTO[];
+  page?: number;
+  totalPages?: number;
+  totalCount?: number;
+  allMarketsCount?: number;
 }
 
 export type FilterTab = "watchlist" | "all" | "gainers" | "losers";

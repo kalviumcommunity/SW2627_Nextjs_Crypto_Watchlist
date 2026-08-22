@@ -6,9 +6,14 @@ import { Search } from "lucide-react";
 interface SearchInputProps {
   value: string;
   onChange: (val: string) => void;
+  placeholder?: string;
 }
 
-export default function SearchInput({ value, onChange }: SearchInputProps) {
+export default function SearchInput({
+  value,
+  onChange,
+  placeholder = "Search coin or pair...",
+}: SearchInputProps) {
   const [localValue, setLocalValue] = useState(value);
 
   useEffect(() => {
@@ -30,7 +35,7 @@ export default function SearchInput({ value, onChange }: SearchInputProps) {
         type="text"
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
-        placeholder="Search coin or pair..."
+        placeholder={placeholder}
         className="w-full h-full bg-[#10131C] border border-[#232B3A] rounded-full pl-9 pr-4 text-sm text-white placeholder-[#5B6472] focus:outline-none focus:border-[#FF5446] transition-colors"
       />
     </div>

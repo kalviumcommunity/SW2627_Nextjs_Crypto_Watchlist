@@ -11,8 +11,10 @@ export async function GET(
     const watchlistId = id || "default-watchlist";
 
     const { searchParams } = new URL(request.url);
-    const tab = searchParams.get("tab") || "watchlist";
+    const tab = searchParams.get("tab") || "all";
     const searchQuery = (searchParams.get("q") || "").trim().toLowerCase();
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
+    const limit = Math.max(1, parseInt(searchParams.get("limit") || "40", 10));
 
     // Fetch default watchlist items
     const watchlistItems = await prisma.watchlistItem.findMany({
@@ -52,7 +54,7 @@ export async function GET(
         priceInr: latestSnapshot?.priceInr ?? 0,
         change24hPct: latestSnapshot?.change24hPct ?? 0,
         volume24h: latestSnapshot?.volume24h ?? "₹0 Cr",
-        marketCap: latestSnapshot?.marketCap ?? "₹0T",
+        marketCap: latestSnapshot?.marketCap ?? "₹0 Cr",
         sparkline7d: sparkline,
         isStarred: starredCoinIds.has(coin.id),
       };
@@ -81,13 +83,29 @@ export async function GET(
       );
     }
 
-    const response: WatchlistResponseDTO = {
+    const totalCount = mappedItems.length;
+    const totalPages = Math.ceil(totalCount / limit) || 1;
+
+    // Apply Pagination
+    const startIndex = (page - 1) * limit;
+    const paginatedItems = mappedItems.slice(startIndex, startIndex + limit);
+
+    const response: WatchlistResponseDTO & {
+      page: number;
+      totalPages: number;
+      totalCount: number;
+      allMarketsCount: number;
+    } = {
       id: watchlistId,
       name: "My Watchlist",
       totalTracked: starredCoinIds.size,
-      totalVolume: "₹12,480.6 Cr",
-      btcDominance: "58.4%",
-      items: mappedItems,
+      totalVolume: "₹6,45,230 Cr",
+      btcDominance: "52.4%",
+      items: paginatedItems,
+      page,
+      totalPages,
+      totalCount,
+      allMarketsCount: coins.length,
     };
 
     return NextResponse.json(response);

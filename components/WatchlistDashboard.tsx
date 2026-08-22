@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import { Star, ArrowRight } from "lucide-react";
 import { FilterTab, WatchlistResponseDTO } from "@/types/watchlist";
+import { useWatchlist } from "@/lib/useWatchlist";
 import TickerStrip from "./TickerStrip";
 import FilterTabs from "./FilterTabs";
 import SearchInput from "./SearchInput";
@@ -17,13 +20,15 @@ export default function WatchlistDashboard({
   initialData,
   watchlistId = "default-watchlist",
 }: WatchlistDashboardProps) {
-  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<FilterTab>("watchlist");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const queryKey = ["watchlist", watchlistId, activeTab, searchQuery];
+  // Use shared hook for star state synchronization across views
+  const { starredCoinIds, totalTracked, toggleStar } = useWatchlist(watchlistId);
 
-  // Fetch data using React Query with initialData fallback
+  const queryKey = ["watchlistData", watchlistId, activeTab, searchQuery];
+
+  // Fetch watchlist tab data
   const { data, refetch } = useQuery<WatchlistResponseDTO>({
     queryKey,
     queryFn: async () => {
@@ -36,105 +41,83 @@ export default function WatchlistDashboard({
       return res.json();
     },
     initialData: activeTab === "watchlist" && !searchQuery ? initialData : undefined,
+    staleTime: 1000 * 4,
+    refetchOnWindowFocus: true,
   });
 
   const displayData = data || initialData;
 
-  // Star Toggle Mutation with Optimistic UI Update
-  const starMutation = useMutation({
-    mutationFn: async ({ coinId, isStarred }: { coinId: string; isStarred: boolean }) => {
-      if (isStarred) {
-        // DELETE
-        const res = await fetch(`/api/watchlists/${watchlistId}/items?coinId=${coinId}`, {
-          method: "DELETE",
-        });
-        if (!res.ok) throw new Error("Failed to remove item");
-      } else {
-        // POST
-        const res = await fetch(`/api/watchlists/${watchlistId}/items`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ coinId }),
-        });
-        if (!res.ok) throw new Error("Failed to add item");
-      }
-    },
-    onMutate: async ({ coinId, isStarred }) => {
-      await queryClient.cancelQueries({ queryKey: ["watchlist"] });
+  // Filter items and keep star state in sync with shared hook
+  const items = (displayData.items || [])
+    .filter((coin) => (activeTab === "watchlist" ? starredCoinIds.has(coin.id) : true))
+    .map((coin) => ({
+      ...coin,
+      isStarred: starredCoinIds.has(coin.id),
+    }));
 
-      // Optimistically update current query data
-      queryClient.setQueriesData<WatchlistResponseDTO>({ queryKey: ["watchlist"] }, (old) => {
-        if (!old) return old;
-        const newStarredState = !isStarred;
-        const updatedItems = old.items.map((coin) =>
-          coin.id === coinId ? { ...coin, isStarred: newStarredState } : coin
-        );
-
-        // If on "watchlist" tab and unstarring, filter out item
-        const filteredItems =
-          activeTab === "watchlist"
-            ? updatedItems.filter((coin) => coin.isStarred)
-            : updatedItems;
-
-        const delta = newStarredState ? 1 : -1;
-
-        return {
-          ...old,
-          totalTracked: Math.max(0, old.totalTracked + delta),
-          items: filteredItems,
-        };
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["watchlist"] });
-    },
-  });
-
-  const handleStarToggle = useCallback(
-    (coinId: string, currentStarred: boolean) => {
-      starMutation.mutate({ coinId, isStarred: currentStarred });
-    },
-    [starMutation]
-  );
+  const isEmptyWatchlist = activeTab === "watchlist" && items.length === 0;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#050810]">
       {/* Ticker Strip */}
-      <TickerStrip
-        trackedCount={displayData.totalTracked}
-        totalVolume={displayData.totalVolume}
-        btcDominance={displayData.btcDominance}
-        onRefresh={refetch}
-      />
+      <TickerStrip onRefresh={refetch} />
 
       {/* Main Content Container */}
-      <main className="max-w-[1280px] w-full mx-auto px-6 py-8 flex-1 flex flex-col">
+      <main className="max-w-[1280px] w-full mx-auto px-4 md:px-6 py-6 md:py-8 flex-1 flex flex-col">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-[28px] font-bold text-white tracking-tight">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-[28px] font-bold text-white tracking-tight">
             Crypto Watchlist
           </h1>
-          <p className="text-sm text-[#9AA4B2] mt-1">
+          <p className="text-xs md:text-sm text-[#9AA4B2] mt-1">
             Real-time market data and performance metrics for your tracked assets.
           </p>
         </div>
 
         {/* Filter Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <FilterTabs
             activeTab={activeTab}
             onTabChange={setActiveTab}
-            watchlistCount={displayData.totalTracked}
-            allMarketsCount={10}
+            watchlistCount={totalTracked}
+            allMarketsCount={displayData.allMarketsCount ?? 100}
           />
-          <SearchInput value={searchQuery} onChange={setSearchQuery} />
+          <SearchInput
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="Search coin or pair..."
+          />
         </div>
 
-        {/* Watchlist Table */}
-        <WatchlistTable
-          coins={displayData.items}
-          onStarToggle={handleStarToggle}
-        />
+        {/* Empty Watchlist State Fallback */}
+        {isEmptyWatchlist ? (
+          <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] p-12 flex flex-col items-center justify-center text-center my-auto min-h-[360px] shadow-lg">
+            {/* Star Icon Tile */}
+            <div className="w-16 h-16 rounded-2xl bg-[#1B2536] border border-[#232B3A] flex items-center justify-center mb-5 shadow-inner">
+              <Star className="w-8 h-8 text-[#F5B94D] fill-[#F5B94D]/20" />
+            </div>
+
+            <h3 className="text-xl font-bold text-white mb-2">
+              Your watchlist is empty
+            </h3>
+            <p className="text-sm text-[#9AA4B2] max-w-sm mb-6">
+              You haven&apos;t added any cryptocurrency assets to your watchlist yet. Explore markets and star coins to track them here.
+            </p>
+
+            <Link
+              href="/markets"
+              className="h-10 px-6 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-sm rounded-lg transition-colors inline-flex items-center gap-2 shadow-md cursor-pointer"
+            >
+              <span>Explore all Coins</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        ) : (
+          <WatchlistTable
+            coins={items}
+            onStarToggle={toggleStar}
+          />
+        )}
       </main>
     </div>
   );

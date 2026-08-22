@@ -11,9 +11,15 @@ interface TableRowProps {
   coin: CoinDTO;
   index: number;
   onStarToggle: (coinId: string, currentStarred: boolean) => void;
+  displayRank?: number;
 }
 
-export default function TableRow({ coin, index, onStarToggle }: TableRowProps) {
+export default function TableRow({
+  coin,
+  index,
+  onStarToggle,
+  displayRank,
+}: TableRowProps) {
   const router = useRouter();
 
   const handleRowClick = () => {
@@ -27,6 +33,8 @@ export default function TableRow({ coin, index, onStarToggle }: TableRowProps) {
     }
   };
 
+  const rankNumber = displayRank ?? coin.rank ?? (index + 1);
+
   return (
     <>
       {/* Desktop & Tablet Table Row (>= 768px) */}
@@ -36,36 +44,15 @@ export default function TableRow({ coin, index, onStarToggle }: TableRowProps) {
         onKeyDown={handleKeyDown}
         className="hidden md:table-row h-[56px] border-b border-[#232B3A] hover:bg-[#1B2536] transition-colors cursor-pointer focus:outline-none focus:bg-[#1B2536]"
       >
-        {/* Star */}
-        <td className="w-10 px-3 text-center">
-          <button
-            type="button"
-            aria-label={coin.isStarred ? "Unstar coin" : "Star coin"}
-            onClick={(e) => {
-              e.stopPropagation();
-              onStarToggle(coin.id, coin.isStarred);
-            }}
-            className="p-1 text-[#9AA4B2] hover:scale-110 transition-transform cursor-pointer"
-          >
-            <Star
-              className={`w-4 h-4 ${
-                coin.isStarred
-                  ? "fill-[#F5B94D] text-[#F5B94D]"
-                  : "text-[#5B6472] hover:text-[#F5B94D]"
-              }`}
-            />
-          </button>
-        </td>
-
-        {/* Index */}
-        <td className="w-10 text-center text-xs text-[#5B6472] tabular-nums font-medium">
-          {index + 1}
+        {/* Rank Number (#) */}
+        <td className="w-12 px-3 text-center text-xs text-[#5B6472] tabular-nums font-medium">
+          {rankNumber}
         </td>
 
         {/* Asset */}
         <td className="px-4">
           <div className="flex items-center gap-3">
-            {/* 32px Circular Avatar */}
+            {/* 32px Circular Avatar Icon */}
             <div className="w-8 h-8 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-white flex-shrink-0">
               {coin.symbol.slice(0, 3)}
             </div>
@@ -73,8 +60,8 @@ export default function TableRow({ coin, index, onStarToggle }: TableRowProps) {
               <span className="text-[14px] font-semibold text-white leading-tight">
                 {coin.name}
               </span>
-              <span className="text-[12px] text-[#5B6472] leading-tight">
-                {coin.subtext}
+              <span className="text-[12px] text-[#5B6472] leading-tight font-medium">
+                {coin.symbol}
               </span>
             </div>
           </div>
@@ -110,18 +97,38 @@ export default function TableRow({ coin, index, onStarToggle }: TableRowProps) {
           {coin.marketCap}
         </td>
 
-        {/* Action */}
-        <td className="px-4 text-right w-[90px]">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/coins/${coin.symbol}`);
-            }}
-            className="h-8 w-[72px] bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-md transition-colors cursor-pointer"
-          >
-            Trade
-          </button>
+        {/* Action Column: Star Icon + Trade Button */}
+        <td className="px-4 text-right min-w-[120px]">
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              aria-label={coin.isStarred ? "Unstar coin" : "Star coin"}
+              onClick={(e) => {
+                e.stopPropagation();
+                onStarToggle(coin.id, coin.isStarred);
+              }}
+              className="p-1.5 rounded-md hover:bg-[#232B3A] text-[#9AA4B2] hover:scale-110 transition-all cursor-pointer"
+            >
+              <Star
+                className={`w-4 h-4 ${
+                  coin.isStarred
+                    ? "fill-[#F5B94D] text-[#F5B94D]"
+                    : "text-[#5B6472] hover:text-[#F5B94D]"
+                }`}
+              />
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/coins/${coin.symbol}`);
+              }}
+              className="h-8 px-3 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-md transition-colors cursor-pointer"
+            >
+              Trade
+            </button>
+          </div>
         </td>
       </tr>
 
@@ -130,31 +137,16 @@ export default function TableRow({ coin, index, onStarToggle }: TableRowProps) {
         onClick={handleRowClick}
         className="md:hidden p-4 border-b border-[#232B3A] bg-[#111827] hover:bg-[#1B2536] transition-colors flex flex-col gap-3 cursor-pointer"
       >
-        {/* Line 1: Star, Icon, Name, Price */}
+        {/* Line 1: Icon, Name, Price */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onStarToggle(coin.id, coin.isStarred);
-              }}
-              className="p-1"
-            >
-              <Star
-                className={`w-4 h-4 ${
-                  coin.isStarred ? "fill-[#F5B94D] text-[#F5B94D]" : "text-[#5B6472]"
-                }`}
-              />
-            </button>
-
             <div className="w-8 h-8 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-white">
               {coin.symbol.slice(0, 3)}
             </div>
 
             <div>
               <div className="text-sm font-semibold text-white">{coin.name}</div>
-              <div className="text-xs text-[#5B6472]">{coin.symbol}</div>
+              <div className="text-xs text-[#5B6472] font-medium">{coin.symbol}</div>
             </div>
           </div>
 
@@ -165,11 +157,25 @@ export default function TableRow({ coin, index, onStarToggle }: TableRowProps) {
           </div>
         </div>
 
-        {/* Line 2: Subtext, Change Badge, Sparkline, Trade Button */}
-        <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#232B3A]/50">
+        {/* Line 2: Star Icon, Change Badge, Sparkline, Trade Button */}
+        <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#232B3A]/50">
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label={coin.isStarred ? "Unstar coin" : "Star coin"}
+              onClick={(e) => {
+                e.stopPropagation();
+                onStarToggle(coin.id, coin.isStarred);
+              }}
+              className="p-1 rounded-md hover:bg-[#232B3A]"
+            >
+              <Star
+                className={`w-4 h-4 ${
+                  coin.isStarred ? "fill-[#F5B94D] text-[#F5B94D]" : "text-[#5B6472]"
+                }`}
+              />
+            </button>
             <ChangeBadge changePct={coin.change24hPct} />
-            <span className="text-xs text-[#9AA4B2]">{coin.volume24h}</span>
           </div>
 
           <Sparkline

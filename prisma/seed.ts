@@ -1,18 +1,21 @@
 import { PrismaClient } from "../app/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import path from "path";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const dbPath = path.join(process.cwd(), "dev.db");
-const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
-const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+const prisma = new PrismaClient({
+  adapter,
+});
 
 async function main() {
   console.log("Seeding Crypto Watchlist and All Markets database...");
 
-  // Clean existing data
+  // Clean existing data in dependency order
   await prisma.watchlistItem.deleteMany();
-  await prisma.watchlist.deleteMany();
   await prisma.priceSnapshot.deleteMany();
+  await prisma.watchlist.deleteMany();
   await prisma.coin.deleteMany();
 
   // Create default watchlist
@@ -23,18 +26,26 @@ async function main() {
     },
   });
 
-  // Top 10 coins exactly as specified by prompt
+  // Top 10 coins
   const top10Coins = [
     {
       symbol: "BTC",
       name: "Bitcoin",
       subtext: "BTC/INR • Layer 1",
       rank: 1,
-      priceInr: 5840230.00,
+      priceInr: 5840230.0,
       change24hPct: 2.45,
       volume24h: "₹2,340 Cr",
       marketCap: "₹1,34,230 Cr",
-      sparkline: [5650000, 5680000, 5720000, 5700000, 5780000, 5810000, 5840230],
+      sparkline: [
+        5650000,
+        5680000,
+        5720000,
+        5700000,
+        5780000,
+        5810000,
+        5840230,
+      ],
       isStarred: true,
     },
     {
@@ -42,11 +53,19 @@ async function main() {
       name: "Ethereum",
       subtext: "ETH/INR • Smart Contract",
       rank: 2,
-      priceInr: 312450.50,
+      priceInr: 312450.5,
       change24hPct: 1.82,
       volume24h: "₹1,840 Cr",
       marketCap: "₹37,540 Cr",
-      sparkline: [305000, 307000, 306000, 309000, 310000, 311500, 312450.5],
+      sparkline: [
+        305000,
+        307000,
+        306000,
+        309000,
+        310000,
+        311500,
+        312450.5,
+      ],
       isStarred: true,
     },
     {
@@ -66,7 +85,7 @@ async function main() {
       name: "BNB",
       subtext: "BNB/INR • Exchange",
       rank: 4,
-      priceInr: 48920.00,
+      priceInr: 48920.0,
       change24hPct: -1.15,
       volume24h: "₹450 Cr",
       marketCap: "₹7,200 Cr",
@@ -139,7 +158,7 @@ async function main() {
       subtext: "DOT/INR • Interoperability",
       rank: 10,
       priceInr: 4106.79,
-      change24hPct: -3.10,
+      change24hPct: -3.1,
       volume24h: "₹482 Cr",
       marketCap: "₹1,511 Cr",
       sparkline: [4240, 4220, 4200, 4180, 4150, 4120, 4106.79],
@@ -147,7 +166,7 @@ async function main() {
     },
   ];
 
-  // List of additional popular crypto names & symbols to generate ranks 11..100
+  // Additional coins for ranks 11–100
   const additionalCoins = [
     { name: "Chainlink", symbol: "LINK", cat: "Oracle" },
     { name: "Avalanche", symbol: "AVAX", cat: "Layer 1" },
@@ -243,37 +262,64 @@ async function main() {
 
   const allCoins = [...top10Coins];
 
-  // Helper pseudo-random generator seeded by index
+  // Generate ranks 11–100
   for (let i = 11; i <= 100; i++) {
     const coinMeta = additionalCoins[(i - 11) % additionalCoins.length];
-    const change24hPct = parseFloat((((Math.sin(i * 1.7) * 8.5) + (i % 3 === 0 ? 3 : -2))).toFixed(2));
-    
-    // Deterministic base price
-    let basePrice = 10 + (Math.sin(i * 2.3) + 1) * 1200;
-    if (i % 7 === 0) basePrice = 0.85 + (i % 5) * 0.4; // Penny/Meme coins
-    if (i % 11 === 0) basePrice = 15000 + (i * 250); // High price coins
-    const priceInr = parseFloat(basePrice.toFixed(basePrice < 10 ? 4 : 2));
 
-    const volNum = Math.floor(10 + Math.abs(Math.sin(i * 3.1)) * 890);
-    const mcapNum = Math.floor(volNum * 5 + Math.abs(Math.cos(i * 1.9)) * 4500);
+    const change24hPct = parseFloat(
+      (
+        Math.sin(i * 1.7) * 8.5 +
+        (i % 3 === 0 ? 3 : -2)
+      ).toFixed(2)
+    );
+
+    let basePrice = 10 + (Math.sin(i * 2.3) + 1) * 1200;
+
+    if (i % 7 === 0) {
+      basePrice = 0.85 + (i % 5) * 0.4;
+    }
+
+    if (i % 11 === 0) {
+      basePrice = 15000 + i * 250;
+    }
+
+    const priceInr = parseFloat(
+      basePrice.toFixed(basePrice < 10 ? 4 : 2)
+    );
+
+    const volNum = Math.floor(
+      10 + Math.abs(Math.sin(i * 3.1)) * 890
+    );
+
+    const mcapNum = Math.floor(
+      volNum * 5 + Math.abs(Math.cos(i * 1.9)) * 4500
+    );
 
     const volume24h = `₹${volNum.toLocaleString("en-IN")} Cr`;
     const marketCap = `₹${mcapNum.toLocaleString("en-IN")} Cr`;
 
-    // Generate sparkline matching change sign
     const sparkline: number[] = [];
+
     let currentVal = priceInr * (1 - change24hPct / 100);
     const step = (priceInr - currentVal) / 6;
+
     for (let j = 0; j < 6; j++) {
-      currentVal += step + (Math.sin(j * 1.5 + i) * (priceInr * 0.01));
-      sparkline.push(parseFloat(currentVal.toFixed(priceInr < 10 ? 4 : 2)));
+      currentVal +=
+        step + Math.sin(j * 1.5 + i) * (priceInr * 0.01);
+
+      sparkline.push(
+        parseFloat(
+          currentVal.toFixed(priceInr < 10 ? 4 : 2)
+        )
+      );
     }
+
     sparkline.push(priceInr);
 
-    // Make sure symbols are unique if duplicated in list
-    const symbol = i > 10 && allCoins.some(c => c.symbol === coinMeta.symbol)
-      ? `${coinMeta.symbol}${i}`
-      : coinMeta.symbol;
+    const symbol =
+      i > 10 && allCoins.some((coin) => coin.symbol === coinMeta.symbol)
+        ? `${coinMeta.symbol}${i}`
+        : coinMeta.symbol;
 
     allCoins.push({
       symbol,
@@ -289,6 +335,7 @@ async function main() {
     });
   }
 
+  // Create coins and price snapshots
   for (const data of allCoins) {
     const coin = await prisma.coin.create({
       data: {
@@ -310,6 +357,7 @@ async function main() {
       },
     });
 
+    // Add starred coins to default watchlist
     if (data.isStarred) {
       await prisma.watchlistItem.create({
         data: {
@@ -320,12 +368,14 @@ async function main() {
     }
   }
 
-  console.log(`Seeding complete! ${allCoins.length} coins seeded, 5 added to default watchlist.`);
+  console.log(
+    `Seeding complete! ${allCoins.length} coins seeded, 5 added to default watchlist.`
+  );
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
+  .catch((error) => {
+    console.error(error);
     process.exit(1);
   })
   .finally(async () => {

@@ -1,11 +1,18 @@
-// This is your Prisma schema file
-datasource db {
-  provider = "sqlite"
-}
-
 generator client {
   provider = "prisma-client"
   output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Watchlist {
+  id        String          @id @default(cuid())
+  name      String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  items     WatchlistItem[]
 }
 
 model Coin {
@@ -24,33 +31,25 @@ model Coin {
 model PriceSnapshot {
   id           String   @id @default(cuid())
   coinId       String
-  coin         Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
   priceInr     Float
   change24hPct Float
   volume24h    String
   marketCap    String
-  sparkline7d  String   // JSON stringified numbers array for 7-day trend
+  sparkline7d  String
   recordedAt   DateTime @default(now())
+  coin         Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
 
   @@index([coinId, recordedAt])
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-
-  watchlist WatchlistItem[]
-}
-
 model WatchlistItem {
-  id        String   @id @default(cuid())
-  coinId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String    @id @default(cuid())
+  coinId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  watchlistId String
+  coin        Coin      @relation(fields: [coinId], references: [id], onDelete: Cascade)
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@unique([userId, coinId])
+  @@unique([watchlistId, coinId])
 }

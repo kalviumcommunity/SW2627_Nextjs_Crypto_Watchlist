@@ -335,12 +335,8 @@ async function main() {
     });
   }
 
-<<<<<<< HEAD
-  for (const data of allCoins as any[]) {
-=======
   // Create coins and price snapshots
-  for (const data of allCoins) {
->>>>>>> origin/main
+  for (const data of allCoins as any[]) {
     const coin = await prisma.coin.create({
       data: {
         symbol: data.symbol,

@@ -9,16 +9,22 @@ generator client {
 }
 
 model Coin {
-  id             String          @id @default(cuid())
-  symbol         String          @unique
-  name           String
-  subtext        String
-  rank           Int
-  iconUrl        String?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  priceSnapshots PriceSnapshot[]
-  watchlistItems WatchlistItem[]
+  id                String          @id @default(cuid())
+  symbol            String          @unique
+  name              String
+  subtext           String
+  rank              Int
+  iconUrl           String?
+  network           String?
+  description       String?
+  websiteUrl        String?
+  whitepaperUrl     String?
+  circulatingSupply String?
+  maxSupply         String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  priceSnapshots    PriceSnapshot[]
+  watchlistItems    WatchlistItem[]
 }
 
 model PriceSnapshot {
@@ -27,6 +33,8 @@ model PriceSnapshot {
   coin         Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
   priceInr     Float
   change24hPct Float
+  low24h       Float?
+  high24h      Float?
   volume24h    String
   marketCap    String
   sparkline7d  String   // JSON stringified numbers array for 7-day trend

@@ -1,0 +1,41 @@
+import { formatINR } from "@/lib/formatters";
+
+interface RangeStatCardProps {
+  currentPrice: number;
+  low24h: number;
+  high24h: number;
+}
+
+export default function RangeStatCard({
+  currentPrice,
+  low24h,
+  high24h,
+}: RangeStatCardProps) {
+  const range = high24h - low24h || 1;
+  const pct = Math.max(0, Math.min(100, ((currentPrice - low24h) / range) * 100));
+
+  return (
+    <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] p-5 md:p-6 w-full">
+      <div className="text-[#5B6472] text-[11px] font-semibold tracking-wider uppercase mb-3">
+        24H RANGE
+      </div>
+
+      <div className="flex items-center justify-between text-xs md:text-sm mb-3 font-medium">
+        <span className="text-[#9AA4B2]">
+          Low: <span className="text-white font-semibold">{formatINR(low24h)}</span>
+        </span>
+        <span className="text-[#9AA4B2]">
+          High: <span className="text-white font-semibold">{formatINR(high24h)}</span>
+        </span>
+      </div>
+
+      {/* Horizontal Gradient Slider Bar */}
+      <div className="relative w-full h-1.5 rounded-full bg-gradient-to-r from-[#E5484D] via-[#F5B94D] to-[#1FB878] mt-2 mb-1">
+        <div
+          className="w-3.5 h-3.5 bg-white border-2 border-[#111827] rounded-full absolute top-1/2 -translate-y-1/2 -translate-x-1/2 shadow-md transition-all duration-300"
+          style={{ left: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}

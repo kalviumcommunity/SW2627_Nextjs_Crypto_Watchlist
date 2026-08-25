@@ -22,7 +22,6 @@ export async function GET(
     });
     const starredCoinIds = new Set(watchlistItems.map((item) => item.coinId));
 
-    // Fetch all coins with their latest price snapshot
     const coins = await prisma.coin.findMany({
       include: {
         priceSnapshots: {

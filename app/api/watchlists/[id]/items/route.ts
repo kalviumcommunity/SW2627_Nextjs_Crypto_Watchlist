@@ -11,9 +11,12 @@ export async function POST(
     const body = await request.json();
     const { coinId } = body;
 
-    if (!coinId) {
-      return NextResponse.json({ error: "coinId is required" }, { status: 400 });
-    }
+   if (!coinId || typeof coinId !== "string" || !coinId.trim()) {
+  return NextResponse.json(
+    { error: "coinId is required" },
+    { status: 400 }
+  );
+}
 
     const item = await prisma.watchlistItem.upsert({
       where: {

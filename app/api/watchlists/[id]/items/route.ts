@@ -7,7 +7,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const watchlistId = id || "default-watchlist";
+    const watchlistId = id?.trim() || "default-watchlist";
     const body = await request.json();
     const { coinId } = body;
 
@@ -52,7 +52,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const watchlistId = id || "default-watchlist";
+    const watchlistId = id?.trim() || "default-watchlist";
     const { searchParams } = new URL(request.url);
     let coinId = searchParams.get("coinId");
 

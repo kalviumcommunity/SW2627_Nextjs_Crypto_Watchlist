@@ -1,13 +1,20 @@
 import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import path from "path";
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const prisma = new PrismaClient({
-  adapter,
-});
+let prisma: PrismaClient;
+if (process.env.DATABASE_URL && process.env.DATABASE_URL.startsWith("postgres")) {
+  const adapter = new PrismaPg({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  });
+  prisma = new PrismaClient({ adapter });
+} else {
+  const dbPath = path.join(process.cwd(), "dev.db");
+  const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
+  prisma = new PrismaClient({ adapter });
+}
 
 async function main() {
   console.log("Seeding Crypto Watchlist and All Markets database...");
@@ -335,13 +342,40 @@ async function main() {
     });
   }
 
+  function mapCategory(subtext: string, symbol: string): "LAYER_1" | "DEFI" | "STABLECOIN" | "EXCHANGE_TOKEN" | "MEME" | "SMART_CONTRACT" {
+    const sym = symbol.toUpperCase();
+    const sub = subtext.toLowerCase();
+
+    if (sym === "BTC") return "LAYER_1";
+    if (sym === "ETH" || sub.includes("smart contract")) return "SMART_CONTRACT";
+    if (sym === "USDT" || sym === "USDC" || sym === "DAI" || sub.includes("stablecoin")) return "STABLECOIN";
+    if (sym === "BNB" || sub.includes("exchange")) return "EXCHANGE_TOKEN";
+    if (sym === "DOGE" || sym === "SHIB" || sym === "PEPE" || sym === "BONK" || sym === "FLOKI" || sym === "WIF" || sym === "POPCAT" || sym === "BRETT" || sym === "BOME" || sub.includes("meme")) return "MEME";
+    if (sub.includes("defi") || sub.includes("dex") || sub.includes("oracle") || sub.includes("yield") || sub.includes("lending") || sub.includes("indexing") || sub.includes("restaking") || sub.includes("bridge") || sub.includes("aggregator")) return "DEFI";
+    return "LAYER_1";
+  }
+
+  function parseMarketCapCr(mcapStr: string): number {
+    if (!mcapStr) return 0;
+    if (mcapStr.includes("L Cr")) {
+      const num = parseFloat(mcapStr.replace(/[^0-9.]/g, ""));
+      return num * 100000;
+    }
+    const cleaned = mcapStr.replace(/[^0-9.]/g, "");
+    return parseFloat(cleaned) || 0;
+  }
+
   // Create coins and price snapshots
   for (const data of allCoins as any[]) {
+    const category = mapCategory(data.subtext || "", data.symbol);
+    const mcapCr = parseMarketCapCr(data.marketCap);
+
     const coin = await prisma.coin.create({
       data: {
         symbol: data.symbol,
         name: data.name,
         subtext: data.subtext,
+        category: category,
         rank: data.rank,
         network: data.network || "Layer 1 Network",
         description: data.description || `${data.name} is a leading digital asset operating on a decentralized peer-to-peer network.`,
@@ -364,6 +398,7 @@ async function main() {
         high24h,
         volume24h: data.volume24h,
         marketCap: data.marketCap,
+        marketCapInrCr: mcapCr,
         sparkline7d: JSON.stringify(data.sparkline),
       },
     });

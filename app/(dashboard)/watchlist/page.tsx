@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import WatchlistDashboard from "@/components/WatchlistDashboard";
 import { CoinDTO, WatchlistResponseDTO } from "@/types/watchlist";
@@ -64,9 +65,12 @@ export default async function WatchlistPage() {
   };
 
   return (
-    <WatchlistDashboard
-      initialData={initialData}
-      watchlistId={watchlistId}
-    />
+    <Suspense fallback={<div className="min-h-screen bg-[#050810]" />}>
+      <WatchlistDashboard
+        initialData={initialData}
+        watchlistId={watchlistId}
+      />
+    </Suspense>
   );
 }
+

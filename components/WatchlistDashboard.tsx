@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Star, ArrowRight } from "lucide-react";
 import { FilterTab, WatchlistResponseDTO } from "@/types/watchlist";
 import { useWatchlist } from "@/lib/useWatchlist";
+import { useCoinSearch } from "@/lib/useCoinSearch";
 import TickerStrip from "./TickerStrip";
 import FilterTabs from "./FilterTabs";
-import SearchInput from "./SearchInput";
 import WatchlistTable from "./WatchlistTable";
+import SearchFilterBar from "./search/SearchFilterBar";
+import ActiveFilterChips from "./search/ActiveFilterChips";
 
 interface WatchlistDashboardProps {
   initialData: WatchlistResponseDTO;
@@ -20,29 +21,25 @@ export default function WatchlistDashboard({
   initialData,
   watchlistId = "default-watchlist",
 }: WatchlistDashboardProps) {
-  const [activeTab, setActiveTab] = useState<FilterTab>("watchlist");
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchParams = useSearchParams();
+  const activeTab = (searchParams.get("tab") as FilterTab) || "watchlist";
 
-  // Use shared hook for star state synchronization across views
+  // Shared hook for star state synchronization across views
   const { starredCoinIds, totalTracked, toggleStar } = useWatchlist(watchlistId);
 
-  const queryKey = ["watchlistData", watchlistId, activeTab, searchQuery];
-
-  // Fetch watchlist tab data
-  const { data, refetch } = useQuery<WatchlistResponseDTO>({
-    queryKey,
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      params.set("tab", activeTab);
-      if (searchQuery) params.set("q", searchQuery);
-
-      const res = await fetch(`/api/watchlists/${watchlistId}?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to fetch watchlist");
-      return res.json();
-    },
-    initialData: activeTab === "watchlist" && !searchQuery ? initialData : undefined,
-    staleTime: 1000 * 4,
-    refetchOnWindowFocus: true,
+  // Search & filter hook scoped to watchlist
+  const {
+    filters,
+    activeFiltersCount,
+    updateFilters,
+    clearAllFilters,
+    data,
+    isLoading,
+    refetch,
+  } = useCoinSearch({
+    watchlistId,
+    tab: activeTab,
+    initialData,
   });
 
   const displayData = data || initialData;
@@ -55,7 +52,16 @@ export default function WatchlistDashboard({
       isStarred: starredCoinIds.has(coin.id),
     }));
 
-  const isEmptyWatchlist = activeTab === "watchlist" && items.length === 0;
+  const isEmptyWatchlist =
+    activeTab === "watchlist" && totalTracked === 0 && activeFiltersCount === 0;
+
+  const handleTabChange = (tab: FilterTab) => {
+    updateFilters({ tab, page: 1 });
+  };
+
+  const handlePageChange = (page: number) => {
+    updateFilters({ page });
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-[#050810]">
@@ -75,17 +81,29 @@ export default function WatchlistDashboard({
         </div>
 
         {/* Filter Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <FilterTabs
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            watchlistCount={totalTracked}
-            allMarketsCount={displayData.allMarketsCount ?? 100}
-          />
-          <SearchInput
-            value={searchQuery}
-            onChange={setSearchQuery}
-            placeholder="Search coin or pair..."
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <FilterTabs
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+              watchlistCount={totalTracked}
+              allMarketsCount={displayData.allMarketsCount ?? 100}
+            />
+            <SearchFilterBar
+              filters={filters}
+              activeFiltersCount={activeFiltersCount}
+              minDatasetPrice={displayData.minPrice}
+              maxDatasetPrice={displayData.maxPrice}
+              onUpdateFilters={updateFilters}
+              onClearFilters={clearAllFilters}
+            />
+          </div>
+
+          {/* Active Filter Chips */}
+          <ActiveFilterChips
+            filters={filters}
+            onUpdateFilters={updateFilters}
+            onClearAll={clearAllFilters}
           />
         </div>
 
@@ -116,9 +134,17 @@ export default function WatchlistDashboard({
           <WatchlistTable
             coins={items}
             onStarToggle={toggleStar}
+            currentPage={displayData.page ?? filters.page}
+            totalPages={displayData.totalPages ?? 1}
+            totalCount={displayData.totalCount ?? 0}
+            pageSize={40}
+            onPageChange={handlePageChange}
+            onClearFilters={clearAllFilters}
+            isLoading={isLoading}
           />
         )}
       </main>
     </div>
   );
 }
+

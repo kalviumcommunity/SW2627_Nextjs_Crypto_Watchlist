@@ -4,7 +4,16 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
+}
+
+enum CoinCategory {
+  LAYER_1
+  DEFI
+  STABLECOIN
+  EXCHANGE_TOKEN
+  MEME
+  SMART_CONTRACT
 }
 
 model Watchlist {
@@ -20,6 +29,7 @@ model Coin {
   symbol            String          @unique
   name              String
   subtext           String
+  category          CoinCategory    @default(LAYER_1)
   rank              Int
   iconUrl           String?
   network           String?
@@ -35,17 +45,18 @@ model Coin {
 }
 
 model PriceSnapshot {
-  id           String   @id @default(cuid())
-  coinId       String
-  priceInr     Float
-  change24hPct Float
-  low24h       Float?
-  high24h      Float?
-  volume24h    String
-  marketCap    String
-  sparkline7d  String
-  recordedAt   DateTime @default(now())
-  coin         Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  coinId         String
+  priceInr       Float
+  change24hPct   Float
+  low24h         Float?
+  high24h        Float?
+  volume24h      String
+  marketCap      String
+  marketCapInrCr Float?
+  sparkline7d    String
+  recordedAt     DateTime @default(now())
+  coin           Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
 
   @@index([coinId, recordedAt])
 }

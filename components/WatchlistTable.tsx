@@ -3,6 +3,7 @@
 import { CoinDTO } from "@/types/watchlist";
 import TableRow from "./TableRow";
 import Pagination from "./Pagination";
+import { FilterX } from "lucide-react";
 
 interface WatchlistTableProps {
   coins: CoinDTO[];
@@ -12,6 +13,8 @@ interface WatchlistTableProps {
   totalCount?: number;
   pageSize?: number;
   onPageChange?: (page: number) => void;
+  onClearFilters?: () => void;
+  isLoading?: boolean;
 }
 
 export default function WatchlistTable({
@@ -22,7 +25,21 @@ export default function WatchlistTable({
   totalCount = coins.length,
   pageSize = 40,
   onPageChange,
+  onClearFilters,
+  isLoading = false,
 }: WatchlistTableProps) {
+  if (isLoading) {
+    return (
+      <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] overflow-hidden shadow-lg p-6 space-y-4 animate-pulse">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="h-12 bg-[#1B2536] rounded-lg w-full" />
+        ))}
+      </div>
+    );
+  }
+
+  const isEmpty = coins.length === 0;
+
   return (
     <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] overflow-hidden shadow-lg">
       {/* Desktop Table View */}
@@ -42,7 +59,7 @@ export default function WatchlistTable({
           </tr>
         </thead>
         <tbody>
-          {coins.length > 0 ? (
+          {!isEmpty ? (
             coins.map((coin, idx) => (
               <TableRow
                 key={coin.id}
@@ -53,11 +70,27 @@ export default function WatchlistTable({
             ))
           ) : (
             <tr>
-              <td
-                colSpan={8}
-                className="h-32 text-center text-sm text-[#9AA4B2]"
-              >
-                No crypto assets found matching criteria.
+              <td colSpan={8} className="py-12 px-4 text-center">
+                <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
+                  <div className="w-14 h-14 rounded-2xl bg-[#1B2536] border border-[#232B3A] flex items-center justify-center mb-4 text-[#FF5446]">
+                    <FilterX className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-base font-bold text-white mb-1">
+                    No coins match your filters
+                  </h3>
+                  <p className="text-xs text-[#9AA4B2] mb-5">
+                    Try adjusting your search query or clearing some filters to see results.
+                  </p>
+                  {onClearFilters && (
+                    <button
+                      type="button"
+                      onClick={onClearFilters}
+                      className="h-9 px-5 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-colors shadow-md cursor-pointer inline-flex items-center gap-2"
+                    >
+                      Clear all filters
+                    </button>
+                  )}
+                </div>
               </td>
             </tr>
           )}
@@ -66,7 +99,7 @@ export default function WatchlistTable({
 
       {/* Mobile Card List (< 768px) */}
       <div className="md:hidden divide-y divide-[#232B3A]">
-        {coins.length > 0 ? (
+        {!isEmpty ? (
           coins.map((coin, idx) => (
             <TableRow
               key={coin.id}
@@ -76,14 +109,31 @@ export default function WatchlistTable({
             />
           ))
         ) : (
-          <div className="p-8 text-center text-sm text-[#9AA4B2]">
-            No crypto assets found matching criteria.
+          <div className="py-12 px-4 text-center flex flex-col items-center justify-center">
+            <div className="w-14 h-14 rounded-2xl bg-[#1B2536] border border-[#232B3A] flex items-center justify-center mb-4 text-[#FF5446]">
+              <FilterX className="w-7 h-7" />
+            </div>
+            <h3 className="text-base font-bold text-white mb-1">
+              No coins match your filters
+            </h3>
+            <p className="text-xs text-[#9AA4B2] mb-5 max-w-xs">
+              Try adjusting your search query or clearing some filters to see results.
+            </p>
+            {onClearFilters && (
+              <button
+                type="button"
+                onClick={onClearFilters}
+                className="h-9 px-5 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-colors shadow-md cursor-pointer"
+              >
+                Clear all filters
+              </button>
+            )}
           </div>
         )}
       </div>
 
       {/* Table Pagination Footer */}
-      {onPageChange && (
+      {!isEmpty && onPageChange && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -95,3 +145,4 @@ export default function WatchlistTable({
     </div>
   );
 }
+

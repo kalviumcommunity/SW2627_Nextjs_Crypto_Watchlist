@@ -1,9 +1,103 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Search, Bell, Settings, User } from "lucide-react";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Search, Bell, Settings, User, X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import AutocompleteDropdown from "./search/AutocompleteDropdown";
+
+function GlobalNavSearch() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const [text, setText] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync with q URL param if on /markets or /watchlist
+  useEffect(() => {
+    if (pathname === "/markets" || pathname === "/watchlist") {
+      setText(searchParams.get("q") || "");
+    }
+  }, [searchParams, pathname]);
+
+  const handleApplyQuery = (queryVal: string) => {
+    const trimmed = queryVal.trim();
+    if (pathname === "/markets" || pathname === "/watchlist") {
+      const params = new URLSearchParams(searchParams.toString());
+      if (trimmed) {
+        params.set("q", trimmed);
+      } else {
+        params.delete("q");
+      }
+      params.delete("page");
+      const qs = params.toString();
+      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    } else {
+      if (trimmed) {
+        router.push(`/markets?q=${encodeURIComponent(trimmed)}`);
+      } else {
+        router.push("/markets");
+      }
+    }
+  };
+
+  const handleClear = () => {
+    setText("");
+    handleApplyQuery("");
+    if (inputRef.current) inputRef.current.focus();
+  };
+
+  return (
+    <div className="relative hidden sm:flex items-center">
+      <Search className="w-4 h-4 text-[#9AA4B2] absolute left-3 pointer-events-none z-10" />
+      <input
+        ref={inputRef}
+        type="text"
+        value={text}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+        onChange={(e) => {
+          const val = e.target.value;
+          setText(val);
+          if (pathname === "/markets" || pathname === "/watchlist") {
+            handleApplyQuery(val);
+          }
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleApplyQuery(text);
+            setIsFocused(false);
+          }
+        }}
+        placeholder="Search markets..."
+        className="w-40 md:w-56 lg:w-64 h-9 pl-9 pr-8 bg-[#111827] text-white text-xs md:text-sm rounded-full border border-[#232B3A] focus:outline-none focus:border-[#FF5446] transition-colors placeholder:text-[#5B6472]"
+      />
+
+      {text && (
+        <button
+          type="button"
+          onClick={handleClear}
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-0.5 rounded-full z-10"
+          title="Clear search"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      )}
+
+      <AutocompleteDropdown
+        query={text}
+        isOpen={isFocused && text.trim().length > 0}
+        onClose={() => setIsFocused(false)}
+        onSelectText={(selectVal) => {
+          setText(selectVal);
+          handleApplyQuery(selectVal);
+        }}
+      />
+    </div>
+  );
+}
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -25,14 +119,7 @@ export default function NavBar() {
         </Link>
 
         {/* Inline Global Search Input */}
-        <div className="relative hidden sm:flex items-center">
-          <Search className="w-4 h-4 text-[#9AA4B2] absolute left-3 pointer-events-none" />
-          <input
-            type="text"
-            placeholder="Search markets..."
-            className="w-40 md:w-56 lg:w-64 h-9 pl-9 pr-4 bg-[#111827] text-white text-xs md:text-sm rounded-full border border-[#232B3A] focus:outline-none focus:border-[#FF5446] transition-colors placeholder:text-[#5B6472]"
-          />
-        </div>
+        <GlobalNavSearch />
       </div>
 
       {/* Center Nav Links: Markets · Coins · Futures · Options · Earn */}
@@ -146,3 +233,4 @@ export default function NavBar() {
     </header>
   );
 }
+

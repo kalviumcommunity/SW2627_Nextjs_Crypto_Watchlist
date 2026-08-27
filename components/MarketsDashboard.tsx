@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 import { FilterTab, WatchlistResponseDTO } from "@/types/watchlist";
 import { useWatchlist } from "@/lib/useWatchlist";
+import { useCoinSearch } from "@/lib/useCoinSearch";
 import TickerStrip from "./TickerStrip";
 import FilterTabs from "./FilterTabs";
-import SearchInput from "./SearchInput";
 import WatchlistTable from "./WatchlistTable";
+import SearchFilterBar from "./search/SearchFilterBar";
+import ActiveFilterChips from "./search/ActiveFilterChips";
 
 interface MarketsDashboardProps {
   initialData: WatchlistResponseDTO;
@@ -18,40 +19,25 @@ export default function MarketsDashboard({
   initialData,
   watchlistId = "default-watchlist",
 }: MarketsDashboardProps) {
-  const [activeTab, setActiveTab] = useState<FilterTab>("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearchParams();
+  const activeTab = (searchParams.get("tab") as FilterTab) || "all";
 
   // Custom hook managing shared star state across the app
   const { starredCoinIds, totalTracked, toggleStar } = useWatchlist(watchlistId);
 
-  // Fetch market data for current tab, search query & page
-  const { data, refetch } = useQuery<
-    WatchlistResponseDTO & {
-      page?: number;
-      totalPages?: number;
-      totalCount?: number;
-      allMarketsCount?: number;
-    }
-  >({
-    queryKey: ["marketsData", watchlistId, activeTab, searchQuery, currentPage],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      params.set("tab", activeTab);
-      if (searchQuery) params.set("q", searchQuery);
-      params.set("page", currentPage.toString());
-      params.set("limit", "40");
-
-      const res = await fetch(`/api/watchlists/${watchlistId}?${params.toString()}`);
-      if (!res.ok) throw new Error("Failed to fetch markets data");
-      return res.json();
-    },
-    initialData:
-      activeTab === "all" && !searchQuery && currentPage === 1
-        ? initialData
-        : undefined,
-    staleTime: 1000 * 4,
-    refetchOnWindowFocus: true,
+  // Custom hook managing search, multi-category, range filter & sort state via URL
+  const {
+    filters,
+    activeFiltersCount,
+    updateFilters,
+    clearAllFilters,
+    data,
+    isLoading,
+    refetch,
+  } = useCoinSearch({
+    watchlistId,
+    tab: activeTab,
+    initialData,
   });
 
   const displayData = data || initialData;
@@ -63,13 +49,11 @@ export default function MarketsDashboard({
   }));
 
   const handleTabChange = (tab: FilterTab) => {
-    setActiveTab(tab);
-    setCurrentPage(1);
+    updateFilters({ tab, page: 1 });
   };
 
-  const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
-    setCurrentPage(1);
+  const handlePageChange = (page: number) => {
+    updateFilters({ page });
   };
 
   return (
@@ -86,18 +70,30 @@ export default function MarketsDashboard({
           </h1>
         </div>
 
-        {/* Filter Bar: Left Pills, Right Search Input */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <FilterTabs
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            watchlistCount={totalTracked}
-            allMarketsCount={displayData.allMarketsCount ?? 100}
-          />
-          <SearchInput
-            value={searchQuery}
-            onChange={handleSearchChange}
-            placeholder="Search coin or pair..."
+        {/* Filter Bar: Left Pills, Right Search Filter Bar */}
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <FilterTabs
+              activeTab={activeTab}
+              onTabChange={handleTabChange}
+              watchlistCount={totalTracked}
+              allMarketsCount={displayData.allMarketsCount ?? 100}
+            />
+            <SearchFilterBar
+              filters={filters}
+              activeFiltersCount={activeFiltersCount}
+              minDatasetPrice={displayData.minPrice}
+              maxDatasetPrice={displayData.maxPrice}
+              onUpdateFilters={updateFilters}
+              onClearFilters={clearAllFilters}
+            />
+          </div>
+
+          {/* Active Filter Chips */}
+          <ActiveFilterChips
+            filters={filters}
+            onUpdateFilters={updateFilters}
+            onClearAll={clearAllFilters}
           />
         </div>
 
@@ -105,13 +101,16 @@ export default function MarketsDashboard({
         <WatchlistTable
           coins={itemsWithStarState}
           onStarToggle={toggleStar}
-          currentPage={currentPage}
-          totalPages={displayData.totalPages ?? 3}
-          totalCount={displayData.totalCount ?? 100}
+          currentPage={displayData.page ?? filters.page}
+          totalPages={displayData.totalPages ?? 1}
+          totalCount={displayData.totalCount ?? 0}
           pageSize={40}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
+          onClearFilters={clearAllFilters}
+          isLoading={isLoading}
         />
       </main>
     </div>
   );
 }
+

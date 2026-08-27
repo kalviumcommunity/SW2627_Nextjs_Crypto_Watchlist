@@ -18,6 +18,17 @@ export async function POST(
   );
 }
 
+const coin = await prisma.coin.findUnique({
+  where: { id: coinId },
+});
+
+if (!coin) {
+  return NextResponse.json(
+    { error: "Coin not found" },
+    { status: 404 }
+  );
+}
+
     const item = await prisma.watchlistItem.upsert({
       where: {
         watchlistId_coinId: {

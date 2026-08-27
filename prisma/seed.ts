@@ -52,20 +52,20 @@ async function main() {
       symbol: "ETH",
       name: "Ethereum",
       subtext: "ETH/INR • Smart Contract",
+      network: "Layer 1 Network",
       rank: 2,
-      priceInr: 312450.5,
-      change24hPct: 1.82,
-      volume24h: "₹1,840 Cr",
-      marketCap: "₹37,540 Cr",
-      sparkline: [
-        305000,
-        307000,
-        306000,
-        309000,
-        310000,
-        311500,
-        312450.5,
-      ],
+      priceInr: 284500.00,
+      change24hPct: 3.85,
+      low24h: 275400.00,
+      high24h: 290120.00,
+      volume24h: "₹6,430.2 Cr",
+      marketCap: "₹34.2 L Cr",
+      circulatingSupply: "120.4M",
+      maxSupply: "Infinite",
+      description: "Ethereum is a decentralized, open-source blockchain with smart contract functionality. Ether (ETH) is the native cryptocurrency of the platform. Among cryptocurrencies, Ether is second only to Bitcoin in market capitalization. Ethereum was conceived in 2013 by programmer Vitalik Buterin.\n\nThe network enables developers to build and deploy decentralized applications (dApps) and issue new crypto assets, known as Ethereum tokens. It has transitioned to a proof-of-stake consensus mechanism, significantly reducing its energy consumption and laying the groundwork for future scalability upgrades.",
+      websiteUrl: "https://ethereum.org",
+      whitepaperUrl: "https://ethereum.org/en/whitepaper/",
+      sparkline: [275400, 278000, 281000, 279500, 282500, 280000, 284500],
       isStarred: true,
     },
     {
@@ -336,21 +336,32 @@ async function main() {
   }
 
   // Create coins and price snapshots
-  for (const data of allCoins) {
+  for (const data of allCoins as any[]) {
     const coin = await prisma.coin.create({
       data: {
         symbol: data.symbol,
         name: data.name,
         subtext: data.subtext,
         rank: data.rank,
+        network: data.network || "Layer 1 Network",
+        description: data.description || `${data.name} is a leading digital asset operating on a decentralized peer-to-peer network.`,
+        websiteUrl: data.websiteUrl || `https://${data.name.toLowerCase().replace(/\s+/g, '')}.org`,
+        whitepaperUrl: data.whitepaperUrl || `https://${data.name.toLowerCase().replace(/\s+/g, '')}.org/whitepaper`,
+        circulatingSupply: data.circulatingSupply || "100.0M",
+        maxSupply: data.maxSupply || "Infinite",
       },
     });
+
+    const low24h = data.low24h ?? parseFloat((data.priceInr * 0.96).toFixed(2));
+    const high24h = data.high24h ?? parseFloat((data.priceInr * 1.04).toFixed(2));
 
     await prisma.priceSnapshot.create({
       data: {
         coinId: coin.id,
         priceInr: data.priceInr,
         change24hPct: data.change24hPct,
+        low24h,
+        high24h,
         volume24h: data.volume24h,
         marketCap: data.marketCap,
         sparkline7d: JSON.stringify(data.sparkline),

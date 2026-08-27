@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Bell, Settings, Wallet } from "lucide-react";
+import { Search, Bell, Settings, User } from "lucide-react";
 import { useState } from "react";
 
 export default function NavBar() {
@@ -10,6 +10,7 @@ export default function NavBar() {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   const isMarketsActive = pathname === "/markets";
+  const isCoinsActive = pathname.startsWith("/coins");
   const isWatchlistActive = pathname === "/watchlist";
 
   return (
@@ -34,7 +35,7 @@ export default function NavBar() {
         </div>
       </div>
 
-      {/* Center Nav Links */}
+      {/* Center Nav Links: Markets · Coins · Futures · Options · Earn */}
       <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-[14px] font-medium h-full">
         <Link
           href="/markets"
@@ -46,6 +47,20 @@ export default function NavBar() {
         >
           Markets
           {isMarketsActive && (
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446]" />
+          )}
+        </Link>
+
+        <Link
+          href="/coins/eth"
+          className={`relative h-full flex items-center transition-colors ${
+            isCoinsActive
+              ? "text-[#FF5446] font-semibold"
+              : "text-[#9AA4B2] hover:text-white"
+          }`}
+        >
+          Coins
+          {isCoinsActive && (
             <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446]" />
           )}
         </Link>
@@ -65,55 +80,50 @@ export default function NavBar() {
         </Link>
 
         <Link href="#" className="text-[#9AA4B2] hover:text-white transition-colors">
-          Trade
-        </Link>
-        <Link href="#" className="text-[#9AA4B2] hover:text-white transition-colors">
           Futures
         </Link>
         <Link href="#" className="text-[#9AA4B2] hover:text-white transition-colors">
-          Assets
+          Options
         </Link>
         <Link href="#" className="text-[#9AA4B2] hover:text-white transition-colors">
-          Staking
+          Earn
         </Link>
       </nav>
 
-      {/* Right Side Icons & Auth Controls */}
+      {/* Right Side Controls */}
       <div className="flex items-center gap-3 md:gap-4">
-        <button
-          aria-label="Wallet"
-          className="text-[#9AA4B2] hover:text-white transition-colors p-1.5 rounded-lg hover:bg-[#111827]"
-        >
-          <Wallet className="w-5 h-5" />
-        </button>
+        {/* BTC Price Pill */}
+        <div className="hidden md:flex items-center px-3 py-1 bg-[#111827] border border-[#232B3A] rounded-md text-xs font-mono text-[#9AA4B2]">
+          <span>BTC:&nbsp;</span>
+          <span className="text-white font-semibold">$42,069.00</span>
+        </div>
+
         <button
           aria-label="Notifications"
           className="text-[#9AA4B2] hover:text-white transition-colors p-1.5 rounded-lg hover:bg-[#111827]"
         >
-          <Bell className="w-5 h-5" />
+          <Bell className="w-4 h-4" />
         </button>
         <button
           aria-label="Settings"
           className="text-[#9AA4B2] hover:text-white transition-colors p-1.5 rounded-lg hover:bg-[#111827]"
         >
-          <Settings className="w-5 h-5" />
+          <Settings className="w-4 h-4" />
         </button>
 
         {isAuthenticated ? (
-          <div className="flex items-center gap-3 pl-2 border-l border-[#232B3A]">
-            <span
-              onClick={() => setIsAuthenticated(false)}
-              title="Click to toggle Auth state demo"
-              className="hidden sm:inline-block text-white text-[14px] font-medium tabular-nums cursor-pointer hover:text-[#FF5446] transition-colors"
-            >
-              ₹50,000.00
-            </span>
+          <div className="flex items-center gap-2 pl-2 border-l border-[#232B3A]">
             <div
               onClick={() => setIsAuthenticated(false)}
-              title="Click to toggle Auth state demo"
-              className="w-8 h-8 rounded-full bg-[#FF5446] text-white flex items-center justify-center font-bold text-xs cursor-pointer hover:opacity-90 transition-opacity"
+              title="Click to toggle Auth state"
+              className="flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity"
             >
-              CD
+              <div className="w-7 h-7 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-white">
+                <User className="w-3.5 h-3.5" />
+              </div>
+              <span className="hidden sm:inline-block text-xs font-medium text-white">
+                Profile
+              </span>
             </div>
           </div>
         ) : (

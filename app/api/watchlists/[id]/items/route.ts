@@ -7,13 +7,27 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const watchlistId = id || "default-watchlist";
+    const watchlistId = id?.trim() || "default-watchlist";
     const body = await request.json();
     const { coinId } = body;
 
-    if (!coinId) {
-      return NextResponse.json({ error: "coinId is required" }, { status: 400 });
-    }
+   if (!coinId || typeof coinId !== "string" || !coinId.trim()) {
+  return NextResponse.json(
+    { error: "coinId is required" },
+    { status: 400 }
+  );
+}
+
+const coin = await prisma.coin.findUnique({
+  where: { id: coinId },
+});
+
+if (!coin) {
+  return NextResponse.json(
+    { error: "Coin not found" },
+    { status: 404 }
+  );
+}
 
     const item = await prisma.watchlistItem.upsert({
       where: {
@@ -49,7 +63,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const watchlistId = id || "default-watchlist";
+    const watchlistId = id?.trim() || "default-watchlist";
     const { searchParams } = new URL(request.url);
     let coinId = searchParams.get("coinId");
 

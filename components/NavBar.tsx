@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Search, Bell, Settings, User, X } from "lucide-react";
+import { Search, Bell, Settings, User, X, LogOut } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useSession, signOut } from "next-auth/react";
 import AutocompleteDropdown from "./search/AutocompleteDropdown";
 
 function GlobalNavSearch() {
@@ -101,7 +102,8 @@ function GlobalNavSearch() {
 
 export default function NavBar() {
   const pathname = usePathname();
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
 
   const isMarketsActive = pathname === "/markets";
   const isCoinsActive = pathname.startsWith("/coins");
@@ -199,34 +201,38 @@ export default function NavBar() {
         </button>
 
         {isAuthenticated ? (
-          <div className="flex items-center gap-2 pl-2 border-l border-[#232B3A]">
-            <div
-              onClick={() => setIsAuthenticated(false)}
-              title="Click to toggle Auth state"
-              className="flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity"
-            >
-              <div className="w-7 h-7 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-white">
-                <User className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-3 pl-2 border-l border-[#232B3A]">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-white font-bold text-xs">
+                {session?.user?.name ? session.user.name.charAt(0).toUpperCase() : <User className="w-3.5 h-3.5" />}
               </div>
-              <span className="hidden sm:inline-block text-xs font-medium text-white">
-                Profile
+              <span className="hidden sm:inline-block text-xs font-medium text-white max-w-[100px] truncate">
+                {session?.user?.name || session?.user?.email || "Profile"}
               </span>
             </div>
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              title="Log Out"
+              aria-label="Log Out"
+              className="text-[#9AA4B2] hover:text-[#FF5446] transition-colors p-1 rounded hover:bg-[#111827]"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         ) : (
           <div className="flex items-center gap-2 pl-2 border-l border-[#232B3A]">
-            <button
-              onClick={() => setIsAuthenticated(true)}
+            <Link
+              href="/login"
               className="px-3 py-1.5 text-xs md:text-sm font-medium text-[#9AA4B2] hover:text-white transition-colors"
             >
               Login
-            </button>
-            <button
-              onClick={() => setIsAuthenticated(true)}
+            </Link>
+            <Link
+              href="/register"
               className="px-3.5 py-1.5 text-xs md:text-sm font-bold text-white bg-[#FF5446] hover:bg-[#D63A2F] rounded-lg transition-colors"
             >
               Register
-            </button>
+            </Link>
           </div>
         )}
       </div>

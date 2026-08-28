@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CoinDCX Crypto Watchlist
 
-## Getting Started
+A full-stack cryptocurrency market tracking and watchlist application inspired by the CoinDCX interface.
 
-First, run the development server:
+The application allows users to explore cryptocurrency markets, view detailed coin information, search and filter assets, and manage their watchlists.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- View cryptocurrency market data
+- Search and filter coins
+- Sort market data
+- View gainers and losers
+- View detailed information for individual coins
+- Track 24-hour price changes
+- View market cap and trading volume
+- View 7-day price trends
+- Add and remove coins from watchlists
+- View tracked/watchlisted coins
+- Automatic market data refresh
+- Responsive dark-themed interface
+- PostgreSQL database with Prisma ORM
+- REST API through Next.js Route Handlers
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Frontend
 
-## Learn More
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- TanStack React Query
+- Lucide React
 
-To learn more about Next.js, take a look at the following resources:-
+### Backend
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Next.js App Router
+- Next.js Route Handlers
+- Prisma ORM
+- PostgreSQL
+- Node.js
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Data
 
-## Deploy on Vercel
+- Cryptocurrency market data from CoinGecko
+- PostgreSQL for application data
+- Prisma for database access and migrations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### DevOps
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Docker
+- Dockerfile
+- `.dockerignore`
+
+## Project Structure
+
+```text
+SW2627_Nextjs_Crypto_Watchlist/
+│
+├── app/
+│   ├── api/
+│   │   ├── coins/
+│   │   ├── markets/
+│   │   └── watchlists/
+│   │
+│   ├── (dashboard)/
+│   │   ├── coins/
+│   │   ├── markets/
+│   │   └── watchlist/
+│   │
+│   ├── layout.tsx
+│   └── page.tsx
+│
+├── components/
+│   ├── MarketsDashboard.tsx
+│   ├── WatchlistTable.tsx
+│   ├── TickerStrip.tsx
+│   ├── FilterTabs.tsx
+│   └── ...
+│
+├── hooks/
+│   └── useMarketData.ts
+│
+├── lib/
+│   ├── prisma.ts
+│   ├── useCoinSearch.ts
+│   └── useWatchlist.ts
+│
+├── prisma/
+│   ├── migrations/
+│   ├── schema.prisma
+│   └── seed.ts
+│
+├── public/
+├── types/
+│
+├── Dockerfile
+├── .dockerignore
+├── next.config.ts
+├── package.json
+└── README.md

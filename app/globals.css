@@ -10,6 +10,7 @@
   --color-text-secondary: #9AA4B2;
   --color-text-tertiary: #5B6472;
   --color-brand-red: #FF5446;
+  --color-brand-red-hover: #D63A2F;
   --color-positive: #1FB878;
   --color-positive-bg: #0F3D30;
   --color-negative: #E5484D;
@@ -27,9 +28,36 @@ body {
   color: #F5F6F8;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+/* Custom subtle dark scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #10131C;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #232B3A;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* Focus styles for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #FF5446;
+  outline-offset: 2px;
 }
 

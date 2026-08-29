@@ -157,17 +157,17 @@ export default function PriceChart({
       {/* Tooltip on Hover */}
       {hoveredPt && (
         <div
-          className="absolute pointer-events-none bg-[#10131C] border border-[#232B3A] text-white text-xs px-2.5 py-1 rounded-md shadow-xl z-20 transition-all duration-75"
+          className="absolute pointer-events-none bg-[#10131C] border border-[#232B3A] text-white text-xs px-3 py-1.5 rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.6)] z-20 transition-all duration-75 flex flex-col items-center"
           style={{
             left: `${(hoveredPt.x / svgWidth) * 100}%`,
-            top: `${Math.max(10, Math.min(hoveredPt.y - 40, svgHeight - 40))}px`,
+            top: `${Math.max(8, Math.min(hoveredPt.y - 48, svgHeight - 48))}px`,
             transform: "translateX(-50%)",
           }}
         >
-          <div className="font-bold tabular-nums">
+          <div className="font-bold tabular-nums text-white text-[13px]">
             {formatINR(hoveredPt.data.price)}
           </div>
-          <div className="text-[10px] text-[#9AA4B2] text-center">
+          <div className="text-[10px] text-[#9AA4B2] font-medium text-center">
             {hoveredPt.data.label}
           </div>
         </div>
@@ -175,3 +175,4 @@ export default function PriceChart({
     </div>
   );
 }
+

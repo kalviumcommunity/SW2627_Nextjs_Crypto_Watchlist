@@ -38,68 +38,73 @@ export default function Pagination({
   };
 
   return (
-    <div className="h-[52px] bg-[#111827] border-t border-[#232B3A] px-4 md:px-6 flex items-center justify-between text-[13px] rounded-b-[10px]">
+    <div className="h-[52px] bg-[#10131C]/60 border-t border-[#232B3A] px-4 md:px-6 flex items-center justify-between text-[13px] rounded-b-[10px]">
       {/* Left: Showing X-Y of N assets */}
-      <div className="text-[#5B6472]">
-        Showing{" "}
-        <span className="text-white font-medium tabular-nums">
+      <div className="text-[#5B6472] text-xs">
+        <span className="hidden sm:inline">Showing </span>
+        <span className="text-white font-semibold tabular-nums">
           {startItem}-{endItem}
         </span>{" "}
         of{" "}
-        <span className="text-white font-medium tabular-nums">
+        <span className="text-white font-semibold tabular-nums">
           {totalCount >= 100 ? `${totalCount}+` : totalCount}
         </span>{" "}
-        assets
+        <span className="hidden sm:inline">assets</span>
       </div>
 
       {/* Right: Prev Arrow, Numbered Pills, Next Arrow */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1 sm:gap-1.5">
         {/* Prev Arrow */}
         <button
           type="button"
           disabled={currentPage <= 1}
           onClick={() => onPageChange(currentPage - 1)}
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          aria-label="Previous page"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#9AA4B2] disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
 
         {/* Page Pills */}
-        {getPageNumbers().map((p, idx) => {
-          if (typeof p === "string") {
-            return (
-              <span
-                key={`ellipsis-${idx}`}
-                className="w-7 text-center text-[#5B6472] font-bold select-none"
-              >
-                …
-              </span>
-            );
-          }
+        <div className="flex items-center gap-1">
+          {getPageNumbers().map((p, idx) => {
+            if (typeof p === "string") {
+              return (
+                <span
+                  key={`ellipsis-${idx}`}
+                  className="w-6 text-center text-[#5B6472] font-bold select-none text-xs"
+                >
+                  …
+                </span>
+              );
+            }
 
-          const isActive = p === currentPage;
-          return (
-            <button
-              key={p}
-              type="button"
-              onClick={() => onPageChange(p)}
-              className={`w-8 h-8 rounded-lg text-xs font-bold transition-all tabular-nums ${
-                isActive
-                  ? "bg-[#FF5446] text-white shadow-sm"
-                  : "bg-transparent text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] border border-transparent"
-              }`}
-            >
-              {p}
-            </button>
-          );
-        })}
+            const isActive = p === currentPage;
+            return (
+              <button
+                key={p}
+                type="button"
+                onClick={() => onPageChange(p)}
+                aria-current={isActive ? "page" : undefined}
+                className={`w-8 h-8 rounded-lg text-xs font-bold transition-all tabular-nums cursor-pointer focus:outline-none ${
+                  isActive
+                    ? "bg-[#FF5446] text-white shadow-sm font-extrabold"
+                    : "bg-transparent text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] border border-transparent"
+                }`}
+              >
+                {p}
+              </button>
+            );
+          })}
+        </div>
 
         {/* Next Arrow */}
         <button
           type="button"
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(currentPage + 1)}
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          aria-label="Next page"
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#9AA4B2] disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
         >
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -107,3 +112,4 @@ export default function Pagination({
     </div>
   );
 }
+

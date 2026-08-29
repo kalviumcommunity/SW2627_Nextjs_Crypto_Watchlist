@@ -68,12 +68,14 @@ export default function SortDropdown({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="h-9 px-3 bg-[#10131C] border border-[#232B3A] hover:border-[#374151] text-[#9AA4B2] hover:text-white rounded-lg flex items-center gap-2 text-xs font-medium transition-colors cursor-pointer outline-none focus:border-[#FF5446]"
+        className="h-9 px-3 bg-[#10131C] border border-[#232B3A] hover:border-[#374151] text-[#9AA4B2] hover:text-white rounded-lg flex items-center gap-2 text-xs font-medium transition-all cursor-pointer outline-none focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 shadow-xs"
         title={`Sort: ${currentOptionLabel} ${activeDir === "asc" ? "↑" : "↓"}`}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
       >
         <ArrowUpDown className="w-3.5 h-3.5 text-[#FF5446] shrink-0" />
         
-        {/* Label visible on desktop & mobile, collapsed to icon on 768-1023px if needed */}
+        {/* Label visible on desktop & mobile */}
         <span className="hidden sm:inline md:hidden lg:inline whitespace-nowrap">
           Sort: {currentOptionLabel}
         </span>
@@ -87,7 +89,7 @@ export default function SortDropdown({
         </span>
 
         <ChevronDown
-          className={`w-3.5 h-3.5 text-[#9AA4B2] transition-transform shrink-0 ${
+          className={`w-3.5 h-3.5 text-[#9AA4B2] transition-transform duration-200 shrink-0 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -95,8 +97,8 @@ export default function SortDropdown({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1 z-50 w-48 bg-[#111827] border border-[#232B3A] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.45)] py-1 text-xs">
-          <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#9AA4B2] border-b border-[#232B3A]/60 mb-1">
+        <div className="absolute right-0 top-full mt-1.5 z-50 w-48 bg-[#111827] border border-[#232B3A] rounded-xl shadow-[0_12px_32px_rgba(0,0,0,0.6)] py-1.5 text-xs animate-in fade-in zoom-in-95 duration-100">
+          <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9AA4B2] border-b border-[#232B3A]/60 mb-1">
             Sort By
           </div>
           {SORT_OPTIONS.map((option) => {
@@ -106,7 +108,7 @@ export default function SortDropdown({
                 key={option.key}
                 type="button"
                 onClick={() => handleOptionClick(option.key)}
-                className={`w-full px-3 py-2 text-left flex items-center justify-between transition-colors ${
+                className={`w-full px-3 py-2 text-left flex items-center justify-between transition-colors cursor-pointer ${
                   isActive
                     ? "bg-[#1B2536] text-white font-semibold"
                     : "text-[#9AA4B2] hover:bg-[#1B2536]/60 hover:text-white"
@@ -130,3 +132,4 @@ export default function SortDropdown({
     </div>
   );
 }
+

@@ -43,7 +43,7 @@ export default function SearchInput({
   };
 
   return (
-    <div className="relative w-full sm:w-[260px] h-[36px] shrink-0">
+    <div className="relative w-full sm:w-[260px] h-9 shrink-0">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9AA4B2] pointer-events-none" />
       
       <input
@@ -57,7 +57,7 @@ export default function SearchInput({
         }}
         onChange={(e) => setLocalValue(e.target.value)}
         placeholder={placeholder}
-        className="w-full h-full bg-[#10131C] border border-[#232B3A] rounded-lg pl-9 pr-8 text-xs text-white placeholder-[#9AA4B2] focus:outline-none focus:border-[#FF5446] transition-colors"
+        className="w-full h-full bg-[#10131C] border border-[#232B3A] hover:border-[#374151] rounded-lg pl-9 pr-8 text-xs text-white placeholder-[#5B6472] focus:outline-none focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 transition-all shadow-xs"
       />
 
       {/* Clear 'x' Button */}
@@ -65,8 +65,9 @@ export default function SearchInput({
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-0.5 rounded-full"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-1 rounded-md hover:bg-[#1B2536]"
           title="Clear search"
+          aria-label="Clear search"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -85,4 +86,5 @@ export default function SearchInput({
     </div>
   );
 }
+
 

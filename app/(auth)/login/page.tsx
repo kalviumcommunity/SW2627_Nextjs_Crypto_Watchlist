@@ -136,7 +136,7 @@ export default function LoginPage() {
             className={`w-full h-[44px] px-4 bg-[#111827] text-white text-sm rounded-lg border transition-colors placeholder:text-[#5B6472] focus:outline-none ${
               emailError
                 ? "border-[#E5484D] focus:border-[#E5484D]"
-                : "border-[#232B3A] focus:border-[#3B82F6]"
+                : "border-[#232B3A] focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30"
             }`}
           />
           {/* Render inline error message text if email validation error exists */}
@@ -174,7 +174,7 @@ export default function LoginPage() {
             role="checkbox"
             aria-checked={rememberMe}
             onClick={() => setRememberMe(!rememberMe)}
-            className={`w-4 h-4 rounded border flex items-center justify-center transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#3B82F6] ${
+            className={`w-4 h-4 rounded border flex items-center justify-center transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 ${
               rememberMe
                 ? "bg-[#FF5446] border-[#FF5446]"
                 : "border-[#232B3A] bg-[#111827]"
@@ -197,7 +197,7 @@ export default function LoginPage() {
           type="submit"
           disabled={isLoading}
           aria-busy={isLoading}
-          className="w-full h-[44px] bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-sm rounded-lg transition-colors flex items-center justify-center disabled:opacity-60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#3B82F6] mt-2"
+          className="w-full h-[44px] bg-[#FF5446] hover:bg-[#D63A2F] active:scale-[0.99] text-white font-bold text-sm rounded-lg transition-all flex items-center justify-center disabled:opacity-60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF5446]/40 shadow-sm mt-2"
         >
           {/* Render spinner icon during loading state, otherwise display 'Log In' text */}
           {isLoading ? (
@@ -206,6 +206,7 @@ export default function LoginPage() {
             "Log In"
           )}
         </button>
+
       </form>
 
       {/* Visual divider line with 'OR' label separating credentials login and OAuth options */}

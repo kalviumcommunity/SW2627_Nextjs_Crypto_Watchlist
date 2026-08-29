@@ -31,10 +31,13 @@ export default function AuthLayout({
           </Link>
         </div>
 
-        {/* Central form card shell restricting max width to 400px for optimal form readability */}
-        <div className="w-full max-w-[400px] flex flex-col">{children}</div>
+        {/* Central form card shell restricting max width to 440px for optimal form readability */}
+        <div className="w-full max-w-[440px] flex flex-col bg-[#111827]/40 sm:bg-[#111827] sm:border sm:border-[#232B3A] p-4 sm:p-8 rounded-2xl shadow-xl">
+          {children}
+        </div>
       </main>
     </div>
   );
 }
+
 

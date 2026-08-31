@@ -1,13 +1,16 @@
 
+// Configure Prisma Client code generator settings
 generator client {
   provider = "prisma-client"
   output   = "../app/generated/prisma"
 }
 
+// Configure SQLite database data source provider
 datasource db {
   provider = "postgresql"
 }
 
+// Enum defining supported cryptocurrency asset classification categories
 enum CoinCategory {
   LAYER_1
   DEFI
@@ -17,108 +20,117 @@ enum CoinCategory {
   SMART_CONTRACT
 }
 
+// User model storing authentication credentials, profile data, and session relationships
 model User {
-  id            String      @id @default(cuid())
-  name          String?
-  email         String      @unique
-  emailVerified DateTime?
-  passwordHash  String?     // null for OAuth-only accounts
-  image         String?
-  createdAt     DateTime    @default(now())
-  accounts      Account[]
-  sessions      Session[]
-  watchlists    Watchlist[]
+  id            String      @id @default(cuid()) // Unique user identifier generated via CUID
+  name          String?                          // Optional full name of the user
+  email         String      @unique              // Unique email address used for login
+  emailVerified DateTime?                        // Timestamp of email verification status
+  passwordHash  String?                          // Bcrypt hashed password (null for OAuth-only accounts)
+  image         String?                          // Optional profile avatar image URL
+  createdAt     DateTime    @default(now())      // Account creation timestamp
+  accounts      Account[]                        // Relational link to linked OAuth social accounts
+  sessions      Session[]                        // Relational link to active database user sessions
+  watchlists    Watchlist[]                      // Relational link to user created watchlists
 }
 
+// Account model storing OAuth provider credentials (Google, GitHub) for NextAuth
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid()) // Unique account record identifier
+  userId            String                       // Foreign key referencing owning User record
+  type              String                       // Account provider type (e.g. 'oauth')
+  provider          String                       // OAuth provider identifier (e.g. 'google', 'github')
+  providerAccountId String                       // Account ID assigned by the external provider
+  refresh_token     String?                      // Optional OAuth refresh token
+  access_token      String?                      // Optional OAuth access token
+  expires_at        Int?                         // Token expiration unix epoch timestamp
+  token_type        String?                      // OAuth token type header (e.g. 'Bearer')
+  scope             String?                      // OAuth permission scopes granted
+  id_token          String?                      // OpenID Connect ID Token JWT string
+  session_state     String?                      // OAuth session state identifier string
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User
 
-  @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])        // Composite constraint: one provider account per user
 }
 
+// Session model for managing database-backed NextAuth user session tokens
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid()) // Unique session ID
+  sessionToken String   @unique              // Secure random session token cookie string
+  userId       String                        // Foreign key linking to authenticated User
+  expires      DateTime                      // Expiration timestamp of the session token
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Relation to User
 }
 
+// VerificationToken model storing magic link or password reset tokens
 model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
+  identifier String   // User email identifier for verification
+  token      String   @unique // Unique random token string
+  expires    DateTime // Expiration timestamp for the verification token
 
-  @@unique([identifier, token])
+  @@unique([identifier, token]) // Composite key on identifier and token
 }
 
+// Watchlist model representing custom user-curated coin collections
 model Watchlist {
-  id        String          @id @default(cuid())
-  name      String
-  userId    String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  user      User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     WatchlistItem[]
+  id        String          @id @default(cuid()) // Unique watchlist identifier
+  name      String                               // Custom name title of the watchlist
+  userId    String?                              // Optional foreign key to registered User
+  createdAt DateTime        @default(now())      // Creation timestamp
+  updatedAt DateTime        @updatedAt           // Auto-updated modification timestamp
+  user      User?           @relation(fields: [userId], references: [id], onDelete: Cascade) // Optional relation to User
+  items     WatchlistItem[]                      // Relational link to coin items inside this watchlist
 }
 
+// Coin model storing cryptocurrency metadata, ranking, and descriptions
 model Coin {
-  id                String          @id @default(cuid())
-  symbol            String          @unique
-  name              String
-  subtext           String
-  category          CoinCategory    @default(LAYER_1)
-  rank              Int
-  iconUrl           String?
-  network           String?
-  description       String?
-  websiteUrl        String?
-  whitepaperUrl     String?
-  circulatingSupply String?
-  maxSupply         String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  priceSnapshots    PriceSnapshot[]
-  watchlistItems    WatchlistItem[]
+  id                String          @id @default(cuid()) // Unique coin database identifier
+  symbol            String          @unique              // Unique ticker symbol (e.g. 'BTC', 'ETH')
+  name              String                               // Full display name (e.g. 'Bitcoin')
+  subtext           String                               // Short subtitle or description tagline
+  category          CoinCategory    @default(LAYER_1)    // Asset classification enum type
+  rank              Int                                  // Market cap market position rank (1, 2, 3...)
+  iconUrl           String?                              // Optional URL path to coin logo icon image
+  network           String?                              // Blockchain network technology description
+  description       String?                              // Detailed multi-paragraph overview text
+  websiteUrl        String?                              // Official project website URL link
+  whitepaperUrl     String?                              // Official technical whitepaper documentation URL
+  circulatingSupply String?                              // Formatted circulating supply quantity string
+  maxSupply         String?                              // Formatted maximum cap supply string
+  createdAt         DateTime        @default(now())      // Record insertion timestamp
+  updatedAt         DateTime        @updatedAt           // Record modification timestamp
+  priceSnapshots    PriceSnapshot[]                      // Historical market price snapshots relation
+  watchlistItems    WatchlistItem[]                      // Watchlist containment items relation
 }
 
+// PriceSnapshot model recording periodic market price points, 24h change, volume, and sparklines
 model PriceSnapshot {
-  id             String   @id @default(cuid())
-  coinId         String
-  priceInr       Float
-  change24hPct   Float
-  low24h         Float?
-  high24h        Float?
-  volume24h      String
-  marketCap      String
-  marketCapInrCr Float?
-  sparkline7d    String
-  recordedAt     DateTime @default(now())
-  coin           Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid()) // Unique snapshot identifier
+  coinId         String                        // Foreign key referencing Coin
+  priceInr       Float                         // Current market price in Indian Rupees (INR)
+  change24hPct   Float                         // 24-hour percentage change value (+/- %)
+  low24h         Float?                        // Optional 24-hour lowest price level
+  high24h        Float?                        // Optional 24-hour highest price level
+  volume24h      String                        // Formatted 24-hour trading volume string (e.g. '₹64,520 Cr')
+  marketCap      String                        // Formatted market capitalization string
+  marketCapInrCr Float?                        // Numeric market cap in Crore INR for range calculations
+  sparkline7d    String                        // JSON serialized string array of 7-day price points
+  recordedAt     DateTime @default(now())      // Timestamp when snapshot was recorded
+  coin           Coin     @relation(fields: [coinId], references: [id], onDelete: Cascade) // Relation to Coin
 
-  @@index([coinId, recordedAt])
+  @@index([coinId, recordedAt])                // Performance index for fetching coin history ordered by time
 }
 
+// WatchlistItem junction table joining Watchlists and Coins
 model WatchlistItem {
-  id          String    @id @default(cuid())
-  coinId      String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  watchlistId String
-  coin        Coin      @relation(fields: [coinId], references: [id], onDelete: Cascade)
-  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid()) // Unique watchlist item record identifier
+  coinId      String                         // Foreign key referencing saved Coin
+  createdAt   DateTime  @default(now())      // Timestamp when coin was added to watchlist
+  updatedAt   DateTime  @updatedAt           // Modification timestamp
+  watchlistId String                         // Foreign key referencing parent Watchlist
+  coin        Coin      @relation(fields: [coinId], references: [id], onDelete: Cascade) // Relation to Coin
+  watchlist   Watchlist @relation(fields: [watchlistId], references: [id], onDelete: Cascade) // Relation to Watchlist
 
-  @@unique([watchlistId, coinId])
+  @@unique([watchlistId, coinId])            // Composite unique constraint: prevent duplicate coin in same watchlist
 }
+

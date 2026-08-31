@@ -1,8 +1,13 @@
+// Client Component directive for Next.js hooks execution
 "use client";
 
+// Import router navigation hooks from Next.js App Router
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
+// Import useQuery hook from TanStack React Query for data fetching, caching, and state management
 import { useQuery } from "@tanstack/react-query";
+// Import React optimization hooks (useCallback, useMemo)
 import { useCallback, useMemo } from "react";
+// Import TypeScript interfaces and type definitions for watchlist and filtering
 import {
   CategoryFilter,
   ChangeQuickFilter,
@@ -13,21 +18,29 @@ import {
   WatchlistResponseDTO,
 } from "@/types/watchlist";
 
+// Export custom React hook managing search query, filters, sorting, pagination, and TanStack Query state
 export function useCoinSearch(options?: {
   watchlistId?: string;
   tab?: string;
   initialData?: WatchlistResponseDTO;
 }) {
+  // Read current URL search parameters
   const searchParams = useSearchParams();
+  // Get Next.js router instance for updating URL query params
   const router = useRouter();
+  // Get current path string
   const pathname = usePathname();
 
+  // Extract optional watchlist ID option
   const watchlistId = options?.watchlistId;
+  // Determine active tab ('all', 'watchlist', 'gainers', 'losers')
   const tab = options?.tab || searchParams.get("tab") || "all";
 
-  // Parse filters from searchParams
+  // Parse active filter values from URL searchParams using useMemo
   const filters: CoinFilterState = useMemo(() => {
+    // Parse search text query ('q')
     const q = (searchParams.get("q") || "").trim();
+    // Parse category filters array
     const categoryRaw = searchParams.get("category") || "";
     const categories = categoryRaw
       .split(",")
@@ -43,26 +56,31 @@ export function useCoinSearch(options?: {
         ].includes(c)
       );
 
+    // Parse price range numeric filters
     const priceMinStr = searchParams.get("priceMin");
     const priceMaxStr = searchParams.get("priceMax");
     const priceMin = priceMinStr ? parseFloat(priceMinStr) : null;
     const priceMax = priceMaxStr ? parseFloat(priceMaxStr) : null;
 
+    // Parse 24-hour quick change filter
     const changeRaw = (searchParams.get("change") || "any").toLowerCase();
     const change: ChangeQuickFilter =
       changeRaw === "gainers" || changeRaw === "losers" ? changeRaw : "any";
 
+    // Parse 24-hour change percentage range filters
     const changeMinStr = searchParams.get("changeMin");
     const changeMaxStr = searchParams.get("changeMax");
     const changeMin = changeMinStr ? parseFloat(changeMinStr) : null;
     const changeMax = changeMaxStr ? parseFloat(changeMaxStr) : null;
 
+    // Parse Market Cap tier filter
     const capRaw = (searchParams.get("cap") || "all").toLowerCase();
     const cap: MarketCapTier =
       capRaw === "large" || capRaw === "mid" || capRaw === "small"
         ? capRaw
         : "all";
 
+    // Parse active sorting column
     const sortRaw = (searchParams.get("sort") || "rank").toLowerCase();
     const sort: SortOption = [
       "rank",
@@ -75,11 +93,14 @@ export function useCoinSearch(options?: {
       ? (sortRaw as SortOption)
       : "rank";
 
+    // Parse active sorting direction ('asc' or 'desc')
     const dirRaw = (searchParams.get("dir") || "asc").toLowerCase();
     const dir: SortDirection = dirRaw === "desc" ? "desc" : "asc";
 
+    // Parse pagination page index
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
 
+    // Return constructed filter state object
     return {
       q,
       categories,
@@ -95,12 +116,12 @@ export function useCoinSearch(options?: {
     };
   }, [searchParams]);
 
-  // Construct URL query string from state
+  // Construct URL query string from filter state mutations
   const buildQueryString = useCallback(
     (newFilters: Partial<CoinFilterState> & { tab?: string; page?: number }) => {
       const params = new URLSearchParams(searchParams.toString());
 
-      // Handle tab
+      // Serialize active tab param
       const currentTab = newFilters.tab !== undefined ? newFilters.tab : tab;
       if (currentTab && currentTab !== "all") {
         params.set("tab", currentTab);
@@ -108,7 +129,7 @@ export function useCoinSearch(options?: {
         params.delete("tab");
       }
 
-      // Handle search query
+      // Serialize search query string
       const newQ = newFilters.q !== undefined ? newFilters.q : filters.q;
       if (newQ) {
         params.set("q", newQ);
@@ -116,7 +137,7 @@ export function useCoinSearch(options?: {
         params.delete("q");
       }
 
-      // Handle categories
+      // Serialize comma-separated category string
       const newCategories =
         newFilters.categories !== undefined
           ? newFilters.categories
@@ -127,7 +148,7 @@ export function useCoinSearch(options?: {
         params.delete("category");
       }
 
-      // Handle price range
+      // Serialize minimum and maximum price params
       const newPriceMin =
         newFilters.priceMin !== undefined
           ? newFilters.priceMin
@@ -147,7 +168,7 @@ export function useCoinSearch(options?: {
         params.delete("priceMax");
       }
 
-      // Handle 24h change
+      // Serialize 24h change params
       const newChange =
         newFilters.change !== undefined ? newFilters.change : filters.change;
       if (newChange && newChange !== "any") {
@@ -175,7 +196,7 @@ export function useCoinSearch(options?: {
         params.delete("changeMax");
       }
 
-      // Handle Market Cap Tier
+      // Serialize market cap tier
       const newCap =
         newFilters.cap !== undefined ? newFilters.cap : filters.cap;
       if (newCap && newCap !== "all") {
@@ -184,7 +205,7 @@ export function useCoinSearch(options?: {
         params.delete("cap");
       }
 
-      // Handle Sort
+      // Serialize sort column and direction
       const newSort =
         newFilters.sort !== undefined ? newFilters.sort : filters.sort;
       const newDir =
@@ -200,7 +221,7 @@ export function useCoinSearch(options?: {
         params.delete("dir");
       }
 
-      // Handle Page (Reset to 1 unless specified)
+      // Serialize current page index (resets to page 1 on filter modifications unless explicitly passed)
       const newPage =
         newFilters.page !== undefined ? newFilters.page : 1;
       if (newPage > 1) {
@@ -214,7 +235,7 @@ export function useCoinSearch(options?: {
     [searchParams, tab, filters]
   );
 
-  // Update URL state helper
+  // Helper method updating URL parameters without full page reload
   const updateFilters = useCallback(
     (newFilters: Partial<CoinFilterState> & { tab?: string; page?: number }) => {
       const queryString = buildQueryString(newFilters);
@@ -224,7 +245,7 @@ export function useCoinSearch(options?: {
     [buildQueryString, pathname, router]
   );
 
-  // Clear all active filters
+  // Helper method resetting all active filter query parameters
   const clearAllFilters = useCallback(() => {
     const params = new URLSearchParams();
     if (tab && tab !== "all") {
@@ -235,13 +256,13 @@ export function useCoinSearch(options?: {
     router.push(newUrl, { scroll: false });
   }, [tab, pathname, router]);
 
-  // Query Key for React Query caching
+  // Construct React Query cache key array dependent on current filters
   const queryKey = useMemo(
     () => ["coins", filters, watchlistId, tab],
     [filters, watchlistId, tab]
   );
 
-  // Fetch API call
+  // Execute TanStack Query fetch call against /api/coins route
   const queryResult = useQuery<
     WatchlistResponseDTO & {
       page?: number;
@@ -294,6 +315,7 @@ export function useCoinSearch(options?: {
     refetchOnWindowFocus: true,
   });
 
+  // Calculate count of active non-default filters for displaying badge count
   const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (filters.q) count++;
@@ -309,6 +331,7 @@ export function useCoinSearch(options?: {
     return count;
   }, [filters]);
 
+  // Return hook utilities and query response data
   return {
     filters,
     activeFiltersCount,
@@ -317,3 +340,4 @@ export function useCoinSearch(options?: {
     ...queryResult,
   };
 }
+

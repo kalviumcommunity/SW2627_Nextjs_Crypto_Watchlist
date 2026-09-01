@@ -84,8 +84,23 @@ export default function PriceChartCard({
       {/* Price Chart */}
       <div className="w-full relative min-h-[220px]">
         {isLoading ? (
-          <div className="w-full h-[220px] flex items-center justify-center text-[#5B6472] text-sm animate-pulse">
-            Loading chart data...
+          <div className="w-full h-[220px] rounded-lg bg-[#10131C]/60 border border-[#232B3A]/30 flex flex-col justify-end p-4 relative overflow-hidden animate-pulse">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#1B2536]/20 to-transparent animate-pulse" />
+            <div className="w-full h-1/2 flex items-end justify-between gap-2 opacity-30">
+              <div className="w-full h-1/3 bg-[#1B2536] rounded-t" />
+              <div className="w-full h-2/3 bg-[#1B2536] rounded-t" />
+              <div className="w-full h-1/2 bg-[#1B2536] rounded-t" />
+              <div className="w-full h-3/4 bg-[#1B2536] rounded-t" />
+              <div className="w-full h-2/5 bg-[#1B2536] rounded-t" />
+              <div className="w-full h-4/5 bg-[#1B2536] rounded-t" />
+              <div className="w-full h-full bg-[#1B2536] rounded-t" />
+            </div>
+            <div className="flex justify-between mt-3 pt-2 border-t border-[#232B3A]/40 text-[10px] text-[#5B6472]">
+              <div className="w-8 h-2.5 bg-[#1B2536] rounded" />
+              <div className="w-8 h-2.5 bg-[#1B2536] rounded" />
+              <div className="w-8 h-2.5 bg-[#1B2536] rounded" />
+              <div className="w-8 h-2.5 bg-[#1B2536] rounded" />
+            </div>
           </div>
         ) : (
           <PriceChart

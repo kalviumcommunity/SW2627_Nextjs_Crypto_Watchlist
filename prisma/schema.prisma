@@ -7,7 +7,7 @@ generator client {
 
 // Configure SQLite database data source provider
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 // Enum defining supported cryptocurrency asset classification categories

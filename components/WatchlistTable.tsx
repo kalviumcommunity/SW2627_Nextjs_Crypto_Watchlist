@@ -3,6 +3,8 @@
 import { CoinDTO } from "@/types/watchlist";
 import TableRow from "./TableRow";
 import Pagination from "./Pagination";
+import TableSkeleton from "./states/TableSkeleton";
+import EmptyState from "./states/EmptyState";
 import { FilterX } from "lucide-react";
 
 interface WatchlistTableProps {
@@ -29,40 +31,7 @@ export default function WatchlistTable({
   isLoading = false,
 }: WatchlistTableProps) {
   if (isLoading) {
-    return (
-      <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] overflow-hidden shadow-lg">
-        {/* Table Header Skeleton */}
-        <div className="h-[44px] bg-[#111827] border-b border-[#232B3A] px-4 hidden md:flex items-center justify-between text-xs text-[#5B6472]">
-          <div className="w-8 h-4 bg-[#1B2536] rounded animate-pulse" />
-          <div className="w-24 h-4 bg-[#1B2536] rounded animate-pulse" />
-          <div className="w-20 h-4 bg-[#1B2536] rounded animate-pulse" />
-          <div className="w-16 h-4 bg-[#1B2536] rounded animate-pulse" />
-          <div className="w-16 h-4 bg-[#1B2536] rounded animate-pulse" />
-          <div className="w-20 h-4 bg-[#1B2536] rounded animate-pulse" />
-        </div>
-        {/* Row Skeletons */}
-        <div className="divide-y divide-[#232B3A]">
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className="h-[56px] px-4 md:px-6 flex items-center justify-between animate-pulse"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#1B2536] shrink-0" />
-                <div className="space-y-1.5">
-                  <div className="w-20 h-3.5 bg-[#1B2536] rounded" />
-                  <div className="w-12 h-2.5 bg-[#1B2536] rounded" />
-                </div>
-              </div>
-              <div className="w-24 h-4 bg-[#1B2536] rounded" />
-              <div className="w-16 h-6 bg-[#1B2536] rounded-md hidden sm:block" />
-              <div className="w-20 h-4 bg-[#1B2536] rounded hidden lg:block" />
-              <div className="w-16 h-8 bg-[#1B2536] rounded-lg hidden md:block" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <TableSkeleton rowCount={8} />;
   }
 
   const isEmpty = coins.length === 0;
@@ -97,33 +66,28 @@ export default function WatchlistTable({
             ))
           ) : (
             <tr>
-              <td colSpan={8} className="py-16 px-4 text-center">
-                <div className="flex flex-col items-center justify-center max-w-sm mx-auto">
-                  <div className="w-14 h-14 rounded-2xl bg-[#1B2536] border border-[#232B3A] flex items-center justify-center mb-4 text-[#FF5446] shadow-sm">
-                    <FilterX className="w-7 h-7" />
-                  </div>
-                  <h3 className="text-base font-bold text-white mb-1">
-                    No coins match your filters
-                  </h3>
-                  <p className="text-xs text-[#9AA4B2] mb-5 leading-relaxed">
-                    Try adjusting your search query or clearing some active filters to see more results.
-                  </p>
-                  {onClearFilters && (
-                    <button
-                      type="button"
-                      onClick={onClearFilters}
-                      className="h-9 px-5 bg-[#FF5446] hover:bg-[#D63A2F] active:scale-95 text-white font-bold text-xs rounded-lg transition-all shadow-md cursor-pointer inline-flex items-center gap-2"
-                    >
-                      Clear all filters
-                    </button>
-                  )}
-                </div>
+              <td colSpan={8} className="p-0">
+                <EmptyState
+                  icon={FilterX}
+                  title="No coins match your filters"
+                  description="Try adjusting your search query or clearing some active filters to see more results."
+                  action={
+                    onClearFilters
+                      ? {
+                          label: "Clear all filters",
+                          onClick: onClearFilters,
+                          variant: "primary",
+                        }
+                      : undefined
+                  }
+                  isBorderless
+                  minHeight="min-h-[340px]"
+                />
               </td>
             </tr>
           )}
         </tbody>
       </table>
-
 
       {/* Mobile Card List (< 768px) */}
       <div className="md:hidden divide-y divide-[#232B3A]">
@@ -137,26 +101,22 @@ export default function WatchlistTable({
             />
           ))
         ) : (
-          <div className="py-12 px-4 text-center flex flex-col items-center justify-center">
-            <div className="w-14 h-14 rounded-2xl bg-[#1B2536] border border-[#232B3A] flex items-center justify-center mb-4 text-[#FF5446]">
-              <FilterX className="w-7 h-7" />
-            </div>
-            <h3 className="text-base font-bold text-white mb-1">
-              No coins match your filters
-            </h3>
-            <p className="text-xs text-[#9AA4B2] mb-5 max-w-xs">
-              Try adjusting your search query or clearing some filters to see results.
-            </p>
-            {onClearFilters && (
-              <button
-                type="button"
-                onClick={onClearFilters}
-                className="h-9 px-5 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-colors shadow-md cursor-pointer"
-              >
-                Clear all filters
-              </button>
-            )}
-          </div>
+          <EmptyState
+            icon={FilterX}
+            title="No coins match your filters"
+            description="Try adjusting your search query or clearing some active filters to see more results."
+            action={
+              onClearFilters
+                ? {
+                    label: "Clear all filters",
+                    onClick: onClearFilters,
+                    variant: "primary",
+                  }
+                : undefined
+            }
+            isBorderless
+            minHeight="min-h-[280px]"
+          />
         )}
       </div>
 

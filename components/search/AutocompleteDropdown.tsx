@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
+import { SearchX } from "lucide-react";
 import { CoinDTO } from "@/types/watchlist";
 
 interface AutocompleteDropdownProps {
@@ -115,16 +116,35 @@ export default function AutocompleteDropdown({
       ref={dropdownRef}
       tabIndex={-1}
       onKeyDown={handleKeyDown}
-      className="absolute top-full left-0 right-0 mt-1 z-50 bg-[#111827] border border-[#232B3A] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.45)] max-h-[280px] overflow-y-auto outline-none py-1 transition-all"
+      className="absolute top-full left-0 right-0 mt-1 z-50 bg-[#111827] border border-[#232B3A] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.45)] max-h-[300px] overflow-y-auto outline-none py-1 transition-all"
     >
       {loading && suggestions.length === 0 ? (
-        <div className="px-4 py-3 text-xs text-[#9AA4B2] flex items-center justify-center gap-2">
-          <div className="w-3 h-3 border-2 border-[#FF5446] border-t-transparent rounded-full animate-spin" />
-          <span>Searching...</span>
+        <div className="p-2 space-y-1.5 animate-pulse">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="px-2.5 py-2 flex items-center justify-between gap-3 rounded-md"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-6 h-6 rounded-full bg-[#1B2536] shrink-0" />
+                <div className="space-y-1">
+                  <div className="w-20 h-3 bg-[#1B2536] rounded" />
+                  <div className="w-12 h-2 bg-[#1B2536] rounded" />
+                </div>
+              </div>
+              <div className="w-14 h-3 bg-[#1B2536] rounded shrink-0" />
+            </div>
+          ))}
         </div>
       ) : suggestions.length === 0 ? (
-        <div className="px-4 py-3 text-xs text-[#9AA4B2] italic text-center">
-          No coins found for &apos;{query}&apos;
+        <div className="px-4 py-5 flex flex-col items-center justify-center text-center gap-1.5">
+          <SearchX className="w-6 h-6 text-[#5B6472] mb-0.5" />
+          <span className="text-xs font-semibold text-white">
+            No coins found for &quot;{query}&quot;
+          </span>
+          <span className="text-[11px] text-[#9AA4B2]">
+            Try searching by symbol (BTC, ETH) or name
+          </span>
         </div>
       ) : (
         suggestions.map((coin, index) => {

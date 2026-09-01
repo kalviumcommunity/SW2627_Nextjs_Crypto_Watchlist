@@ -1,8 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { Star, ArrowRight } from "lucide-react";
+import { Star } from "lucide-react";
 import { FilterTab, WatchlistResponseDTO } from "@/types/watchlist";
 import { useWatchlist } from "@/lib/useWatchlist";
 import { useCoinSearch } from "@/lib/useCoinSearch";
@@ -11,6 +10,7 @@ import FilterTabs from "./FilterTabs";
 import WatchlistTable from "./WatchlistTable";
 import SearchFilterBar from "./search/SearchFilterBar";
 import ActiveFilterChips from "./search/ActiveFilterChips";
+import EmptyState from "./states/EmptyState";
 
 interface WatchlistDashboardProps {
   initialData: WatchlistResponseDTO;
@@ -109,32 +109,20 @@ export default function WatchlistDashboard({
 
         {/* Empty Watchlist State Fallback */}
         {isEmptyWatchlist ? (
-          <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] p-8 md:p-14 flex flex-col items-center justify-center text-center my-auto min-h-[380px] shadow-lg relative overflow-hidden">
-            {/* Subtle background ambient radial gradient */}
-            <div className="absolute inset-0 bg-radial from-[#F5B94D]/5 via-transparent to-transparent pointer-events-none" />
-
-            {/* Star Icon Tile */}
-            <div className="w-16 h-16 rounded-2xl bg-[#1B2536] border border-[#232B3A] flex items-center justify-center mb-5 shadow-[0_0_24px_rgba(245,185,77,0.15)] relative">
-              <Star className="w-8 h-8 text-[#F5B94D] fill-[#F5B94D]/20 animate-pulse" />
-            </div>
-
-            <h3 className="text-xl md:text-2xl font-bold text-white mb-2 tracking-tight">
-              Your watchlist is empty
-            </h3>
-            <p className="text-xs md:text-sm text-[#9AA4B2] max-w-sm mb-6 leading-relaxed">
-              You haven&apos;t added any cryptocurrency assets to your watchlist yet. Explore markets and star coins to track them here.
-            </p>
-
-            <Link
-              href="/markets"
-              className="h-10 px-6 bg-[#FF5446] hover:bg-[#D63A2F] active:scale-95 text-white font-bold text-sm rounded-lg transition-all inline-flex items-center gap-2 shadow-md cursor-pointer group"
-            >
-              <span>Explore all Coins</span>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </div>
+          <EmptyState
+            icon={Star}
+            iconClassName="text-[#F5B94D] fill-[#F5B94D]/20 animate-pulse"
+            iconTileClassName="bg-[#1B2536] border-[#232B3A] shadow-[0_0_24px_rgba(245,185,77,0.15)]"
+            title="Your watchlist is empty"
+            description="Star coins from the market overview to add them here and monitor their performance closely."
+            action={{
+              label: "Explore all Coins",
+              href: "/markets",
+              variant: "primary",
+            }}
+            minHeight="min-h-[380px]"
+          />
         ) : (
-
           <WatchlistTable
             coins={items}
             onStarToggle={toggleStar}

@@ -14,17 +14,18 @@ export default function RangeSelector({
   onChange,
 }: RangeSelectorProps) {
   return (
-    <div className="bg-[#10131C] p-1 rounded-lg border border-[#232B3A] inline-flex items-center gap-0.5 select-none">
+    <div className="bg-[#10131C] p-1 rounded-lg border border-[#232B3A] inline-flex items-center gap-1 select-none shadow-xs">
       {ranges.map((range) => {
         const isActive = selectedRange === range;
         return (
           <button
             key={range}
+            type="button"
             onClick={() => onChange(range)}
-            className={`px-2.5 md:px-3 py-1 rounded-md text-xs font-semibold transition-all duration-150 ${
+            className={`px-2.5 md:px-3 py-1 rounded-md text-xs font-bold transition-all duration-150 cursor-pointer focus:outline-none ${
               isActive
-                ? "bg-[#1B2536] text-white shadow-sm"
-                : "text-[#9AA4B2] hover:text-white hover:bg-[#1B2536]/50"
+                ? "bg-[#1B2536] text-white border border-[#232B3A] shadow-xs"
+                : "text-[#9AA4B2] hover:text-white hover:bg-[#1B2536]/50 border border-transparent"
             }`}
           >
             {range}
@@ -34,3 +35,4 @@ export default function RangeSelector({
     </div>
   );
 }
+

@@ -111,8 +111,9 @@ export default function PasswordInput({
           className={`w-full h-[44px] px-4 pr-11 bg-[#111827] text-white text-sm rounded-lg border transition-colors placeholder:text-[#5B6472] focus:outline-none ${
             error
               ? "border-[#E5484D] focus:border-[#E5484D]"
-              : "border-[#232B3A] focus:border-[#3B82F6]"
+              : "border-[#232B3A] focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30"
           }`}
+
         />
 
         {/* Toggle button switching password visibility between hidden and visible */}

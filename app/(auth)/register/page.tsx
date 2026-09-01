@@ -213,7 +213,7 @@ export default function RegisterPage() {
             className={`w-full h-[44px] px-4 bg-[#111827] text-white text-sm rounded-lg border transition-colors placeholder:text-[#5B6472] focus:outline-none ${
               nameError
                 ? "border-[#E5484D] focus:border-[#E5484D]"
-                : "border-[#232B3A] focus:border-[#3B82F6]"
+                : "border-[#232B3A] focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30"
             }`}
           />
           {nameError && (
@@ -247,7 +247,7 @@ export default function RegisterPage() {
                   ? "border-[#E5484D] focus:border-[#E5484D]"
                   : isEmailAvailable === true
                   ? "border-[#1FB878] focus:border-[#1FB878]"
-                  : "border-[#232B3A] focus:border-[#3B82F6]"
+                  : "border-[#232B3A] focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30"
               }`}
             />
 
@@ -312,7 +312,7 @@ export default function RegisterPage() {
             className={`w-full h-[44px] px-4 bg-[#111827] text-white text-sm rounded-lg border transition-colors placeholder:text-[#5B6472] focus:outline-none ${
               confirmPasswordError
                 ? "border-[#E5484D] focus:border-[#E5484D]"
-                : "border-[#232B3A] focus:border-[#3B82F6]"
+                : "border-[#232B3A] focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30"
             }`}
           />
           {confirmPasswordError && (
@@ -333,7 +333,7 @@ export default function RegisterPage() {
                 setTermsAgreed(!termsAgreed);
                 if (termsError) setTermsError("");
               }}
-              className={`w-4 h-4 mt-0.5 rounded border flex items-center justify-center transition-colors cursor-pointer flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-[#3B82F6] ${
+              className={`w-4 h-4 mt-0.5 rounded border flex items-center justify-center transition-colors cursor-pointer flex-shrink-0 focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 ${
                 termsAgreed
                   ? "bg-[#FF5446] border-[#FF5446]"
                   : "border-[#232B3A] bg-[#111827]"
@@ -377,7 +377,7 @@ export default function RegisterPage() {
           type="submit"
           disabled={!termsAgreed || isLoading}
           aria-busy={isLoading}
-          className="w-full h-[44px] bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-sm rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#3B82F6] mt-2"
+          className="w-full h-[44px] bg-[#FF5446] hover:bg-[#D63A2F] active:scale-[0.99] text-white font-bold text-sm rounded-lg transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF5446]/40 shadow-sm mt-2"
         >
           {isLoading ? (
             <Loader2 className="w-5 h-5 animate-spin text-white" />
@@ -385,6 +385,7 @@ export default function RegisterPage() {
             "Create Account"
           )}
         </button>
+
       </form>
 
       {/* Divider */}

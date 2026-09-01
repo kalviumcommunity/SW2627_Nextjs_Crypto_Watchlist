@@ -42,10 +42,10 @@ export default function TableRow({
         tabIndex={0}
         onClick={handleRowClick}
         onKeyDown={handleKeyDown}
-        className="hidden md:table-row h-[56px] border-b border-[#232B3A] hover:bg-[#1B2536] transition-colors cursor-pointer focus:outline-none focus:bg-[#1B2536]"
+        className="hidden md:table-row h-[56px] border-b border-[#232B3A] hover:bg-[#1B2536]/80 transition-colors cursor-pointer focus:outline-none focus:bg-[#1B2536] group"
       >
         {/* Rank Number (#) */}
-        <td className="w-12 px-3 text-center text-xs text-[#5B6472] tabular-nums font-medium">
+        <td className="w-12 px-3 text-center text-xs text-[#5B6472] tabular-nums font-semibold">
           {rankNumber}
         </td>
 
@@ -53,14 +53,14 @@ export default function TableRow({
         <td className="px-4">
           <div className="flex items-center gap-3">
             {/* 32px Circular Avatar Icon */}
-            <div className="w-8 h-8 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-white flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-[#10131C] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-[#F5B94D] flex-shrink-0 group-hover:border-[#374151] transition-colors shadow-xs">
               {coin.symbol.slice(0, 3)}
             </div>
-            <div className="flex flex-col">
-              <span className="text-[14px] font-semibold text-white leading-tight">
+            <div className="flex flex-col min-w-0">
+              <span className="text-[14px] font-semibold text-white leading-tight truncate">
                 {coin.name}
               </span>
-              <span className="text-[12px] text-[#5B6472] leading-tight font-medium">
+              <span className="text-[11px] text-[#5B6472] leading-tight font-medium uppercase font-mono">
                 {coin.symbol}
               </span>
             </div>
@@ -69,7 +69,7 @@ export default function TableRow({
 
         {/* Price (INR) */}
         <td className="px-4 text-right">
-          <span className="text-[15px] font-medium text-white tabular-nums">
+          <span className="text-[14px] md:text-[15px] font-bold text-white tabular-nums">
             {formatINR(coin.priceInr)}
           </span>
         </td>
@@ -81,19 +81,21 @@ export default function TableRow({
 
         {/* 7D Trend */}
         <td className="px-4 text-center w-[100px]">
-          <Sparkline
-            data={coin.sparkline7d}
-            isPositive={coin.change24hPct >= 0}
-          />
+          <div className="flex justify-center">
+            <Sparkline
+              data={coin.sparkline7d}
+              isPositive={coin.change24hPct >= 0}
+            />
+          </div>
         </td>
 
         {/* 24h Volume */}
-        <td className="px-4 text-right text-[14px] text-[#9AA4B2] tabular-nums">
+        <td className="px-4 text-right text-[13px] text-[#9AA4B2] tabular-nums font-medium">
           {coin.volume24h}
         </td>
 
         {/* Market Cap (Hidden on <1280px screens) */}
-        <td className="hidden xl:table-cell px-4 text-right text-[14px] text-[#9AA4B2] tabular-nums">
+        <td className="hidden xl:table-cell px-4 text-right text-[13px] text-[#9AA4B2] tabular-nums font-medium">
           {coin.marketCap}
         </td>
 
@@ -107,10 +109,10 @@ export default function TableRow({
                 e.stopPropagation();
                 onStarToggle(coin.id, coin.isStarred);
               }}
-              className="p-1.5 rounded-md hover:bg-[#232B3A] text-[#9AA4B2] hover:scale-110 transition-all cursor-pointer"
+              className="p-1.5 rounded-md hover:bg-[#232B3A] text-[#9AA4B2] hover:scale-110 active:scale-95 transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
             >
               <Star
-                className={`w-4 h-4 ${
+                className={`w-4 h-4 transition-colors ${
                   coin.isStarred
                     ? "fill-[#F5B94D] text-[#F5B94D]"
                     : "text-[#5B6472] hover:text-[#F5B94D]"
@@ -124,7 +126,7 @@ export default function TableRow({
                 e.stopPropagation();
                 router.push(`/coins/${coin.symbol}`);
               }}
-              className="h-8 px-3 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-md transition-colors cursor-pointer"
+              className="h-8 px-3.5 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
             >
               Trade
             </button>
@@ -134,31 +136,58 @@ export default function TableRow({
 
       {/* Mobile Card View (< 768px) */}
       <div
+        tabIndex={0}
         onClick={handleRowClick}
-        className="md:hidden p-4 border-b border-[#232B3A] bg-[#111827] hover:bg-[#1B2536] transition-colors flex flex-col gap-3 cursor-pointer"
+        onKeyDown={handleKeyDown}
+        className="md:hidden p-3.5 border-b border-[#232B3A] bg-[#111827] hover:bg-[#1B2536]/80 transition-colors flex flex-col gap-2.5 cursor-pointer active:bg-[#1B2536]"
       >
-        {/* Line 1: Icon, Name, Price */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-white">
+        {/* Line 1: Rank Badge + Avatar + Name/Symbol (Left) & Price + Change Badge (Right) */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            {/* Rank badge */}
+            <span className="text-[11px] font-bold text-[#5B6472] tabular-nums min-w-[18px]">
+              #{rankNumber}
+            </span>
+
+            {/* Avatar */}
+            <div className="w-8 h-8 rounded-full bg-[#10131C] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-[#F5B94D] shrink-0">
               {coin.symbol.slice(0, 3)}
             </div>
 
-            <div>
-              <div className="text-sm font-semibold text-white">{coin.name}</div>
-              <div className="text-xs text-[#5B6472] font-medium">{coin.symbol}</div>
+            {/* Name + Symbol */}
+            <div className="min-w-0">
+              <div className="text-sm font-semibold text-white truncate leading-tight">
+                {coin.name}
+              </div>
+              <div className="text-[11px] text-[#5B6472] font-mono uppercase leading-tight mt-0.5">
+                {coin.symbol}
+              </div>
             </div>
           </div>
 
-          <div className="text-right">
-            <div className="text-sm font-medium text-white tabular-nums">
+          {/* Price & Change Badge */}
+          <div className="text-right shrink-0 flex flex-col items-end gap-1">
+            <div className="text-sm font-bold text-white tabular-nums leading-tight">
               {formatINR(coin.priceInr)}
             </div>
+            <ChangeBadge changePct={coin.change24hPct} />
           </div>
         </div>
 
-        {/* Line 2: Star Icon, Change Badge, Sparkline, Trade Button */}
-        <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#232B3A]/50">
+        {/* Line 2: Sparkline + Volume info (Left) & Actions (Right) */}
+        <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#232B3A]/40 text-xs">
+          <div className="flex items-center gap-3">
+            <Sparkline
+              data={coin.sparkline7d}
+              isPositive={coin.change24hPct >= 0}
+              width={65}
+              height={22}
+            />
+            <span className="text-[11px] text-[#5B6472] font-medium hidden xs:inline">
+              Vol: {coin.volume24h}
+            </span>
+          </div>
+
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -167,7 +196,7 @@ export default function TableRow({
                 e.stopPropagation();
                 onStarToggle(coin.id, coin.isStarred);
               }}
-              className="p-1 rounded-md hover:bg-[#232B3A]"
+              className="p-1.5 rounded-md hover:bg-[#232B3A] text-[#9AA4B2] transition-colors cursor-pointer"
             >
               <Star
                 className={`w-4 h-4 ${
@@ -175,28 +204,21 @@ export default function TableRow({
                 }`}
               />
             </button>
-            <ChangeBadge changePct={coin.change24hPct} />
+
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/coins/${coin.symbol}`);
+              }}
+              className="h-7 px-3.5 bg-[#FF5446] hover:bg-[#D63A2F] active:scale-95 text-white font-bold text-xs rounded-md transition-all shadow-xs"
+            >
+              Trade
+            </button>
           </div>
-
-          <Sparkline
-            data={coin.sparkline7d}
-            isPositive={coin.change24hPct >= 0}
-            width={70}
-            height={24}
-          />
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/coins/${coin.symbol}`);
-            }}
-            className="h-8 px-4 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-md transition-colors"
-          >
-            Trade
-          </button>
         </div>
       </div>
     </>
   );
 }
+

@@ -73,15 +73,16 @@ function GlobalNavSearch() {
           }
         }}
         placeholder="Search markets..."
-        className="w-40 md:w-56 lg:w-64 h-9 pl-9 pr-8 bg-[#111827] text-white text-xs md:text-sm rounded-full border border-[#232B3A] focus:outline-none focus:border-[#FF5446] transition-colors placeholder:text-[#5B6472]"
+        className="w-40 md:w-56 lg:w-64 h-9 pl-9 pr-8 bg-[#111827] text-white text-xs md:text-sm rounded-full border border-[#232B3A] focus:outline-none focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 transition-all placeholder:text-[#5B6472]"
       />
 
       {text && (
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-0.5 rounded-full z-10"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-0.5 rounded-full z-10 hover:bg-[#1B2536]"
           title="Clear search"
+          aria-label="Clear search"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -110,11 +111,14 @@ export default function NavBar() {
   const isWatchlistActive = pathname === "/watchlist";
 
   return (
-    <header className="h-[56px] bg-[#10131C] border-b border-[#232B3A] px-4 md:px-6 flex items-center justify-between sticky top-0 z-40">
+    <header className="h-[56px] bg-[#10131C]/95 backdrop-blur-md border-b border-[#232B3A] px-4 md:px-6 flex items-center justify-between sticky top-0 z-40 transition-colors">
       {/* Left: Brand Logo & Global Search */}
       <div className="flex items-center gap-4 lg:gap-6">
-        <Link href="/markets" className="flex items-center flex-shrink-0">
-          <span className="text-xl md:text-2xl font-bold tracking-tight">
+        <Link
+          href="/markets"
+          className="flex items-center flex-shrink-0 group focus:outline-none"
+        >
+          <span className="text-xl md:text-2xl font-bold tracking-tight transition-transform group-hover:scale-[1.02]">
             <span className="text-white">Coin</span>
             <span className="text-[#FF5446]">DCX</span>
           </span>
@@ -134,9 +138,9 @@ export default function NavBar() {
               : "text-[#9AA4B2] hover:text-white"
           }`}
         >
-          Markets
+          <span>Markets</span>
           {isMarketsActive && (
-            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446]" />
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446] rounded-t-full shadow-[0_0_8px_#FF5446]" />
           )}
         </Link>
 
@@ -148,9 +152,9 @@ export default function NavBar() {
               : "text-[#9AA4B2] hover:text-white"
           }`}
         >
-          Coins
+          <span>Coins</span>
           {isCoinsActive && (
-            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446]" />
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446] rounded-t-full shadow-[0_0_8px_#FF5446]" />
           )}
         </Link>
 
@@ -162,49 +166,62 @@ export default function NavBar() {
               : "text-[#9AA4B2] hover:text-white"
           }`}
         >
-          Watchlist
+          <span>Watchlist</span>
           {isWatchlistActive && (
-            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446]" />
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446] rounded-t-full shadow-[0_0_8px_#FF5446]" />
           )}
         </Link>
 
-        <Link href="#" className="text-[#9AA4B2] hover:text-white transition-colors">
+        <Link
+          href="#"
+          className="text-[#9AA4B2] hover:text-white transition-colors cursor-pointer"
+        >
           Futures
         </Link>
-        <Link href="#" className="text-[#9AA4B2] hover:text-white transition-colors">
+        <Link
+          href="#"
+          className="text-[#9AA4B2] hover:text-white transition-colors cursor-pointer"
+        >
           Options
         </Link>
-        <Link href="#" className="text-[#9AA4B2] hover:text-white transition-colors">
+        <Link
+          href="#"
+          className="text-[#9AA4B2] hover:text-white transition-colors cursor-pointer"
+        >
           Earn
         </Link>
       </nav>
 
       {/* Right Side Controls */}
-      <div className="flex items-center gap-3 md:gap-4">
+      <div className="flex items-center gap-2.5 md:gap-3.5">
         {/* BTC Price Pill */}
-        <div className="hidden md:flex items-center px-3 py-1 bg-[#111827] border border-[#232B3A] rounded-md text-xs font-mono text-[#9AA4B2]">
+        <div className="hidden md:flex items-center px-3 py-1 bg-[#111827] border border-[#232B3A] rounded-full text-xs font-mono text-[#9AA4B2] shadow-xs">
           <span>BTC:&nbsp;</span>
-          <span className="text-white font-semibold">$42,069.00</span>
+          <span className="text-white font-semibold tabular-nums">$42,069.00</span>
         </div>
 
         <button
           aria-label="Notifications"
-          className="text-[#9AA4B2] hover:text-white transition-colors p-1.5 rounded-lg hover:bg-[#111827]"
+          className="text-[#9AA4B2] hover:text-white transition-colors p-2 rounded-lg hover:bg-[#111827] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
         >
           <Bell className="w-4 h-4" />
         </button>
         <button
           aria-label="Settings"
-          className="text-[#9AA4B2] hover:text-white transition-colors p-1.5 rounded-lg hover:bg-[#111827]"
+          className="text-[#9AA4B2] hover:text-white transition-colors p-2 rounded-lg hover:bg-[#111827] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
         >
           <Settings className="w-4 h-4" />
         </button>
 
         {isAuthenticated ? (
-          <div className="flex items-center gap-3 pl-2 border-l border-[#232B3A]">
+          <div className="flex items-center gap-2.5 pl-2 border-l border-[#232B3A]">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-white font-bold text-xs">
-                {session?.user?.name ? session.user.name.charAt(0).toUpperCase() : <User className="w-3.5 h-3.5" />}
+              <div className="w-7 h-7 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-white font-bold text-xs shadow-xs">
+                {session?.user?.name ? (
+                  session.user.name.charAt(0).toUpperCase()
+                ) : (
+                  <User className="w-3.5 h-3.5" />
+                )}
               </div>
               <span className="hidden sm:inline-block text-xs font-medium text-white max-w-[100px] truncate">
                 {session?.user?.name || session?.user?.email || "Profile"}
@@ -214,7 +231,7 @@ export default function NavBar() {
               onClick={() => signOut({ callbackUrl: "/login" })}
               title="Log Out"
               aria-label="Log Out"
-              className="text-[#9AA4B2] hover:text-[#FF5446] transition-colors p-1 rounded hover:bg-[#111827]"
+              className="text-[#9AA4B2] hover:text-[#FF5446] transition-colors p-1.5 rounded-md hover:bg-[#111827] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -223,13 +240,13 @@ export default function NavBar() {
           <div className="flex items-center gap-2 pl-2 border-l border-[#232B3A]">
             <Link
               href="/login"
-              className="px-3 py-1.5 text-xs md:text-sm font-medium text-[#9AA4B2] hover:text-white transition-colors"
+              className="px-3 py-1.5 text-xs md:text-sm font-medium text-[#9AA4B2] hover:text-white transition-colors rounded-lg hover:bg-[#111827]"
             >
               Login
             </Link>
             <Link
               href="/register"
-              className="px-3.5 py-1.5 text-xs md:text-sm font-bold text-white bg-[#FF5446] hover:bg-[#D63A2F] rounded-lg transition-colors"
+              className="px-3.5 py-1.5 text-xs md:text-sm font-bold text-white bg-[#FF5446] hover:bg-[#D63A2F] active:scale-95 rounded-lg transition-all shadow-sm"
             >
               Register
             </Link>
@@ -239,4 +256,5 @@ export default function NavBar() {
     </header>
   );
 }
+
 

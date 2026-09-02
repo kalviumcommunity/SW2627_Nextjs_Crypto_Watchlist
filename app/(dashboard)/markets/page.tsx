@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import MarketsDashboard from "@/components/MarketsDashboard";
+import DashboardSkeleton from "@/components/states/DashboardSkeleton";
 import { CoinDTO, WatchlistResponseDTO } from "@/types/watchlist";
 
 export const revalidate = 0; // Server render on demand
@@ -75,7 +76,7 @@ export default async function MarketsPage() {
   };
 
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#050810]" />}>
+    <Suspense fallback={<DashboardSkeleton title="All Crypto Markets" />}>
       <MarketsDashboard
         initialData={initialData}
         watchlistId={watchlistId}

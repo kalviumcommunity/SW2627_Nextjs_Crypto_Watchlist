@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { Star } from "lucide-react";
 import { FilterTab, WatchlistResponseDTO } from "@/types/watchlist";
 import { useWatchlist } from "@/lib/useWatchlist";
 import { useCoinSearch } from "@/lib/useCoinSearch";
@@ -9,6 +10,7 @@ import FilterTabs from "./FilterTabs";
 import WatchlistTable from "./WatchlistTable";
 import SearchFilterBar from "./search/SearchFilterBar";
 import ActiveFilterChips from "./search/ActiveFilterChips";
+import EmptyState from "./states/EmptyState";
 
 interface MarketsDashboardProps {
   initialData: WatchlistResponseDTO;
@@ -33,6 +35,8 @@ export default function MarketsDashboard({
     clearAllFilters,
     data,
     isLoading,
+    isError,
+    error,
     refetch,
   } = useCoinSearch({
     watchlistId,
@@ -47,6 +51,9 @@ export default function MarketsDashboard({
     ...coin,
     isStarred: starredCoinIds.has(coin.id),
   }));
+
+  const isEmptyWatchlist =
+    activeTab === "watchlist" && totalTracked === 0 && activeFiltersCount === 0;
 
   const handleTabChange = (tab: FilterTab) => {
     updateFilters({ tab, page: 1 });
@@ -97,18 +104,40 @@ export default function MarketsDashboard({
           />
         </div>
 
-        {/* Markets Table */}
-        <WatchlistTable
-          coins={itemsWithStarState}
-          onStarToggle={toggleStar}
-          currentPage={displayData.page ?? filters.page}
-          totalPages={displayData.totalPages ?? 1}
-          totalCount={displayData.totalCount ?? 0}
-          pageSize={40}
-          onPageChange={handlePageChange}
-          onClearFilters={clearAllFilters}
-          isLoading={isLoading}
-        />
+        {/* Empty Watchlist State Fallback */}
+        {isEmptyWatchlist ? (
+          <EmptyState
+            icon={Star}
+            iconClassName="text-[#F5B94D] fill-[#F5B94D]/20 animate-pulse"
+            iconTileClassName="bg-[#1B2536] border-[#232B3A] shadow-[0_0_24px_rgba(245,185,77,0.15)]"
+            title="Your watchlist is empty"
+            description="Star coins from the market overview to add them here and monitor their performance closely."
+            action={{
+              label: "Explore all Coins",
+              onClick: () => handleTabChange("all"),
+              variant: "primary",
+            }}
+            minHeight="min-h-[380px]"
+          />
+        ) : (
+          <WatchlistTable
+            coins={itemsWithStarState}
+            onStarToggle={toggleStar}
+            searchQuery={filters.q}
+            isWatchlistTab={activeTab === "watchlist"}
+            totalTracked={totalTracked}
+            currentPage={displayData.page ?? filters.page}
+            totalPages={displayData.totalPages ?? 1}
+            totalCount={displayData.totalCount ?? 0}
+            pageSize={40}
+            onPageChange={handlePageChange}
+            onClearFilters={clearAllFilters}
+            isLoading={isLoading}
+            isError={isError}
+            errorMessage={error?.message}
+            onRetry={refetch}
+          />
+        )}
       </main>
     </div>
   );

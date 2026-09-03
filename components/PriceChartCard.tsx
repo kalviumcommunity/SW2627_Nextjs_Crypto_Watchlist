@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { AlertCircle, RefreshCw } from "lucide-react";
 import { formatINR } from "@/lib/formatters";
 import ChangeBadge from "./ChangeBadge";
 import RangeSelector, { TimeRange } from "./RangeSelector";
@@ -37,7 +38,7 @@ export default function PriceChartCard({
     label: string;
   } | null>(null);
 
-  const { data: historyData, isLoading } = useQuery<ChartHistoryDTO>({
+  const { data: historyData, isLoading, isError, refetch } = useQuery<ChartHistoryDTO>({
     queryKey: ["coinHistory", symbol, selectedRange],
     queryFn: async () => {
       const res = await fetch(`/api/coins/${symbol}/history?range=${selectedRange}`);
@@ -83,7 +84,25 @@ export default function PriceChartCard({
 
       {/* Price Chart */}
       <div className="w-full relative min-h-[220px]">
-        {isLoading ? (
+        {isError ? (
+          <div className="w-full h-[220px] rounded-lg bg-[#10131C]/60 border border-[#232B3A]/40 flex flex-col items-center justify-center p-6 text-center gap-2.5">
+            <AlertCircle className="w-6 h-6 text-[#E5484D]" />
+            <div className="text-xs font-semibold text-white">
+              Failed to load chart data
+            </div>
+            <div className="text-[11px] text-[#9AA4B2] max-w-xs">
+              Unable to retrieve historical prices for this timeframe.
+            </div>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-1 px-3.5 py-1.5 bg-[#1B2536] hover:bg-[#232B3A] text-white text-xs font-medium rounded-md border border-[#232B3A] inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <RefreshCw className="w-3 h-3" />
+              <span>Retry</span>
+            </button>
+          </div>
+        ) : isLoading ? (
           <div className="w-full h-[220px] rounded-lg bg-[#10131C]/60 border border-[#232B3A]/30 flex flex-col justify-end p-4 relative overflow-hidden animate-pulse">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#1B2536]/20 to-transparent animate-pulse" />
             <div className="w-full h-1/2 flex items-end justify-between gap-2 opacity-30">

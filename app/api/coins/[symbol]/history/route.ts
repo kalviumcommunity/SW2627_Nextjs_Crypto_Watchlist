@@ -61,6 +61,12 @@ export async function GET(
 
     // Configure curve parameters depending on requested time range
     switch (range) {
+      // 1 Hour range: 12 data points (every 5 minutes)
+      case "1H":
+        pointsCount = 12;
+        labelFormat = (i) => `${i * 5}m`;
+        rangePctMultiplier = 0.35;
+        break;
       // 1 Day range: 24 hourly data points
       case "1D":
         pointsCount = 24;

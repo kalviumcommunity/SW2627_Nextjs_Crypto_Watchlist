@@ -13,7 +13,7 @@ The application allows users to explore cryptocurrency markets, view detailed co
 - View detailed information for individual coins
 - Track 24-hour price changes
 - View market cap and trading volume
-- View 7-day price trends
+- View 7 day price trends
 - Add and remove coins from watchlists
 - View tracked/watchlisted coins
 - Automatic market data refresh

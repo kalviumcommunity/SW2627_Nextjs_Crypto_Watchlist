@@ -155,7 +155,9 @@ export default function WatchlistTable({
             <th className="px-4 text-right font-medium">Price (INR)</th>
             <th className="px-4 text-center font-medium">24h Change</th>
             <th className="px-4 text-center font-medium w-[100px]">7D Trend</th>
-            <th className="px-4 text-right font-medium">24h Volume</th>
+            <th className="hidden xl:table-cell px-4 text-right font-medium">
+              24h Volume
+            </th>
             <th className="hidden xl:table-cell px-4 text-right font-medium">
               Market Cap
             </th>
@@ -170,6 +172,7 @@ export default function WatchlistTable({
                 coin={coin}
                 index={idx}
                 onStarToggle={onStarToggle}
+                variant="row"
               />
             ))
           ) : (
@@ -191,6 +194,7 @@ export default function WatchlistTable({
               coin={coin}
               index={idx}
               onStarToggle={onStarToggle}
+              variant="card"
             />
           ))
         ) : (

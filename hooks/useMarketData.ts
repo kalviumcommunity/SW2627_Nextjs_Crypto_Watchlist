@@ -18,10 +18,11 @@ export function useMarketData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMarketData = useCallback(async () => {
-    try {
-      const response = await fetch("/api/markets");
-
+ const fetchMarketData = useCallback(async () => {
+  try {
+    const response = await fetch("/api/markets", {
+      cache: "no-store",
+    });
       if (!response.ok) {
         throw new Error("Failed to fetch market data");
       }

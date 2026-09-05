@@ -95,7 +95,7 @@ export default async function CoinDetailPage({
   return (
     <main className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 md:py-8">
       {/* Top Header Row & Breadcrumb */}
-      <CoinHeader coin={coin} />
+      <CoinHeader coin={coin} lastUpdated={latestSnapshot?.recordedAt} />
 
       {/* Divider */}
       <div className="border-t border-[#232B3A] pt-6 md:pt-8">

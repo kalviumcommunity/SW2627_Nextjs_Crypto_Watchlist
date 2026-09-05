@@ -2,9 +2,9 @@
 
 import { ReactNode } from "react";
 import Link from "next/link";
-import { LucideIcon, ArrowRight, Coins, Star, FilterX, SearchX } from "lucide-react";
+import { LucideIcon, ArrowRight, Coins, Star, FilterX, SearchX, AlertCircle } from "lucide-react";
 
-export type EmptyStateIconName = "coins" | "star" | "filter" | "search";
+export type EmptyStateIconName = "coins" | "star" | "filter" | "search" | "error";
 
 interface EmptyStateAction {
   label: string;
@@ -49,6 +49,7 @@ export default function EmptyState({
     if (resolvedIconName === "star") return <Star className={cls} />;
     if (resolvedIconName === "filter") return <FilterX className={cls} />;
     if (resolvedIconName === "search") return <SearchX className={cls} />;
+    if (resolvedIconName === "error") return <AlertCircle className={cls} />;
     if (typeof icon === "function") {
       const CustomIcon = icon;
       return <CustomIcon className={cls} />;

@@ -24,19 +24,29 @@ export default function AutocompleteDropdown({
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch up to 8 autocomplete suggestions when query changes
-  useEffect(() => {
+  const [prevQuery, setPrevQuery] = useState(query);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+
+  if (prevQuery !== query || prevIsOpen !== isOpen) {
+    setPrevQuery(query);
+    setPrevIsOpen(isOpen);
     if (!query.trim() || !isOpen) {
       setSuggestions([]);
       setSelectedIndex(-1);
+    }
+  }
+
+  // Fetch up to 8 autocomplete suggestions when query changes
+  useEffect(() => {
+    if (!query.trim() || !isOpen) {
       return;
     }
 
     let isMounted = true;
-    setLoading(true);
 
     const timer = setTimeout(async () => {
       try {
+        if (isMounted) setLoading(true);
         const res = await fetch(`/api/coins?q=${encodeURIComponent(query)}&limit=8`);
         if (!res.ok) throw new Error("Failed to fetch autocomplete");
         const data = await res.json();
@@ -115,11 +125,13 @@ export default function AutocompleteDropdown({
     <div
       ref={dropdownRef}
       tabIndex={-1}
+      role="listbox"
+      aria-label="Search suggestions"
       onKeyDown={handleKeyDown}
       className="absolute top-full left-0 right-0 mt-1 z-50 bg-[#111827] border border-[#232B3A] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.45)] max-h-[300px] overflow-y-auto outline-none py-1 transition-all"
     >
       {loading && suggestions.length === 0 ? (
-        <div className="p-2 space-y-1.5 animate-pulse">
+        <div className="p-2 space-y-1.5 animate-pulse" role="status" aria-label="Loading suggestions">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
@@ -137,8 +149,8 @@ export default function AutocompleteDropdown({
           ))}
         </div>
       ) : suggestions.length === 0 ? (
-        <div className="px-4 py-5 flex flex-col items-center justify-center text-center gap-1.5">
-          <SearchX className="w-6 h-6 text-[#5B6472] mb-0.5" />
+        <div className="px-4 py-5 flex flex-col items-center justify-center text-center gap-1.5" role="status">
+          <SearchX className="w-6 h-6 text-[#9AA4B2] mb-0.5" aria-hidden="true" />
           <span className="text-xs font-semibold text-white">
             No coins found for &quot;{query}&quot;
           </span>
@@ -152,6 +164,8 @@ export default function AutocompleteDropdown({
           return (
             <div
               key={coin.id}
+              role="option"
+              aria-selected={isSelected}
               onClick={() => {
                 router.push(`/coins/${coin.symbol}`);
                 onClose();
@@ -165,7 +179,7 @@ export default function AutocompleteDropdown({
             >
               {/* Left: Icon / Symbol & Name */}
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-6 h-6 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-[10px] font-bold text-[#F5B94D] shrink-0">
+                <div className="w-6 h-6 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-[10px] font-bold text-[#F5B94D] shrink-0" aria-hidden="true">
                   {coin.symbol.slice(0, 3)}
                 </div>
                 <div className="flex flex-col min-w-0">

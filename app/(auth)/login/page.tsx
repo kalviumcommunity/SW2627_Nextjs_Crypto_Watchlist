@@ -83,7 +83,7 @@ export default function LoginPage() {
         // Refresh router context to update authentication session state
         routerInstance.refresh();
       }
-    } catch (err) {
+    } catch {
       // Catch unexpected network/runtime exceptions during sign-in
       setAuthError("Invalid email or password. Please try again.");
       setIsLoading(false);
@@ -141,7 +141,7 @@ export default function LoginPage() {
           />
           {/* Render inline error message text if email validation error exists */}
           {emailError && (
-            <span id="email-error" className="text-xs text-[#E5484D]">
+            <span id="email-error" className="text-xs text-[#E5484D]" role="alert">
               {emailError}
             </span>
           )}
@@ -159,7 +159,7 @@ export default function LoginPage() {
           headerRight={
             <Link
               href="#"
-              className="text-[13px] text-[#9AA4B2] hover:text-[#FF5446] transition-colors"
+              className="text-[13px] text-[#9AA4B2] hover:text-[#FF5446] transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF5446] rounded"
             >
               Forgot password?
             </Link>
@@ -172,24 +172,26 @@ export default function LoginPage() {
           <button
             type="button"
             role="checkbox"
+            id="remember-me-checkbox"
             aria-checked={rememberMe}
+            aria-label="Remember me"
             onClick={() => setRememberMe(!rememberMe)}
-            className={`w-4 h-4 rounded border flex items-center justify-center transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 ${
+            className={`w-4 h-4 rounded border flex items-center justify-center transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446] ${
               rememberMe
                 ? "bg-[#FF5446] border-[#FF5446]"
                 : "border-[#232B3A] bg-[#111827]"
             }`}
           >
             {/* Render checkmark icon inside checkbox when checked */}
-            {rememberMe && <Check className="w-3 h-3 text-white stroke-[3]" />}
+            {rememberMe && <Check className="w-3 h-3 text-white stroke-[3]" aria-hidden="true" />}
           </button>
           {/* Clickable text label toggling the remember me checkbox state */}
-          <span
-            onClick={() => setRememberMe(!rememberMe)}
+          <label
+            htmlFor="remember-me-checkbox"
             className="text-[13px] text-[#9AA4B2] cursor-pointer select-none"
           >
             Remember me
-          </span>
+          </label>
         </div>
 
         {/* Primary submit action button */}
@@ -197,11 +199,11 @@ export default function LoginPage() {
           type="submit"
           disabled={isLoading}
           aria-busy={isLoading}
-          className="w-full h-[44px] bg-[#FF5446] hover:bg-[#D63A2F] active:scale-[0.99] text-white font-bold text-sm rounded-lg transition-all flex items-center justify-center disabled:opacity-60 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF5446]/40 shadow-sm mt-2"
+          className="w-full h-[44px] bg-[#FF5446] hover:bg-[#D63A2F] active:scale-[0.99] text-white font-bold text-sm rounded-lg transition-all flex items-center justify-center disabled:opacity-60 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446] shadow-sm mt-2"
         >
           {/* Render spinner icon during loading state, otherwise display 'Log In' text */}
           {isLoading ? (
-            <Loader2 className="w-5 h-5 animate-spin text-white" />
+            <Loader2 className="w-5 h-5 animate-spin text-white" aria-hidden="true" />
           ) : (
             "Log In"
           )}
@@ -210,11 +212,11 @@ export default function LoginPage() {
       </form>
 
       {/* Visual divider line with 'OR' label separating credentials login and OAuth options */}
-      <div className="relative flex items-center justify-center my-6">
+      <div className="relative flex items-center justify-center my-6" aria-hidden="true">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-[#232B3A]" />
         </div>
-        <div className="relative px-3 bg-[#050810] text-[12px] font-medium text-[#5B6472]">
+        <div className="relative px-3 bg-[#050810] text-[12px] font-medium text-[#9AA4B2]">
           OR
         </div>
       </div>
@@ -224,10 +226,10 @@ export default function LoginPage() {
 
       {/* Footer navigation link directing unregistered users to registration page */}
       <div className="text-center pt-2 text-[14px] text-[#9AA4B2]">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link
           href="/register"
-          className="text-[#FF5446] font-semibold hover:underline"
+          className="text-[#FF5446] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF5446] rounded"
         >
           Sign up
         </Link>

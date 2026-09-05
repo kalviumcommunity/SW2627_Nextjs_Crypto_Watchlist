@@ -65,9 +65,13 @@ export default function FilterPanel({
     filters.changeMax !== null ? filters.changeMax : 100
   );
   const [stagedCap, setStagedCap] = useState<MarketCapTier>(filters.cap);
+  const [prevOpenState, setPrevOpenState] = useState(isOpen);
+  const [prevFiltersState, setPrevFiltersState] = useState(filters);
 
   // Sync staged state whenever filters prop or isOpen changes
-  useEffect(() => {
+  if (prevOpenState !== isOpen || prevFiltersState !== filters) {
+    setPrevOpenState(isOpen);
+    setPrevFiltersState(filters);
     if (isOpen) {
       setStagedCategories(filters.categories);
       setStagedPriceMin(
@@ -81,9 +85,9 @@ export default function FilterPanel({
       setStagedChangeMax(filters.changeMax !== null ? filters.changeMax : 100);
       setStagedCap(filters.cap);
     }
-  }, [isOpen, filters]);
+  }
 
-  // Click outside listener for desktop popover
+  // Click outside and Escape key listener
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -93,11 +97,18 @@ export default function FilterPanel({
         setIsOpen(false);
       }
     }
+    function handleKeyDown(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen]);
 
@@ -159,14 +170,17 @@ export default function FilterPanel({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
+        aria-label={isFilterActive ? `Filters (${activeFiltersCount} active)` : "Filter options"}
         className={`h-9 px-3.5 rounded-lg flex items-center gap-2 text-xs font-semibold border transition-all cursor-pointer outline-none relative focus:ring-1 focus:ring-[#FF5446]/40 ${
           isFilterActive
             ? "bg-[#111827] border-[#FF5446] text-white shadow-[0_0_12px_rgba(255,84,70,0.25)]"
             : "bg-[#10131C] border-[#232B3A] text-[#9AA4B2] hover:text-white hover:border-[#374151]"
         }`}
-        aria-expanded={isOpen}
       >
         <SlidersHorizontal
+          aria-hidden="true"
           className={`w-3.5 h-3.5 ${
             isFilterActive ? "text-[#FF5446]" : "text-[#9AA4B2]"
           }`}
@@ -175,7 +189,7 @@ export default function FilterPanel({
 
         {/* Red Dot Badge */}
         {isFilterActive && (
-          <span className="w-2 h-2 rounded-full bg-[#FF5446] shadow-[0_0_6px_#FF5446]" />
+          <span className="w-2 h-2 rounded-full bg-[#FF5446] shadow-[0_0_6px_#FF5446]" aria-hidden="true" />
         )}
       </button>
 
@@ -186,10 +200,14 @@ export default function FilterPanel({
           <div
             className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden"
             onClick={() => setIsOpen(false)}
+            aria-hidden="true"
           />
 
           {/* Panel Container */}
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Filter Crypto Markets"
             className="
               fixed inset-x-0 bottom-0 z-50 rounded-t-[20px] max-h-[85vh] overflow-y-auto
               md:absolute md:inset-auto md:right-0 md:top-full md:mt-2 md:w-[360px] md:max-h-none md:rounded-xl md:shadow-[0_8px_24px_rgba(0,0,0,0.45)]
@@ -197,20 +215,21 @@ export default function FilterPanel({
             "
           >
             {/* Mobile Drag Handle */}
-            <div className="w-10 h-1 bg-[#232B3A] rounded-full mx-auto mb-4 md:hidden" />
+            <div className="w-10 h-1 bg-[#232B3A] rounded-full mx-auto mb-4 md:hidden" aria-hidden="true" />
 
             {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-[#232B3A] mb-4">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-[#FF5446]" />
+                <SlidersHorizontal className="w-4 h-4 text-[#FF5446]" aria-hidden="true" />
                 <span>Filter Crypto Markets</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
+                aria-label="Close filter panel"
                 className="text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-1"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
@@ -227,6 +246,7 @@ export default function FilterPanel({
                       <button
                         key={cat.key}
                         type="button"
+                        aria-pressed={isSelected}
                         onClick={() => toggleCategory(cat.key)}
                         className={`px-2.5 py-1.5 rounded-md border text-[11px] font-medium transition-all cursor-pointer ${
                           isSelected
@@ -244,7 +264,7 @@ export default function FilterPanel({
               {/* 2. Price Range (INR) */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-[#9AA4B2]">
+                  <label htmlFor="filter-price-min" className="text-[11px] font-bold uppercase tracking-wider text-[#9AA4B2]">
                     Price Range (INR)
                   </label>
                   <span className="text-[10px] text-[#9AA4B2]">
@@ -258,8 +278,10 @@ export default function FilterPanel({
                       Min Price (₹)
                     </span>
                     <input
+                      id="filter-price-min"
                       type="number"
                       placeholder="0"
+                      aria-label="Minimum price in INR"
                       value={stagedPriceMin}
                       onChange={(e) => setStagedPriceMin(e.target.value)}
                       className="w-full bg-[#10131C] border border-[#232B3A] focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 rounded-md px-2.5 py-1.5 text-xs text-white outline-none transition-all"
@@ -270,8 +292,10 @@ export default function FilterPanel({
                       Max Price (₹)
                     </span>
                     <input
+                      id="filter-price-max"
                       type="number"
                       placeholder="No limit"
+                      aria-label="Maximum price in INR"
                       value={stagedPriceMax}
                       onChange={(e) => setStagedPriceMax(e.target.value)}
                       className="w-full bg-[#10131C] border border-[#232B3A] focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 rounded-md px-2.5 py-1.5 text-xs text-white outline-none transition-all"
@@ -297,6 +321,7 @@ export default function FilterPanel({
                     <button
                       key={item.key}
                       type="button"
+                      aria-pressed={stagedChange === item.key}
                       onClick={() => handleQuickChange(item.key)}
                       className={`py-1.5 px-2 rounded-md border text-[11px] font-medium text-center transition-all cursor-pointer ${
                         stagedChange === item.key
@@ -323,6 +348,7 @@ export default function FilterPanel({
                       min="-100"
                       max="100"
                       step="5"
+                      aria-label="Minimum 24 hour change percentage"
                       value={stagedChangeMin}
                       onChange={(e) =>
                         setStagedChangeMin(
@@ -339,6 +365,7 @@ export default function FilterPanel({
                       min="-100"
                       max="100"
                       step="5"
+                      aria-label="Maximum 24 hour change percentage"
                       value={stagedChangeMax}
                       onChange={(e) =>
                         setStagedChangeMax(
@@ -364,6 +391,7 @@ export default function FilterPanel({
                     <button
                       key={tier.key}
                       type="button"
+                      aria-pressed={stagedCap === tier.key}
                       onClick={() => setStagedCap(tier.key)}
                       className={`py-1.5 px-2 rounded-md border text-[11px] font-medium text-left truncate transition-all cursor-pointer ${
                         stagedCap === tier.key

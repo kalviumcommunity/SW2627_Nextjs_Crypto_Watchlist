@@ -25,7 +25,7 @@ export default function FilterTabs({
   ];
 
   return (
-    <div className="flex items-center gap-2 flex-wrap" role="tablist">
+    <div className="flex items-center gap-2 flex-wrap" role="tablist" aria-label="Market view filters">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         
@@ -33,6 +33,7 @@ export default function FilterTabs({
           <>
             {tab.icon && (
               <Star
+                aria-hidden="true"
                 className={`w-3.5 h-3.5 transition-transform ${
                   isActive ? "fill-[#F5B94D] text-[#F5B94D] scale-110" : "text-[#9AA4B2]"
                 }`}
@@ -77,6 +78,7 @@ export default function FilterTabs({
         return (
           <button
             key={tab.id}
+            type="button"
             onClick={() => onTabChange(tab.id)}
             className={className}
             role="tab"

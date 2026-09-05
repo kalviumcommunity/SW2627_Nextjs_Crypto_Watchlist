@@ -26,6 +26,7 @@ export default function RangeSelector({
             key={range}
             role="tab"
             aria-selected={isActive}
+            aria-label={`Time range: ${range}`}
             type="button"
             onClick={() => onChange(range)}
             className={`px-2.5 sm:px-3 py-1 rounded-md text-xs font-bold transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF5446] shrink-0 ${

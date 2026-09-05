@@ -17,16 +17,22 @@ export default function Sparkline({
     // Fallback line if data is sparse
     const color = isPositive ? "#1FB878" : "#E5484D";
     return (
-      <svg width={width} height={height} className="overflow-visible">
-        <line
-          x1="0"
-          y1={height / 2}
-          x2={width}
-          y2={height / 2}
-          stroke={color}
-          strokeWidth="1.5"
-        />
-      </svg>
+      <div
+        role="img"
+        aria-label={isPositive ? "7-day upward price trend" : "7-day downward price trend"}
+        className="flex items-center justify-center w-[90px] h-[32px]"
+      >
+        <svg width={width} height={height} className="overflow-visible" aria-hidden="true">
+          <line
+            x1="0"
+            y1={height / 2}
+            x2={width}
+            y2={height / 2}
+            stroke={color}
+            strokeWidth="1.5"
+          />
+        </svg>
+      </div>
     );
   }
 
@@ -47,8 +53,12 @@ export default function Sparkline({
   const strokeColor = isPositive ? "#1FB878" : "#E5484D";
 
   return (
-    <div className="flex items-center justify-center w-[90px] h-[32px]">
-      <svg width={width} height={height} className="overflow-visible">
+    <div
+      role="img"
+      aria-label={isPositive ? "7-day upward price trend" : "7-day downward price trend"}
+      className="flex items-center justify-center w-[90px] h-[32px]"
+    >
+      <svg width={width} height={height} className="overflow-visible" aria-hidden="true">
         <polyline
           fill="none"
           stroke={strokeColor}

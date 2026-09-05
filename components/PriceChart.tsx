@@ -100,6 +100,32 @@ export default function PriceChart({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!data || data.length === 0) return;
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      const nextIdx = hoverIndex === null ? 0 : Math.min(hoverIndex + 1, data.length - 1);
+      setHoverIndex(nextIdx);
+      if (onHoverPoint && data[nextIdx]) onHoverPoint(data[nextIdx]);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      const prevIdx = hoverIndex === null ? data.length - 1 : Math.max(hoverIndex - 1, 0);
+      setHoverIndex(prevIdx);
+      if (onHoverPoint && data[prevIdx]) onHoverPoint(data[prevIdx]);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setHoverIndex(0);
+      if (onHoverPoint && data[0]) onHoverPoint(data[0]);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      const lastIdx = data.length - 1;
+      setHoverIndex(lastIdx);
+      if (onHoverPoint && data[lastIdx]) onHoverPoint(data[lastIdx]);
+    } else if (e.key === "Escape") {
+      clearHover();
+    }
+  };
+
   const hoveredPt = hoverIndex !== null && points[hoverIndex] ? points[hoverIndex] : null;
 
   // Percentage difference from start of period for hovered point
@@ -120,17 +146,19 @@ export default function PriceChart({
   return (
     <div
       ref={containerRef}
+      tabIndex={0}
       onMouseMove={handleMouseMove}
       onMouseLeave={clearHover}
       onTouchStart={handleTouchMove}
       onTouchMove={handleTouchMove}
       onTouchEnd={clearHover}
-      className="relative w-full h-[240px] cursor-crosshair select-none touch-pan-x"
+      onKeyDown={handleKeyDown}
+      className="relative w-full h-[240px] cursor-crosshair select-none touch-pan-x focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2B6CB0] rounded-lg"
       role="region"
-      aria-label="Interactive price trend chart"
+      aria-label="Interactive price trend chart. Use left and right arrow keys to inspect data points across time."
     >
       {/* Background horizontal grid guides */}
-      <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 py-6">
+      <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 py-6" aria-hidden="true">
         <div className="border-b border-[#232B3A] w-full" />
         <div className="border-b border-[#232B3A] w-full" />
         <div className="border-b border-[#232B3A] w-full" />
@@ -141,6 +169,7 @@ export default function PriceChart({
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         preserveAspectRatio="none"
         className="w-full h-full overflow-visible"
+        aria-hidden="true"
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">

@@ -37,6 +37,13 @@ export default function RegisterPage() {
 
   // Debounced email check effect
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [prevEmail, setPrevEmail] = useState(email);
+
+  if (prevEmail !== email) {
+    setPrevEmail(email);
+    setIsEmailAvailable(null);
+    setEmailCheckMessage("");
+  }
 
   useEffect(() => {
     if (debounceTimerRef.current) {
@@ -47,18 +54,12 @@ export default function RegisterPage() {
     const isValidFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
 
     if (!isValidFormat) {
-      setIsCheckingEmail(false);
-      setIsEmailAvailable(null);
-      setEmailCheckMessage("");
       return;
     }
 
-    setIsCheckingEmail(true);
-    setIsEmailAvailable(null);
-    setEmailCheckMessage("");
-
     debounceTimerRef.current = setTimeout(async () => {
       try {
+        setIsCheckingEmail(true);
         const res = await fetch(
           `/api/auth/check-email?email=${encodeURIComponent(trimmedEmail)}`
         );
@@ -72,7 +73,7 @@ export default function RegisterPage() {
           setIsEmailAvailable(false);
           setEmailCheckMessage("An account with this email already exists");
         }
-      } catch (err) {
+      } catch {
         setIsCheckingEmail(false);
         setIsEmailAvailable(null);
       }
@@ -166,7 +167,7 @@ export default function RegisterPage() {
         router.push("/watchlist");
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setServerError("Something went wrong. Please try again.");
       setIsLoading(false);
     }
@@ -252,9 +253,9 @@ export default function RegisterPage() {
             />
 
             {/* Right-aligned inline indicator */}
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none" aria-hidden="true">
               {isCheckingEmail && (
-                <Loader2 className="w-4 h-4 text-[#5B6472] animate-spin" />
+                <Loader2 className="w-4 h-4 text-[#9AA4B2] animate-spin" />
               )}
               {!isCheckingEmail && isEmailAvailable === true && (
                 <Check className="w-4 h-4 text-[#1FB878]" />
@@ -266,7 +267,7 @@ export default function RegisterPage() {
           </div>
 
           {(emailError || emailCheckMessage) && (
-            <span id="email-error" className="text-xs text-[#E5484D]">
+            <span id="email-error" className="text-xs text-[#E5484D]" role="alert">
               {emailError || emailCheckMessage}
             </span>
           )}
@@ -316,7 +317,7 @@ export default function RegisterPage() {
             }`}
           />
           {confirmPasswordError && (
-            <span id="confirmPassword-error" className="text-xs text-[#E5484D]">
+            <span id="confirmPassword-error" className="text-xs text-[#E5484D]" role="alert">
               {confirmPasswordError}
             </span>
           )}
@@ -328,31 +329,30 @@ export default function RegisterPage() {
             <button
               type="button"
               role="checkbox"
+              id="terms-checkbox"
               aria-checked={termsAgreed}
+              aria-label="I agree to the Terms of Service and Privacy Policy of CoinDCX"
               onClick={() => {
                 setTermsAgreed(!termsAgreed);
                 if (termsError) setTermsError("");
               }}
-              className={`w-4 h-4 mt-0.5 rounded border flex items-center justify-center transition-colors cursor-pointer flex-shrink-0 focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 ${
+              className={`w-4 h-4 mt-0.5 rounded border flex items-center justify-center transition-colors cursor-pointer flex-shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446] ${
                 termsAgreed
                   ? "bg-[#FF5446] border-[#FF5446]"
                   : "border-[#232B3A] bg-[#111827]"
               }`}
             >
-              {termsAgreed && <Check className="w-3 h-3 text-white stroke-[3]" />}
+              {termsAgreed && <Check className="w-3 h-3 text-white stroke-[3]" aria-hidden="true" />}
             </button>
-            <span
-              onClick={() => {
-                setTermsAgreed(!termsAgreed);
-                if (termsError) setTermsError("");
-              }}
+            <label
+              htmlFor="terms-checkbox"
               className="text-[13px] text-[#9AA4B2] leading-relaxed cursor-pointer select-none"
             >
               I agree to the{" "}
               <Link
                 href="#"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[#FF5446] hover:underline"
+                className="text-[#FF5446] hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF5446] rounded"
               >
                 Terms of Service
               </Link>{" "}
@@ -360,15 +360,15 @@ export default function RegisterPage() {
               <Link
                 href="#"
                 onClick={(e) => e.stopPropagation()}
-                className="text-[#FF5446] hover:underline"
+                className="text-[#FF5446] hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF5446] rounded"
               >
                 Privacy Policy
               </Link>{" "}
               of CoinDCX
-            </span>
+            </label>
           </div>
           {termsError && (
-            <span className="text-xs text-[#E5484D] pl-6.5">{termsError}</span>
+            <span className="text-xs text-[#E5484D] pl-6.5" role="alert">{termsError}</span>
           )}
         </div>
 
@@ -377,10 +377,10 @@ export default function RegisterPage() {
           type="submit"
           disabled={!termsAgreed || isLoading}
           aria-busy={isLoading}
-          className="w-full h-[44px] bg-[#FF5446] hover:bg-[#D63A2F] active:scale-[0.99] text-white font-bold text-sm rounded-lg transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF5446]/40 shadow-sm mt-2"
+          className="w-full h-[44px] bg-[#FF5446] hover:bg-[#D63A2F] active:scale-[0.99] text-white font-bold text-sm rounded-lg transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446] shadow-sm mt-2"
         >
           {isLoading ? (
-            <Loader2 className="w-5 h-5 animate-spin text-white" />
+            <Loader2 className="w-5 h-5 animate-spin text-white" aria-hidden="true" />
           ) : (
             "Create Account"
           )}
@@ -389,11 +389,11 @@ export default function RegisterPage() {
       </form>
 
       {/* Divider */}
-      <div className="relative flex items-center justify-center my-6">
+      <div className="relative flex items-center justify-center my-6" aria-hidden="true">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-[#232B3A]" />
         </div>
-        <div className="relative px-3 bg-[#050810] text-[12px] font-medium text-[#5B6472]">
+        <div className="relative px-3 bg-[#050810] text-[12px] font-medium text-[#9AA4B2]">
           OR
         </div>
       </div>
@@ -406,7 +406,7 @@ export default function RegisterPage() {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="text-[#FF5446] font-semibold hover:underline"
+          className="text-[#FF5446] font-semibold hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FF5446] rounded"
         >
           Log in
         </Link>

@@ -27,7 +27,7 @@ export default function SortDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on click outside
+  // Close dropdown on click outside or Escape key
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -37,11 +37,18 @@ export default function SortDropdown({
         setIsOpen(false);
       }
     }
+    function handleKeyDown(event: globalThis.KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleKeyDown);
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen]);
 
@@ -70,10 +77,11 @@ export default function SortDropdown({
         onClick={() => setIsOpen((prev) => !prev)}
         className="h-9 px-3 bg-[#10131C] border border-[#232B3A] hover:border-[#374151] text-[#9AA4B2] hover:text-white rounded-lg flex items-center gap-2 text-xs font-medium transition-all cursor-pointer outline-none focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 shadow-xs"
         title={`Sort: ${currentOptionLabel} ${activeDir === "asc" ? "↑" : "↓"}`}
+        aria-label={`Sort by ${currentOptionLabel}, ${activeDir === "asc" ? "ascending" : "descending"}`}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
-        <ArrowUpDown className="w-3.5 h-3.5 text-[#FF5446] shrink-0" />
+        <ArrowUpDown className="w-3.5 h-3.5 text-[#FF5446] shrink-0" aria-hidden="true" />
         
         {/* Label visible on desktop & mobile */}
         <span className="hidden sm:inline md:hidden lg:inline whitespace-nowrap">
@@ -92,13 +100,18 @@ export default function SortDropdown({
           className={`w-3.5 h-3.5 text-[#9AA4B2] transition-transform duration-200 shrink-0 ${
             isOpen ? "rotate-180" : ""
           }`}
+          aria-hidden="true"
         />
       </button>
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1.5 z-50 w-48 bg-[#111827] border border-[#232B3A] rounded-xl shadow-[0_12px_32px_rgba(0,0,0,0.6)] py-1.5 text-xs animate-in fade-in zoom-in-95 duration-100">
-          <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9AA4B2] border-b border-[#232B3A]/60 mb-1">
+        <div
+          role="listbox"
+          aria-label="Sort options"
+          className="absolute right-0 top-full mt-1.5 z-50 w-48 bg-[#111827] border border-[#232B3A] rounded-xl shadow-[0_12px_32px_rgba(0,0,0,0.6)] py-1.5 text-xs animate-in fade-in zoom-in-95 duration-100"
+        >
+          <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9AA4B2] border-b border-[#232B3A]/60 mb-1" aria-hidden="true">
             Sort By
           </div>
           {SORT_OPTIONS.map((option) => {
@@ -107,6 +120,8 @@ export default function SortDropdown({
               <button
                 key={option.key}
                 type="button"
+                role="option"
+                aria-selected={isActive}
                 onClick={() => handleOptionClick(option.key)}
                 className={`w-full px-3 py-2 text-left flex items-center justify-between transition-colors cursor-pointer ${
                   isActive
@@ -118,9 +133,9 @@ export default function SortDropdown({
                 {isActive && (
                   <span className="flex items-center gap-0.5 text-[#FF5446] font-bold text-xs">
                     {activeDir === "asc" ? (
-                      <ArrowUp className="w-3 h-3" />
+                      <ArrowUp className="w-3 h-3" aria-hidden="true" />
                     ) : (
-                      <ArrowDown className="w-3 h-3" />
+                      <ArrowDown className="w-3 h-3" aria-hidden="true" />
                     )}
                   </span>
                 )}

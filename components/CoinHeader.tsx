@@ -35,14 +35,19 @@ export default function CoinHeader({ coin, lastUpdated }: CoinHeaderProps) {
         <Link
           href="/markets"
           className="inline-flex items-center gap-1.5 text-xs md:text-sm text-[#9AA4B2] hover:text-white transition-colors font-medium group"
+          aria-label="Back to Markets & Watchlist"
         >
-          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
           <span>Back to Markets & Watchlist</span>
         </Link>
 
         {/* Live Market Pulse Indicator */}
-        <div className="flex items-center gap-2 text-[11px] text-[#9AA4B2] font-medium bg-[#10131C] px-2.5 py-1 rounded-full border border-[#232B3A]">
-          <span className="relative flex h-2 w-2">
+        <div
+          role="status"
+          aria-label={`Live market feed active, last updated ${formattedLastUpdated}`}
+          className="flex items-center gap-2 text-[11px] text-[#9AA4B2] font-medium bg-[#10131C] px-2.5 py-1 rounded-full border border-[#232B3A]"
+        >
+          <span className="relative flex h-2 w-2" aria-hidden="true">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1FB878] opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1FB878]"></span>
           </span>
@@ -54,7 +59,7 @@ export default function CoinHeader({ coin, lastUpdated }: CoinHeaderProps) {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
         {/* Left: Coin logo + details */}
         <div className="flex items-center gap-3.5 md:gap-4 min-w-0">
-          <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-[#161F2E] to-[#10131C] border border-[#232B3A] flex items-center justify-center text-[#F5B94D] font-bold text-lg md:text-xl flex-shrink-0 shadow-md ring-1 ring-white/5">
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-[#161F2E] to-[#10131C] border border-[#232B3A] flex items-center justify-center text-[#F5B94D] font-bold text-lg md:text-xl flex-shrink-0 shadow-md ring-1 ring-white/5" aria-hidden="true">
             {coin.symbol.slice(0, 3)}
           </div>
           <div className="min-w-0">
@@ -69,7 +74,7 @@ export default function CoinHeader({ coin, lastUpdated }: CoinHeaderProps) {
                 Rank #{coin.rank}
               </span>
             </div>
-            <p className="text-[#5B6472] text-[13px] font-medium mt-1">
+            <p className="text-[#9AA4B2] text-[13px] font-medium mt-1">
               {displaySubtext}
             </p>
           </div>
@@ -84,6 +89,7 @@ export default function CoinHeader({ coin, lastUpdated }: CoinHeaderProps) {
           />
           <button
             type="button"
+            aria-label={`Trade ${coin.name} (${coin.symbol})`}
             className="flex-1 sm:flex-initial h-[40px] px-6 bg-[#FF5446] hover:bg-[#D63A2F] active:scale-95 text-white font-bold text-sm rounded-lg transition-all duration-150 flex items-center justify-center gap-1.5 shadow-md hover:shadow-[#FF5446]/20 cursor-pointer"
           >
             <span>Trade</span>

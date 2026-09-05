@@ -45,16 +45,16 @@ export default function EmptyState({
 
   const renderIcon = () => {
     const cls = `w-7 h-7 md:w-8 md:h-8 ${iconClassName}`;
-    if (resolvedIconName === "coins") return <Coins className={cls} />;
-    if (resolvedIconName === "star") return <Star className={cls} />;
-    if (resolvedIconName === "filter") return <FilterX className={cls} />;
-    if (resolvedIconName === "search") return <SearchX className={cls} />;
-    if (resolvedIconName === "error") return <AlertCircle className={cls} />;
+    if (resolvedIconName === "coins") return <Coins className={cls} aria-hidden="true" />;
+    if (resolvedIconName === "star") return <Star className={cls} aria-hidden="true" />;
+    if (resolvedIconName === "filter") return <FilterX className={cls} aria-hidden="true" />;
+    if (resolvedIconName === "search") return <SearchX className={cls} aria-hidden="true" />;
+    if (resolvedIconName === "error") return <AlertCircle className={cls} aria-hidden="true" />;
     if (typeof icon === "function") {
       const CustomIcon = icon;
-      return <CustomIcon className={cls} />;
+      return <CustomIcon className={cls} aria-hidden="true" />;
     }
-    return <FilterX className={cls} />;
+    return <FilterX className={cls} aria-hidden="true" />;
   };
   const renderAction = (act: EmptyStateAction, isSecondary = false) => {
     const ActionIcon = act.icon || (isSecondary ? undefined : ArrowRight);
@@ -63,14 +63,14 @@ export default function EmptyState({
         ? "bg-[#1B2536] hover:bg-[#232B3A] text-[#F5F6F8] border border-[#232B3A] hover:border-[#374151]"
         : "bg-[#FF5446] hover:bg-[#D63A2F] text-white shadow-md";
 
-    const commonClasses = `h-10 px-6 font-bold text-sm rounded-lg transition-all inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 group ${variantStyle}`;
+    const commonClasses = `h-10 px-6 font-bold text-sm rounded-lg transition-all inline-flex items-center justify-center gap-2 cursor-pointer active:scale-95 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446] ${variantStyle}`;
 
     if (act.href) {
       return (
         <Link key={act.label} href={act.href} className={commonClasses}>
           <span>{act.label}</span>
           {ActionIcon && (
-            <ActionIcon className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+            <ActionIcon className="w-4 h-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
           )}
         </Link>
       );
@@ -85,7 +85,7 @@ export default function EmptyState({
       >
         <span>{act.label}</span>
         {ActionIcon && (
-          <ActionIcon className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+          <ActionIcon className="w-4 h-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
         )}
       </button>
     );
@@ -93,6 +93,8 @@ export default function EmptyState({
 
   return (
     <div
+      role="status"
+      aria-live="polite"
       className={`relative overflow-hidden flex flex-col items-center justify-center text-center p-8 md:p-12 ${minHeight} ${
         isBorderless
           ? "bg-transparent"
@@ -102,6 +104,7 @@ export default function EmptyState({
       {/* Centered Icon Tile */}
       <div
         className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl border flex items-center justify-center mb-4 md:mb-5 shadow-sm relative ${iconTileClassName}`}
+        aria-hidden="true"
       >
         {renderIcon()}
       </div>

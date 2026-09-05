@@ -147,21 +147,21 @@ export default function WatchlistTable({
   return (
     <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] overflow-hidden shadow-lg transition-all">
       {/* Desktop Table View */}
-      <table className="w-full text-left border-collapse hidden md:table">
+      <table className="w-full text-left border-collapse hidden md:table" aria-label="Cryptocurrency markets table">
         <thead>
-          <tr className="h-[44px] bg-[#10131C]/60 border-b border-[#232B3A] text-[12px] font-semibold text-[#5B6472] uppercase tracking-wider">
-            <th className="w-12 px-3 text-center font-medium">#</th>
-            <th className="px-4 font-medium">Asset</th>
-            <th className="px-4 text-right font-medium">Price (INR)</th>
-            <th className="px-4 text-center font-medium">24h Change</th>
-            <th className="px-4 text-center font-medium w-[100px]">7D Trend</th>
-            <th className="hidden xl:table-cell px-4 text-right font-medium">
+          <tr className="h-[44px] bg-[#10131C]/60 border-b border-[#232B3A] text-[12px] font-semibold text-[#9AA4B2] uppercase tracking-wider">
+            <th scope="col" className="w-12 px-3 text-center font-medium">#</th>
+            <th scope="col" className="px-4 font-medium">Asset</th>
+            <th scope="col" className="px-4 text-right font-medium">Price (INR)</th>
+            <th scope="col" className="px-4 text-center font-medium">24h Change</th>
+            <th scope="col" className="px-4 text-center font-medium w-[100px]">7D Trend</th>
+            <th scope="col" className="hidden xl:table-cell px-4 text-right font-medium">
               24h Volume
             </th>
-            <th className="hidden xl:table-cell px-4 text-right font-medium">
+            <th scope="col" className="hidden xl:table-cell px-4 text-right font-medium">
               Market Cap
             </th>
-            <th className="px-4 text-right font-medium min-w-[120px]">Action</th>
+            <th scope="col" className="px-4 text-right font-medium min-w-[120px]">Action</th>
           </tr>
         </thead>
         <tbody>

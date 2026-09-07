@@ -76,9 +76,12 @@ export async function DELETE(
       }
     }
 
-    if (!coinId) {
-      return NextResponse.json({ error: "coinId is required" }, { status: 400 });
-    }
+    if (!coinId || typeof coinId !== "string" || !coinId.trim()) {
+  return NextResponse.json(
+    { error: "coinId is required" },
+    { status: 400 }
+  );
+}
 
     await prisma.watchlistItem.deleteMany({
       where: {

@@ -5,11 +5,14 @@ import TableRow from "./TableRow";
 import Pagination from "./Pagination";
 import TableSkeleton from "./states/TableSkeleton";
 import EmptyState from "./states/EmptyState";
-import { FilterX } from "lucide-react";
+import { FilterX, SearchX, Star, AlertCircle, RefreshCw } from "lucide-react";
 
 interface WatchlistTableProps {
   coins: CoinDTO[];
   onStarToggle: (coinId: string, currentStarred: boolean) => void;
+  searchQuery?: string;
+  isWatchlistTab?: boolean;
+  totalTracked?: number;
   currentPage?: number;
   totalPages?: number;
   totalCount?: number;
@@ -17,11 +20,17 @@ interface WatchlistTableProps {
   onPageChange?: (page: number) => void;
   onClearFilters?: () => void;
   isLoading?: boolean;
+  isError?: boolean;
+  errorMessage?: string;
+  onRetry?: () => void;
 }
 
 export default function WatchlistTable({
   coins,
   onStarToggle,
+  searchQuery,
+  isWatchlistTab = false,
+  totalTracked,
   currentPage = 1,
   totalPages = 1,
   totalCount = coins.length,
@@ -29,12 +38,111 @@ export default function WatchlistTable({
   onPageChange,
   onClearFilters,
   isLoading = false,
+  isError = false,
+  errorMessage,
+  onRetry,
 }: WatchlistTableProps) {
+  if (isError) {
+    return (
+      <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] overflow-hidden shadow-lg">
+        <EmptyState
+          icon={AlertCircle}
+          iconClassName="text-[#E5484D]"
+          iconTileClassName="bg-[#3A1B22] border-[#E5484D]/30 shadow-[0_0_24px_rgba(229,72,77,0.15)]"
+          title="Failed to load market data"
+          description={
+            errorMessage ||
+            "Something went wrong while retrieving live market prices. Please check your connection and try again."
+          }
+          action={
+            onRetry
+              ? {
+                  label: "Retry",
+                  onClick: onRetry,
+                  icon: RefreshCw,
+                  variant: "primary",
+                }
+              : undefined
+          }
+          minHeight="min-h-[360px]"
+        />
+      </div>
+    );
+  }
+
   if (isLoading) {
     return <TableSkeleton rowCount={8} />;
   }
 
   const isEmpty = coins.length === 0;
+
+  const renderEmptyContent = (minHeight: string) => {
+    // 1. Empty Watchlist state (when on watchlist tab and 0 coins tracked, no search query)
+    if (isWatchlistTab && totalTracked === 0 && !searchQuery?.trim()) {
+      return (
+        <EmptyState
+          icon={Star}
+          iconClassName="text-[#F5B94D] fill-[#F5B94D]/20 animate-pulse"
+          iconTileClassName="bg-[#1B2536] border-[#232B3A] shadow-[0_0_24px_rgba(245,185,77,0.15)]"
+          title="Your watchlist is empty"
+          description="Star coins from the market overview to add them here and monitor their performance closely."
+          action={{
+            label: "Explore all Coins",
+            href: "/markets",
+            variant: "primary",
+          }}
+          isBorderless
+          minHeight={minHeight}
+        />
+      );
+    }
+
+    // 2. Search No-Results state (when a search query was entered)
+    if (searchQuery && searchQuery.trim().length > 0) {
+      return (
+        <EmptyState
+          icon={SearchX}
+          iconClassName="text-[#9AA4B2]"
+          iconTileClassName="bg-[#1B2536] border-[#232B3A]"
+          title={`No results found for "${searchQuery.trim()}"`}
+          description="We couldn't find any cryptocurrency matching your search. Check for typos or search by symbol or name."
+          action={
+            onClearFilters
+              ? {
+                  label: "Clear search query",
+                  onClick: onClearFilters,
+                  variant: "primary",
+                }
+              : undefined
+          }
+          isBorderless
+          minHeight={minHeight}
+        />
+      );
+    }
+
+    // 3. Filter No-Results state (filters applied, e.g. price range / category / gainers / losers)
+    return (
+      <EmptyState
+        icon={FilterX}
+        iconClassName="text-[#FF5446]"
+        iconTileClassName="bg-[#1B2536] border-[#232B3A]"
+        title="No coins match your filters"
+        description="Try adjusting your search query or clearing some active filters to see more results."
+        action={
+          onClearFilters
+            ? {
+                label: "Clear all filters",
+                onClick: onClearFilters,
+                variant: "primary",
+              }
+            : undefined
+        }
+        isBorderless
+        minHeight={minHeight}
+      />
+    );
+  };
 
   return (
     <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] overflow-hidden shadow-lg transition-all">
@@ -67,22 +175,7 @@ export default function WatchlistTable({
           ) : (
             <tr>
               <td colSpan={8} className="p-0">
-                <EmptyState
-                  icon={FilterX}
-                  title="No coins match your filters"
-                  description="Try adjusting your search query or clearing some active filters to see more results."
-                  action={
-                    onClearFilters
-                      ? {
-                          label: "Clear all filters",
-                          onClick: onClearFilters,
-                          variant: "primary",
-                        }
-                      : undefined
-                  }
-                  isBorderless
-                  minHeight="min-h-[340px]"
-                />
+                {renderEmptyContent("min-h-[340px]")}
               </td>
             </tr>
           )}
@@ -101,22 +194,7 @@ export default function WatchlistTable({
             />
           ))
         ) : (
-          <EmptyState
-            icon={FilterX}
-            title="No coins match your filters"
-            description="Try adjusting your search query or clearing some active filters to see more results."
-            action={
-              onClearFilters
-                ? {
-                    label: "Clear all filters",
-                    onClick: onClearFilters,
-                    variant: "primary",
-                  }
-                : undefined
-            }
-            isBorderless
-            minHeight="min-h-[280px]"
-          />
+          renderEmptyContent("min-h-[280px]")
         )}
       </div>
 

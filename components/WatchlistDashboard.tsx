@@ -35,6 +35,8 @@ export default function WatchlistDashboard({
     clearAllFilters,
     data,
     isLoading,
+    isError,
+    error,
     refetch,
   } = useCoinSearch({
     watchlistId,
@@ -126,6 +128,9 @@ export default function WatchlistDashboard({
           <WatchlistTable
             coins={items}
             onStarToggle={toggleStar}
+            searchQuery={filters.q}
+            isWatchlistTab={activeTab === "watchlist"}
+            totalTracked={totalTracked}
             currentPage={displayData.page ?? filters.page}
             totalPages={displayData.totalPages ?? 1}
             totalCount={displayData.totalCount ?? 0}
@@ -133,6 +138,9 @@ export default function WatchlistDashboard({
             onPageChange={handlePageChange}
             onClearFilters={clearAllFilters}
             isLoading={isLoading}
+            isError={isError}
+            errorMessage={error?.message}
+            onRetry={refetch}
           />
         )}
       </main>

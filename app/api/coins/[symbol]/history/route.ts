@@ -21,45 +21,46 @@ export async function GET(
     // Extract selected chart time range
     const range = searchParams.get("range") || "1W";
 
-    // Query database for coin details along with price snapshots
-const now = new Date();
-let startDate: Date | undefined;
+    // Calculate the start date based on the selected time range
+    const now = new Date();
+    let startDate: Date | undefined;
 
-switch (range) {
-  case "1D":
-    startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    break;
-  case "1W":
-    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    break;
-  case "1M":
-    startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    break;
-  case "1Y":
-    startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
-    break;
-  case "ALL":
-    startDate = undefined;
-    break;
-  default:
-    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-}
+    switch (range) {
+      case "1D":
+        startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        break;
+      case "1W":
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case "1M":
+        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      case "1Y":
+        startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+        break;
+      case "ALL":
+        startDate = undefined;
+        break;
+      default:
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    }
 
-const coin = await prisma.coin.findUnique({
-  where: { symbol: upperSymbol },
-  include: {
-    priceSnapshots: {
-      where: startDate
-        ? {
-            recordedAt: {
-              gte: startDate,
-            },
-          }
-        : undefined,
-      orderBy: { recordedAt: "asc" },
-    },
-  },
-});
+    // Query database for coin details along with filtered price snapshots
+    const coin = await prisma.coin.findUnique({
+      where: { symbol: upperSymbol },
+      include: {
+        priceSnapshots: {
+          where: startDate
+            ? {
+                recordedAt: {
+                  gte: startDate,
+                },
+              }
+            : undefined,
+          orderBy: { recordedAt: "asc" },
+        },
+      },
+    });
 
     // If coin is not found in database, return 404 Not Found response
     if (!coin) {

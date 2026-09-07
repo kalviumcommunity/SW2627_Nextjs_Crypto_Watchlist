@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useId } from "react";
+import { useState, useRef, useId, useCallback } from "react";
 import { formatINR } from "@/lib/formatters";
 
-interface ChartPoint {
+export interface ChartPoint {
   time: string;
   label: string;
   price: number;
@@ -24,9 +24,31 @@ export default function PriceChart({
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
+  const updateHover = useCallback(
+    (clientX: number) => {
+      if (!containerRef.current || !data || data.length === 0) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const mouseX = clientX - rect.left;
+      const relativeX = Math.max(0, Math.min(mouseX / rect.width, 1));
+      const closestIdx = Math.round(relativeX * (data.length - 1));
+      setHoverIndex(closestIdx);
+      if (onHoverPoint && data[closestIdx]) {
+        onHoverPoint(data[closestIdx]);
+      }
+    },
+    [data, onHoverPoint]
+  );
+
+  const clearHover = useCallback(() => {
+    setHoverIndex(null);
+    if (onHoverPoint) {
+      onHoverPoint(null);
+    }
+  }, [onHoverPoint]);
+
   if (!data || data.length === 0) {
     return (
-      <div className="w-full h-[220px] flex items-center justify-center text-[#5B6472] text-sm">
+      <div className="w-full h-[240px] flex items-center justify-center text-[#5B6472] text-sm">
         No chart data available
       </div>
     );
@@ -36,22 +58,23 @@ export default function PriceChart({
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
   const priceRange = maxPrice - minPrice || 1;
+  const startPrice = prices[0] || minPrice;
 
   // Chart dimensions in viewBox SVG coordinate system
   const svgWidth = 800;
-  const svgHeight = 220;
-  const paddingY = 20;
+  const svgHeight = 240;
+  const paddingY = 24;
 
   // Calculate coordinates for points
   const points = data.map((d, index) => {
-    const x = (index / (data.length - 1)) * svgWidth;
+    const x = data.length > 1 ? (index / (data.length - 1)) * svgWidth : svgWidth / 2;
     const normalizedY = (d.price - minPrice) / priceRange;
     // Invert Y for SVG space
     const y = svgHeight - paddingY - normalizedY * (svgHeight - paddingY * 2);
     return { x, y, data: d };
   });
 
-  // Build SVG smooth path or polyline
+  // Build SVG smooth path using Bezier curves
   let pathD = "";
   if (points.length > 0) {
     pathD = `M ${points[0].x} ${points[0].y}`;
@@ -63,39 +86,57 @@ export default function PriceChart({
     }
   }
 
-  // Gradient path
+  // Gradient closed area path
   const areaD = `${pathD} L ${svgWidth} ${svgHeight} L 0 ${svgHeight} Z`;
-
   const strokeColor = isPositive ? "#1FB878" : "#E5484D";
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left;
-    const relativeX = Math.max(0, Math.min(mouseX / rect.width, 1));
-    const closestIdx = Math.round(relativeX * (data.length - 1));
-    setHoverIndex(closestIdx);
-    if (onHoverPoint && data[closestIdx]) {
-      onHoverPoint(data[closestIdx]);
+    updateHover(e.clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches[0]) {
+      updateHover(e.touches[0].clientX);
     }
   };
 
-  const handleMouseLeave = () => {
-    setHoverIndex(null);
-    if (onHoverPoint) {
-      onHoverPoint(null);
-    }
-  };
+  const hoveredPt = hoverIndex !== null && points[hoverIndex] ? points[hoverIndex] : null;
 
-  const hoveredPt = hoverIndex !== null ? points[hoverIndex] : null;
+  // Percentage difference from start of period for hovered point
+  let hoverPctChange = 0;
+  if (hoveredPt) {
+    hoverPctChange = ((hoveredPt.data.price - startPrice) / startPrice) * 100;
+  }
+
+  // Calculate horizontal tooltip alignment based on X position to avoid screen clipping
+  const xRatio = hoveredPt ? hoveredPt.x / svgWidth : 0.5;
+  const tooltipTransform =
+    xRatio < 0.15
+      ? "translateX(0%)"
+      : xRatio > 0.85
+      ? "translateX(-100%)"
+      : "translateX(-50%)";
 
   return (
     <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="relative w-full h-[220px] cursor-crosshair select-none overflow-hidden"
+      onMouseLeave={clearHover}
+      onTouchStart={handleTouchMove}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={clearHover}
+      className="relative w-full h-[240px] cursor-crosshair select-none touch-pan-x"
+      role="region"
+      aria-label="Interactive price trend chart"
     >
+      {/* Background horizontal grid guides */}
+      <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 py-6">
+        <div className="border-b border-[#232B3A] w-full" />
+        <div className="border-b border-[#232B3A] w-full" />
+        <div className="border-b border-[#232B3A] w-full" />
+      </div>
+
+      {/* SVG Chart Graphic */}
       <svg
         viewBox={`0 0 ${svgWidth} ${svgHeight}`}
         preserveAspectRatio="none"
@@ -103,12 +144,13 @@ export default function PriceChart({
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={strokeColor} stopOpacity={0.25} />
+            <stop offset="0%" stopColor={strokeColor} stopOpacity={0.28} />
+            <stop offset="75%" stopColor={strokeColor} stopOpacity={0.05} />
             <stop offset="100%" stopColor={strokeColor} stopOpacity={0.0} />
           </linearGradient>
         </defs>
 
-        {/* Gradient fill under area */}
+        {/* Gradient fill under curve */}
         <path d={areaD} fill={`url(#${gradientId})`} />
 
         {/* Line stroke */}
@@ -121,7 +163,7 @@ export default function PriceChart({
           strokeLinejoin="round"
         />
 
-        {/* Hover Crosshair Vertical Guide */}
+        {/* Hover Crosshair Vertical Guide & Indicator */}
         {hoveredPt && (
           <g>
             <line
@@ -133,13 +175,24 @@ export default function PriceChart({
               strokeWidth="1.5"
               strokeDasharray="4 4"
             />
+            {/* Subtle horizontal baseline guide */}
+            <line
+              x1={0}
+              y1={hoveredPt.y}
+              x2={svgWidth}
+              y2={hoveredPt.y}
+              stroke="#232B3A"
+              strokeWidth="1"
+              strokeDasharray="2 4"
+              opacity="0.6"
+            />
             {/* Outer halo ring */}
             <circle
               cx={hoveredPt.x}
               cy={hoveredPt.y}
               r="8"
               fill={strokeColor}
-              fillOpacity="0.25"
+              fillOpacity="0.3"
             />
             {/* Active Data Point Dot */}
             <circle
@@ -154,21 +207,34 @@ export default function PriceChart({
         )}
       </svg>
 
-      {/* Tooltip on Hover */}
+      {/* Floating Interactive Tooltip */}
       {hoveredPt && (
         <div
-          className="absolute pointer-events-none bg-[#10131C] border border-[#232B3A] text-white text-xs px-3 py-1.5 rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.6)] z-20 transition-all duration-75 flex flex-col items-center"
+          className="absolute pointer-events-none bg-[#10131C]/95 backdrop-blur-sm border border-[#232B3A] text-white px-3 py-2 rounded-lg shadow-[0_12px_28px_rgba(0,0,0,0.75)] z-20 transition-transform duration-75 min-w-[120px]"
           style={{
             left: `${(hoveredPt.x / svgWidth) * 100}%`,
-            top: `${Math.max(8, Math.min(hoveredPt.y - 48, svgHeight - 48))}px`,
-            transform: "translateX(-50%)",
+            top: `${Math.max(6, Math.min(hoveredPt.y - 62, svgHeight - 68))}px`,
+            transform: tooltipTransform,
           }}
         >
-          <div className="font-bold tabular-nums text-white text-[13px]">
-            {formatINR(hoveredPt.data.price)}
+          <div className="flex items-center justify-between gap-2">
+            <span className="font-bold tabular-nums text-white text-xs md:text-sm">
+              {formatINR(hoveredPt.data.price)}
+            </span>
+            <span
+              className={`text-[10px] font-bold tabular-nums px-1 py-0.5 rounded ${
+                hoverPctChange >= 0
+                  ? "text-[#1FB878] bg-[#0F3D30]"
+                  : "text-[#E5484D] bg-[#3A1B22]"
+              }`}
+            >
+              {hoverPctChange >= 0 ? "+" : ""}
+              {hoverPctChange.toFixed(2)}%
+            </span>
           </div>
-          <div className="text-[10px] text-[#9AA4B2] font-medium text-center">
-            {hoveredPt.data.label}
+          <div className="text-[10px] text-[#9AA4B2] font-medium mt-0.5 flex items-center justify-between gap-2">
+            <span>{hoveredPt.data.label}</span>
+            <span className="text-[#5B6472] uppercase text-[9px] font-semibold">Period</span>
           </div>
         </div>
       )}

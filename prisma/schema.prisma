@@ -5,9 +5,9 @@ generator client {
   output   = "../app/generated/prisma"
 }
 
-// Configure SQLite database data source provider
+// Configure PostgreSQL database data source provider
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 // Enum defining supported cryptocurrency asset classification categories

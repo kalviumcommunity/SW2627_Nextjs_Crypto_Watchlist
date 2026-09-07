@@ -40,22 +40,24 @@ export default function AboutCard({
           href={website}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#10131C] border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:border-[#374151] transition-all group"
+          aria-label={`Official Website for ${name} (opens in a new tab)`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#10131C] border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:border-[#374151] transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446]"
         >
-          <Globe className="w-4 h-4 text-[#FF5446]" />
+          <Globe className="w-4 h-4 text-[#FF5446]" aria-hidden="true" />
           <span>Official Website</span>
-          <ExternalLink className="w-3 h-3 text-[#5B6472] group-hover:text-white transition-colors" />
+          <ExternalLink className="w-3 h-3 text-[#9AA4B2] group-hover:text-white transition-colors" aria-hidden="true" />
         </a>
 
         <a
           href={whitepaper}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#10131C] border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:border-[#374151] transition-all group"
+          aria-label={`Whitepaper for ${name} (opens in a new tab)`}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#10131C] border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:border-[#374151] transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446]"
         >
-          <FileText className="w-4 h-4 text-[#FF5446]" />
+          <FileText className="w-4 h-4 text-[#FF5446]" aria-hidden="true" />
           <span>Whitepaper</span>
-          <ExternalLink className="w-3 h-3 text-[#5B6472] group-hover:text-white transition-colors" />
+          <ExternalLink className="w-3 h-3 text-[#9AA4B2] group-hover:text-white transition-colors" aria-hidden="true" />
         </a>
       </div>
     </div>

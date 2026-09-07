@@ -1,6 +1,11 @@
 export default function CoinDetailSkeleton() {
   return (
-    <main className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 md:py-8 animate-pulse">
+    <main
+      role="status"
+      aria-busy="true"
+      aria-label="Loading coin details"
+      className="max-w-[1280px] mx-auto px-4 md:px-6 py-6 md:py-8 animate-pulse"
+    >
       {/* Top Header Row & Breadcrumb Skeleton */}
       <div className="w-full mb-6">
         {/* Breadcrumb skeleton */}

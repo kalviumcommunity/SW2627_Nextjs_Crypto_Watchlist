@@ -102,8 +102,8 @@ export default function PriceChartCard({
       {/* Price Chart */}
       <div className="w-full relative min-h-[240px]">
         {isError ? (
-          <div className="w-full h-[240px] rounded-lg bg-[#10131C]/60 border border-[#232B3A]/40 flex flex-col items-center justify-center p-6 text-center gap-2.5">
-            <AlertCircle className="w-6 h-6 text-[#E5484D]" />
+          <div role="alert" className="w-full h-[240px] rounded-lg bg-[#10131C]/60 border border-[#232B3A]/40 flex flex-col items-center justify-center p-6 text-center gap-2.5">
+            <AlertCircle className="w-6 h-6 text-[#E5484D]" aria-hidden="true" />
             <div className="text-xs font-semibold text-white">
               Failed to load chart data
             </div>
@@ -113,25 +113,26 @@ export default function PriceChartCard({
             <button
               type="button"
               onClick={() => refetch()}
+              aria-label="Retry loading chart data"
               className="mt-1 px-3.5 py-1.5 bg-[#1B2536] hover:bg-[#232B3A] text-white text-xs font-medium rounded-md border border-[#232B3A] inline-flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <RefreshCw className="w-3 h-3" />
+              <RefreshCw className="w-3 h-3" aria-hidden="true" />
               <span>Retry</span>
             </button>
           </div>
         ) : isLoading ? (
-          <div className="w-full h-[240px] rounded-lg bg-[#10131C]/60 border border-[#232B3A]/30 flex flex-col justify-end p-4 relative overflow-hidden animate-pulse">
+          <div role="status" aria-label="Loading price chart" className="w-full h-[240px] rounded-lg bg-[#10131C]/60 border border-[#232B3A]/30 flex flex-col justify-end p-4 relative overflow-hidden animate-pulse">
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#1B2536]/20 to-transparent animate-pulse" />
             <div className="w-full h-1/2 flex items-end justify-between gap-2 opacity-30">
-              <div className="w-full h-1/3 bg-[#1B2536] rounded-t" />
-              <div className="w-full h-2/3 bg-[#1B2536] rounded-t" />
-              <div className="w-full h-1/2 bg-[#1B2536] rounded-t" />
-              <div className="w-full h-3/4 bg-[#1B2536] rounded-t" />
-              <div className="w-full h-2/5 bg-[#1B2536] rounded-t" />
-              <div className="w-full h-4/5 bg-[#1B2536] rounded-t" />
-              <div className="w-full h-full bg-[#1B2536] rounded-t" />
+              <div className="w-full h-1/3 bg-[#1B2536] rounded" />
+              <div className="w-full h-2/3 bg-[#1B2536] rounded" />
+              <div className="w-full h-1/2 bg-[#1B2536] rounded" />
+              <div className="w-full h-3/4 bg-[#1B2536] rounded" />
+              <div className="w-full h-2/5 bg-[#1B2536] rounded" />
+              <div className="w-full h-4/5 bg-[#1B2536] rounded" />
+              <div className="w-full h-full bg-[#1B2536] rounded" />
             </div>
-            <div className="flex justify-between mt-3 pt-2 border-t border-[#232B3A]/40 text-[10px] text-[#5B6472]">
+            <div className="flex justify-between mt-3 pt-2 border-t border-[#232B3A]/40 text-[10px] text-[#9AA4B2]">
               <div className="w-8 h-2.5 bg-[#1B2536] rounded" />
               <div className="w-8 h-2.5 bg-[#1B2536] rounded" />
               <div className="w-8 h-2.5 bg-[#1B2536] rounded" />
@@ -150,8 +151,8 @@ export default function PriceChartCard({
       {/* Period High / Low Footer Quick-Stats */}
       <div className="flex items-center justify-between pt-4 mt-4 border-t border-[#232B3A]/60 text-xs text-[#9AA4B2]">
         <div className="flex items-center gap-1.5">
-          <TrendingDown className="w-3.5 h-3.5 text-[#E5484D]" />
-          <span className="text-[#5B6472] uppercase text-[10px] font-bold tracking-wider">
+          <TrendingDown className="w-3.5 h-3.5 text-[#E5484D]" aria-hidden="true" />
+          <span className="text-[#9AA4B2] uppercase text-[10px] font-bold tracking-wider">
             {selectedRange} Low:
           </span>
           <span className="font-semibold text-white tabular-nums">
@@ -159,8 +160,8 @@ export default function PriceChartCard({
           </span>
         </div>
         <div className="flex items-center gap-1.5">
-          <TrendingUp className="w-3.5 h-3.5 text-[#1FB878]" />
-          <span className="text-[#5B6472] uppercase text-[10px] font-bold tracking-wider">
+          <TrendingUp className="w-3.5 h-3.5 text-[#1FB878]" aria-hidden="true" />
+          <span className="text-[#9AA4B2] uppercase text-[10px] font-bold tracking-wider">
             {selectedRange} High:
           </span>
           <span className="font-semibold text-white tabular-nums">

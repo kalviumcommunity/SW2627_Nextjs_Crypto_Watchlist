@@ -38,9 +38,12 @@ export default function Pagination({
   };
 
   return (
-    <div className="h-[52px] bg-[#10131C]/60 border-t border-[#232B3A] px-4 md:px-6 flex items-center justify-between text-[13px] rounded-b-[10px]">
+    <nav
+      aria-label="Pagination Navigation"
+      className="h-[52px] bg-[#10131C]/60 border-t border-[#232B3A] px-4 md:px-6 flex items-center justify-between text-[13px] rounded-b-[10px]"
+    >
       {/* Left: Showing X-Y of N assets */}
-      <div className="text-[#5B6472] text-xs">
+      <div className="text-[#9AA4B2] text-xs">
         <span className="hidden sm:inline">Showing </span>
         <span className="text-white font-semibold tabular-nums">
           {startItem}-{endItem}
@@ -62,7 +65,7 @@ export default function Pagination({
           aria-label="Previous page"
           className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#9AA4B2] disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-4 h-4" aria-hidden="true" />
         </button>
 
         {/* Page Pills */}
@@ -72,7 +75,8 @@ export default function Pagination({
               return (
                 <span
                   key={`ellipsis-${idx}`}
-                  className="w-6 text-center text-[#5B6472] font-bold select-none text-xs"
+                  className="w-6 text-center text-[#9AA4B2] font-bold select-none text-xs"
+                  aria-hidden="true"
                 >
                   …
                 </span>
@@ -85,6 +89,7 @@ export default function Pagination({
                 key={p}
                 type="button"
                 onClick={() => onPageChange(p)}
+                aria-label={`Page ${p}`}
                 aria-current={isActive ? "page" : undefined}
                 className={`w-8 h-8 rounded-lg text-xs font-bold transition-all tabular-nums cursor-pointer focus:outline-none ${
                   isActive
@@ -106,10 +111,10 @@ export default function Pagination({
           aria-label="Next page"
           className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#9AA4B2] disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-4 h-4" aria-hidden="true" />
         </button>
       </div>
-    </div>
+    </nav>
   );
 }
 

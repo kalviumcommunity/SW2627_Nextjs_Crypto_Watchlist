@@ -64,7 +64,7 @@ function GlobalNavSearch({
 
   return (
     <div className={`relative items-center ${containerClassName}`}>
-      <Search className="w-4 h-4 text-[#9AA4B2] absolute left-3 pointer-events-none z-10" />
+      <Search className="w-4 h-4 text-[#9AA4B2] absolute left-3 pointer-events-none z-10" aria-hidden="true" />
       <input
         ref={inputRef}
         type="text"
@@ -85,6 +85,7 @@ function GlobalNavSearch({
           }
         }}
         placeholder="Search markets..."
+        aria-label="Search markets"
         className={`h-9 pl-9 pr-8 bg-[#111827] text-white text-xs md:text-sm rounded-full border border-[#232B3A] focus:outline-none focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 transition-all placeholder:text-[#5B6472] ${inputClassName}`}
       />
 
@@ -96,7 +97,7 @@ function GlobalNavSearch({
           title="Clear search"
           aria-label="Clear search"
         >
-          <X className="w-3.5 h-3.5" />
+          <X className="w-3.5 h-3.5" aria-hidden="true" />
         </button>
       )}
 
@@ -154,26 +155,26 @@ export default function NavBar() {
   return (
     <>
       <header className="h-[56px] bg-[#10131C]/95 backdrop-blur-md border-b border-[#232B3A] px-3 sm:px-4 md:px-6 flex items-center justify-between sticky top-0 z-40 transition-colors">
-        {/* Left: Hamburger (mobile) + Brand Logo + Desktop Search */}
         <div className="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
-          {/* Mobile hamburger toggle */}
           <button
             type="button"
             aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-nav-menu"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden p-2 rounded-lg text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
           >
             {isMobileMenuOpen ? (
-              <X className="w-5 h-5 text-[#FF5446]" />
+              <X className="w-5 h-5 text-[#FF5446]" aria-hidden="true" />
             ) : (
-              <Menu className="w-5 h-5" />
+              <Menu className="w-5 h-5" aria-hidden="true" />
             )}
           </button>
 
           <Link
             href="/markets"
             className="flex items-center flex-shrink-0 group focus:outline-none"
+            aria-label="CoinDCX Home"
           >
             <span className="text-xl md:text-2xl font-bold tracking-tight transition-transform group-hover:scale-[1.02]">
               <span className="text-white">Coin</span>
@@ -181,19 +182,21 @@ export default function NavBar() {
             </span>
           </Link>
 
-          {/* Inline Desktop Global Search Input */}
           <GlobalNavSearch
             containerClassName="hidden md:flex"
             inputClassName="w-44 lg:w-64"
           />
         </div>
 
-        {/* Center Nav Links: Desktop / Tablet */}
-        <nav className="hidden md:flex items-center gap-4 lg:gap-7 xl:gap-8 text-[14px] font-medium h-full">
+        <nav
+          aria-label="Main Navigation"
+          className="hidden md:flex items-center gap-4 lg:gap-7 xl:gap-8 text-[14px] font-medium h-full"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
+              aria-current={link.active ? "page" : undefined}
               className={`relative h-full flex items-center transition-colors ${
                 link.active
                   ? "text-[#FF5446] font-semibold"
@@ -202,37 +205,37 @@ export default function NavBar() {
             >
               <span>{link.label}</span>
               {link.active && (
-                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446] rounded-t-full shadow-[0_0_8px_#FF5446]" />
+                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF5446] rounded-t-full shadow-[0_0_8px_#FF5446]" aria-hidden="true" />
               )}
             </Link>
           ))}
         </nav>
 
-        {/* Right Side Controls */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3">
-          {/* BTC Price Pill (Hidden on tablet & mobile) */}
-          <div className="hidden xl:flex items-center px-3 py-1 bg-[#111827] border border-[#232B3A] rounded-full text-xs font-mono text-[#9AA4B2] shadow-xs">
+          <div className="hidden xl:flex items-center px-3 py-1 bg-[#111827] border border-[#232B3A] rounded-full text-xs font-mono text-[#9AA4B2] shadow-xs" aria-label="Current Bitcoin price">
             <span>BTC:&nbsp;</span>
             <span className="text-white font-semibold tabular-nums">$42,069.00</span>
           </div>
 
           <button
+            type="button"
             aria-label="Notifications"
             className="hidden sm:flex text-[#9AA4B2] hover:text-white transition-colors p-2 rounded-lg hover:bg-[#111827] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-4 h-4" aria-hidden="true" />
           </button>
           <button
+            type="button"
             aria-label="Settings"
             className="hidden sm:flex text-[#9AA4B2] hover:text-white transition-colors p-2 rounded-lg hover:bg-[#111827] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="w-4 h-4" aria-hidden="true" />
           </button>
 
           {isAuthenticated ? (
             <div className="flex items-center gap-2 pl-1.5 sm:pl-2 sm:border-l sm:border-[#232B3A]">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-white font-bold text-xs shadow-xs">
+              <div className="flex items-center gap-2" aria-label={`Logged in as ${session?.user?.name || session?.user?.email || "User"}`}>
+                <div className="w-7 h-7 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-white font-bold text-xs shadow-xs" aria-hidden="true">
                   {session?.user?.name ? (
                     session.user.name.charAt(0).toUpperCase()
                   ) : (
@@ -244,12 +247,13 @@ export default function NavBar() {
                 </span>
               </div>
               <button
+                type="button"
                 onClick={() => signOut({ callbackUrl: "/login" })}
                 title="Log Out"
                 aria-label="Log Out"
                 className="hidden sm:flex text-[#9AA4B2] hover:text-[#FF5446] transition-colors p-1.5 rounded-md hover:bg-[#111827] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
           ) : (
@@ -271,18 +275,21 @@ export default function NavBar() {
         </div>
       </header>
 
-      {/* Mobile Drawer / Dropdown (< 768px) */}
       {isMobileMenuOpen && (
         <>
-          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
           />
 
-          {/* Menu Dropdown Sheet */}
-          <div className="fixed top-[56px] left-0 right-0 max-h-[calc(100vh-56px)] overflow-y-auto bg-[#10131C] border-b border-[#232B3A] shadow-2xl p-4 md:hidden z-50 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200">
-            {/* Mobile Search */}
+          <div
+            id="mobile-nav-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+            className="fixed top-[56px] left-0 right-0 max-h-[calc(100vh-56px)] overflow-y-auto bg-[#10131C] border-b border-[#232B3A] shadow-2xl p-4 md:hidden z-50 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200"
+          >
             <div className="w-full">
               <GlobalNavSearch
                 containerClassName="flex w-full"
@@ -291,12 +298,15 @@ export default function NavBar() {
               />
             </div>
 
-            {/* Nav Links */}
-            <div className="flex flex-col gap-1 py-1 border-t border-[#232B3A]/60">
+            <nav
+              aria-label="Mobile Navigation"
+              className="flex flex-col gap-1 py-1 border-t border-[#232B3A]/60"
+            >
               {navLinks.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
+                  aria-current={link.active ? "page" : undefined}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${
                     link.active
@@ -306,15 +316,14 @@ export default function NavBar() {
                 >
                   <span>{link.label}</span>
                   {link.active && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF5446]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF5446]" aria-hidden="true" />
                   )}
                 </Link>
               ))}
-            </div>
+            </nav>
 
-            {/* Secondary Controls: BTC pill + Alerts & Settings */}
             <div className="flex items-center justify-between pt-3 border-t border-[#232B3A]/60 text-xs">
-              <div className="flex items-center px-3 py-1.5 bg-[#111827] border border-[#232B3A] rounded-full font-mono text-[#9AA4B2]">
+              <div className="flex items-center px-3 py-1.5 bg-[#111827] border border-[#232B3A] rounded-full font-mono text-[#9AA4B2]" aria-label="Current Bitcoin price">
                 <span>BTC:&nbsp;</span>
                 <span className="text-white font-semibold tabular-nums">
                   $42,069.00
@@ -323,26 +332,27 @@ export default function NavBar() {
 
               <div className="flex items-center gap-1">
                 <button
+                  type="button"
                   aria-label="Notifications"
                   className="text-[#9AA4B2] hover:text-white p-2 rounded-lg hover:bg-[#1B2536] transition-colors cursor-pointer"
                 >
-                  <Bell className="w-4 h-4" />
+                  <Bell className="w-4 h-4" aria-hidden="true" />
                 </button>
                 <button
+                  type="button"
                   aria-label="Settings"
                   className="text-[#9AA4B2] hover:text-white p-2 rounded-lg hover:bg-[#1B2536] transition-colors cursor-pointer"
                 >
-                  <Settings className="w-4 h-4" />
+                  <Settings className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
             </div>
 
-            {/* Auth Section in Drawer */}
             <div className="pt-3 border-t border-[#232B3A]/60">
               {isAuthenticated ? (
                 <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#111827] border border-[#232B3A]">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-white font-bold text-xs shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-[#1B2536] border border-[#232B3A] flex items-center justify-center text-white font-bold text-xs shrink-0" aria-hidden="true">
                       {session?.user?.name ? (
                         session.user.name.charAt(0).toUpperCase()
                       ) : (
@@ -353,19 +363,21 @@ export default function NavBar() {
                       <span className="text-xs font-semibold text-white truncate">
                         {session?.user?.name || "User"}
                       </span>
-                      <span className="text-[10px] text-[#5B6472] truncate">
+                      <span className="text-[10px] text-[#9AA4B2] truncate">
                         {session?.user?.email || ""}
                       </span>
                     </div>
                   </div>
                   <button
+                    type="button"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       signOut({ callbackUrl: "/login" });
                     }}
                     className="flex items-center gap-1.5 text-xs text-[#FF5446] hover:text-[#D63A2F] px-2.5 py-1.5 rounded-md hover:bg-[#FF5446]/10 transition-colors cursor-pointer"
+                    aria-label="Log out"
                   >
-                    <LogOut className="w-3.5 h-3.5" />
+                    <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
                     <span>Log out</span>
                   </button>
                 </div>

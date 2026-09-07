@@ -42,12 +42,13 @@ export default function TableRow({
       tabIndex={0}
       onClick={handleRowClick}
       onKeyDown={handleKeyDown}
+      aria-label={`View details for ${coin.name} (${coin.symbol})`}
       className={`${
         variant === "row" ? "" : "hidden md:table-row"
       } h-[56px] border-b border-[#232B3A] hover:bg-[#1B2536]/80 transition-colors cursor-pointer focus:outline-none focus:bg-[#1B2536] group`}
     >
       {/* Rank Number (#) */}
-      <td className="w-12 px-3 text-center text-xs text-[#5B6472] tabular-nums font-semibold">
+      <td className="w-12 px-3 text-center text-xs text-[#9AA4B2] tabular-nums font-semibold">
         {rankNumber}
       </td>
 
@@ -55,14 +56,14 @@ export default function TableRow({
       <td className="px-4">
         <div className="flex items-center gap-3">
           {/* 32px Circular Avatar Icon */}
-          <div className="w-8 h-8 rounded-full bg-[#10131C] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-[#F5B94D] flex-shrink-0 group-hover:border-[#374151] transition-colors shadow-xs">
+          <div className="w-8 h-8 rounded-full bg-[#10131C] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-[#F5B94D] flex-shrink-0 group-hover:border-[#374151] transition-colors shadow-xs" aria-hidden="true">
             {coin.symbol.slice(0, 3)}
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-[14px] font-semibold text-white leading-tight truncate">
               {coin.name}
             </span>
-            <span className="text-[11px] text-[#5B6472] leading-tight font-medium uppercase font-mono">
+            <span className="text-[11px] text-[#9AA4B2] leading-tight font-medium uppercase font-mono">
               {coin.symbol}
             </span>
           </div>
@@ -106,7 +107,8 @@ export default function TableRow({
         <div className="flex items-center justify-end gap-2">
           <button
             type="button"
-            aria-label={coin.isStarred ? "Unstar coin" : "Star coin"}
+            aria-label={coin.isStarred ? `Remove ${coin.name} from watchlist` : `Add ${coin.name} to watchlist`}
+            aria-pressed={coin.isStarred}
             onClick={(e) => {
               e.stopPropagation();
               onStarToggle(coin.id, coin.isStarred);
@@ -114,16 +116,18 @@ export default function TableRow({
             className="p-2 rounded-md hover:bg-[#232B3A] text-[#9AA4B2] hover:scale-110 active:scale-95 transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
           >
             <Star
+              aria-hidden="true"
               className={`w-4 h-4 transition-colors ${
                 coin.isStarred
                   ? "fill-[#F5B94D] text-[#F5B94D]"
-                  : "text-[#5B6472] hover:text-[#F5B94D]"
+                  : "text-[#9AA4B2] hover:text-[#F5B94D]"
               }`}
             />
           </button>
 
           <button
             type="button"
+            aria-label={`Trade ${coin.name}`}
             onClick={(e) => {
               e.stopPropagation();
               router.push(`/coins/${coin.symbol}`);
@@ -140,6 +144,8 @@ export default function TableRow({
   const renderCard = () => (
     <div
       tabIndex={0}
+      role="button"
+      aria-label={`View details for ${coin.name} (${coin.symbol})`}
       onClick={handleRowClick}
       onKeyDown={handleKeyDown}
       className={`${
@@ -150,12 +156,12 @@ export default function TableRow({
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           {/* Rank badge */}
-          <span className="text-[11px] font-bold text-[#5B6472] tabular-nums min-w-[20px] text-center">
+          <span className="text-[11px] font-bold text-[#9AA4B2] tabular-nums min-w-[20px] text-center">
             #{rankNumber}
           </span>
 
           {/* Avatar */}
-          <div className="w-8 h-8 rounded-full bg-[#10131C] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-[#F5B94D] shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[#10131C] border border-[#232B3A] flex items-center justify-center font-bold text-xs text-[#F5B94D] shrink-0" aria-hidden="true">
             {coin.symbol.slice(0, 3)}
           </div>
 
@@ -164,7 +170,7 @@ export default function TableRow({
             <span className="text-[14px] font-semibold text-white truncate leading-tight">
               {coin.name}
             </span>
-            <span className="text-[11px] text-[#5B6472] font-mono uppercase leading-tight mt-0.5">
+            <span className="text-[11px] text-[#9AA4B2] font-mono uppercase leading-tight mt-0.5">
               {coin.symbol}
             </span>
           </div>
@@ -193,7 +199,8 @@ export default function TableRow({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            aria-label={coin.isStarred ? "Unstar coin" : "Star coin"}
+            aria-label={coin.isStarred ? `Remove ${coin.name} from watchlist` : `Add ${coin.name} to watchlist`}
+            aria-pressed={coin.isStarred}
             onClick={(e) => {
               e.stopPropagation();
               onStarToggle(coin.id, coin.isStarred);
@@ -201,16 +208,18 @@ export default function TableRow({
             className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[#232B3A] active:scale-95 text-[#9AA4B2] transition-colors cursor-pointer border border-transparent hover:border-[#232B3A]"
           >
             <Star
+              aria-hidden="true"
               className={`w-4 h-4 ${
                 coin.isStarred
                   ? "fill-[#F5B94D] text-[#F5B94D]"
-                  : "text-[#5B6472]"
+                  : "text-[#9AA4B2]"
               }`}
             />
           </button>
 
           <button
             type="button"
+            aria-label={`Trade ${coin.name}`}
             onClick={(e) => {
               e.stopPropagation();
               router.push(`/coins/${coin.symbol}`);

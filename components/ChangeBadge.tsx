@@ -11,6 +11,7 @@ export default function ChangeBadge({ changePct }: ChangeBadgeProps) {
 
   return (
     <span
+      aria-label={`${isPositive ? "Up" : "Down"} ${Math.abs(changePct).toFixed(2)}% in 24 hours`}
       className={`inline-flex items-center justify-center px-2.5 py-1 rounded-md text-[12px] font-bold tabular-nums ${
         isPositive
           ? "bg-[#0F3D30] text-[#1FB878]"

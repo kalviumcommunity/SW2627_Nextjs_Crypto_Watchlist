@@ -4,7 +4,12 @@ interface TableSkeletonProps {
 
 export default function TableSkeleton({ rowCount = 8 }: TableSkeletonProps) {
   return (
-    <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] overflow-hidden shadow-lg">
+    <div
+      role="status"
+      aria-busy="true"
+      aria-label="Loading cryptocurrency markets"
+      className="bg-[#111827] border border-[#232B3A] rounded-[10px] overflow-hidden shadow-lg"
+    >
       {/* Desktop Table View (>= 768px) */}
       <div className="hidden md:block">
         <table className="w-full text-left border-collapse">

@@ -4,7 +4,7 @@
 // Import useState hook for tracking password text visibility (hidden vs visible)
 import { useState } from "react";
 // Import icons from Lucide React for password show/hide and checklist verification badges
-import { Eye, EyeOff, Check, X } from "lucide-react";
+import { Eye, EyeOff, Check } from "lucide-react";
 
 // TypeScript interface defining component properties for PasswordInput
 interface PasswordInputProps {
@@ -120,32 +120,36 @@ export default function PasswordInput({
         <button
           type="button"
           onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#5B6472] hover:text-[#9AA4B2] transition-colors p-1 rounded cursor-pointer"
+          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9AA4B2] hover:text-white transition-colors p-1 rounded cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446]"
           title={showPassword ? "Hide password" : "Show password"}
           aria-label={showPassword ? "Hide password" : "Show password"}
         >
           {/* Render EyeOff icon when visible, render Eye icon when hidden */}
           {showPassword ? (
-            <EyeOff className="w-4 h-4" />
+            <EyeOff className="w-4 h-4" aria-hidden="true" />
           ) : (
-            <Eye className="w-4 h-4" />
+            <Eye className="w-4 h-4" aria-hidden="true" />
           )}
         </button>
       </div>
 
       {/* Display validation error message when strength meter is not active */}
       {error && !showStrengthMeter && (
-        <span id={`${id}-error`} className="text-xs text-[#E5484D]">
+        <span id={`${id}-error`} className="text-xs text-[#E5484D]" role="alert">
           {error}
         </span>
       )}
 
       {/* Conditionally render password strength meter and checklist when enabled */}
       {showStrengthMeter && value.length > 0 && (
-        <div className="mt-1 space-y-2">
+        <div
+          role="status"
+          aria-label={`Password strength: ${strengthLabel}`}
+          className="mt-1 space-y-2"
+        >
           {/* 4-segment visual strength bar and status label */}
           <div className="flex items-center gap-3">
-            <div className="flex-1 grid grid-cols-4 gap-1.5 h-1.5">
+            <div className="flex-1 grid grid-cols-4 gap-1.5 h-1.5" aria-hidden="true">
               {[1, 2, 3, 4].map((seg) => (
                 <div
                   key={seg}
@@ -167,14 +171,14 @@ export default function PasswordInput({
             {/* Rule 1: Minimum length check indicator */}
             <div className="flex items-center gap-1.5 text-xs">
               {hasMinLength ? (
-                <Check className="w-3.5 h-3.5 text-[#1FB878]" />
+                <Check className="w-3.5 h-3.5 text-[#1FB878]" aria-hidden="true" />
               ) : (
-                <span className="w-3.5 h-3.5 text-[#5B6472] text-center inline-block">
+                <span className="w-3.5 h-3.5 text-[#9AA4B2] text-center inline-block" aria-hidden="true">
                   •
                 </span>
               )}
               <span
-                className={hasMinLength ? "text-[#1FB878]" : "text-[#5B6472]"}
+                className={hasMinLength ? "text-[#1FB878]" : "text-[#9AA4B2]"}
               >
                 At least 8 characters
               </span>
@@ -183,14 +187,14 @@ export default function PasswordInput({
             {/* Rule 2: Numeric digit check indicator */}
             <div className="flex items-center gap-1.5 text-xs">
               {hasNumber ? (
-                <Check className="w-3.5 h-3.5 text-[#1FB878]" />
+                <Check className="w-3.5 h-3.5 text-[#1FB878]" aria-hidden="true" />
               ) : (
-                <span className="w-3.5 h-3.5 text-[#5B6472] text-center inline-block">
+                <span className="w-3.5 h-3.5 text-[#9AA4B2] text-center inline-block" aria-hidden="true">
                   •
                 </span>
               )}
               <span
-                className={hasNumber ? "text-[#1FB878]" : "text-[#5B6472]"}
+                className={hasNumber ? "text-[#1FB878]" : "text-[#9AA4B2]"}
               >
                 One number
               </span>
@@ -199,15 +203,15 @@ export default function PasswordInput({
             {/* Rule 3: Special character check indicator */}
             <div className="flex items-center gap-1.5 text-xs">
               {hasSpecialChar ? (
-                <Check className="w-3.5 h-3.5 text-[#1FB878]" />
+                <Check className="w-3.5 h-3.5 text-[#1FB878]" aria-hidden="true" />
               ) : (
-                <span className="w-3.5 h-3.5 text-[#5B6472] text-center inline-block">
+                <span className="w-3.5 h-3.5 text-[#9AA4B2] text-center inline-block" aria-hidden="true">
                   •
                 </span>
               )}
               <span
                 className={
-                  hasSpecialChar ? "text-[#1FB878]" : "text-[#5B6472]"
+                  hasSpecialChar ? "text-[#1FB878]" : "text-[#9AA4B2]"
                 }
               >
                 One special character

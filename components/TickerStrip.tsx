@@ -39,47 +39,51 @@ export default function TickerStrip({
   }, [onRefresh]);
 
   return (
-    <div className="h-[36px] bg-[#10131C] border-b border-[#232B3A] px-4 md:px-6 flex items-center justify-between text-[13px] text-[#9AA4B2] overflow-x-auto whitespace-nowrap scrollbar-none">
+    <div
+      role="region"
+      aria-label="Market overview ticker"
+      className="h-[36px] bg-[#10131C] border-b border-[#232B3A] px-4 md:px-6 flex items-center justify-between text-[13px] text-[#9AA4B2] overflow-x-auto whitespace-nowrap scrollbar-none"
+    >
       {/* Metrics List */}
       <div className="flex items-center gap-4 md:gap-6 text-xs md:text-[13px]">
         {/* 24h Vol */}
         <div className="flex items-center gap-1.5">
-          <span className="text-[#5B6472]">24h Vol:</span>
+          <span className="text-[#9AA4B2]">24h Vol:</span>
           <span className="text-white font-medium tabular-nums">{vol24h}</span>
         </div>
-        <span className="text-[#232B3A]">·</span>
+        <span className="text-[#232B3A]" aria-hidden="true">·</span>
 
         {/* BTC Dom */}
         <div className="flex items-center gap-1.5">
-          <span className="text-[#5B6472]">BTC Dom:</span>
+          <span className="text-[#9AA4B2]">BTC Dom:</span>
           <span className="text-white font-medium tabular-nums">{btcDom}</span>
         </div>
-        <span className="text-[#232B3A]">·</span>
+        <span className="text-[#232B3A]" aria-hidden="true">·</span>
 
         {/* ETH Dom */}
         <div className="flex items-center gap-1.5">
-          <span className="text-[#5B6472]">ETH Dom:</span>
+          <span className="text-[#9AA4B2]">ETH Dom:</span>
           <span className="text-white font-medium tabular-nums">{ethDom}</span>
         </div>
-        <span className="text-[#232B3A]">·</span>
+        <span className="text-[#232B3A]" aria-hidden="true">·</span>
 
         {/* Total MCap */}
         <div className="flex items-center gap-1.5">
-          <span className="text-[#5B6472]">Total MCap:</span>
+          <span className="text-[#9AA4B2]">Total MCap:</span>
           <span className="text-white font-medium tabular-nums">{totalMCap}</span>
         </div>
-        <span className="text-[#232B3A]">·</span>
+        <span className="text-[#232B3A]" aria-hidden="true">·</span>
 
         {/* Global Market Change */}
-        <div className="flex items-center gap-1 text-[#1FB878] font-medium bg-[#0F3D30]/60 px-2 py-0.5 rounded text-xs">
+        <div className="flex items-center gap-1 text-[#1FB878] font-medium bg-[#0F3D30]/60 px-2 py-0.5 rounded text-xs" aria-label={`Global Market 24h change ${globalMarketPct}`}>
           <span>Global Market {globalMarketPct}</span>
-          <ArrowUpRight className="w-3.5 h-3.5" />
+          <ArrowUpRight className="w-3.5 h-3.5" aria-hidden="true" />
         </div>
       </div>
 
       {/* Right-aligned Refresh Countdown */}
       <div className="flex items-center gap-2 pl-4 text-xs md:text-[13px]">
-        <RefreshCw className="w-3.5 h-3.5 text-[#FF5446] animate-spin-slow" />
+        <RefreshCw className="w-3.5 h-3.5 text-[#FF5446] animate-spin-slow" aria-hidden="true" />
         <span className="text-[#9AA4B2]">
           Refresh in <span className="tabular-nums text-white font-medium">{countdown}s</span>
         </span>

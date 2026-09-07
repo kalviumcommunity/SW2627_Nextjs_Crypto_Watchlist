@@ -62,11 +62,14 @@ export default function MarketsDashboard({
   const handlePageChange = (page: number) => {
     updateFilters({ page });
   };
-
+const handleRefresh = async () => {
+  await fetch("/api/markets");
+  await refetch();
+};
   return (
     <div className="flex flex-col min-h-screen bg-[#050810]">
       {/* Top Ticker Strip */}
-      <TickerStrip onRefresh={refetch} />
+      <TickerStrip onRefresh={handleRefresh} />
 
       {/* Main Content Container */}
       <main className="max-w-[1280px] w-full mx-auto px-4 md:px-6 py-6 md:py-8 flex-1 flex flex-col">

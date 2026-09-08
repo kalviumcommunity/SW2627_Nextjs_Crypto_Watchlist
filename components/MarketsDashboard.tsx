@@ -63,8 +63,17 @@ export default function MarketsDashboard({
     updateFilters({ page });
   };
 const handleRefresh = async () => {
-  await fetch("/api/markets");
-  await refetch();
+  try {
+    const response = await fetch("/api/markets");
+
+    if (!response.ok) {
+      throw new Error("Failed to refresh market data");
+    }
+
+    await refetch();
+  } catch (error) {
+    console.error("Market refresh failed:", error);
+  }
 };
   return (
     <div className="flex flex-col min-h-screen bg-[#050810]">

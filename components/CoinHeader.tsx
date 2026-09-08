@@ -51,7 +51,7 @@ export default function CoinHeader({ coin, lastUpdated }: CoinHeaderProps) {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1FB878] opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1FB878]"></span>
           </span>
-          <span>Live feed &middot; {formattedLastUpdated}</span>
+          <span suppressHydrationWarning>Live feed &middot; {formattedLastUpdated}</span>
         </div>
       </div>
 

@@ -18,11 +18,11 @@ export function useMarketData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
- const fetchMarketData = useCallback(async () => {
-  try {
-    const response = await fetch("/api/markets", {
-      cache: "no-store",
-    });
+  const fetchMarketData = useCallback(async () => {
+    try {
+      const response = await fetch("/api/markets", {
+        cache: "no-store",
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch market data");
       }
@@ -31,7 +31,7 @@ export function useMarketData() {
 
       setCoins(data);
       setError(null);
-    } catch (err) {
+    } catch {
       setError("Unable to load market data");
     } finally {
       setLoading(false);
@@ -39,13 +39,40 @@ export function useMarketData() {
   }, []);
 
   useEffect(() => {
-    fetchMarketData();
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const response = await fetch("/api/markets", {
+          cache: "no-store",
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch market data");
+        }
+        const data: MarketCoin[] = await response.json();
+        if (!cancelled) {
+          setCoins(data);
+          setError(null);
+        }
+      } catch {
+        if (!cancelled) {
+          setError("Unable to load market data");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void load();
 
     const interval = setInterval(() => {
-      fetchMarketData();
+      void fetchMarketData();
     }, 5000);
 
     return () => {
+      cancelled = true;
       clearInterval(interval);
     };
   }, [fetchMarketData]);
@@ -55,4 +82,4 @@ export function useMarketData() {
     loading,
     error,
   };
-}
+}

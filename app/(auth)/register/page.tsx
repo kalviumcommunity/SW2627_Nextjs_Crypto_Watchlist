@@ -218,7 +218,7 @@ export default function RegisterPage() {
             }`}
           />
           {nameError && (
-            <span id="name-error" className="text-xs text-[#E5484D]">
+            <span id="name-error" className="text-xs text-[#E5484D]" role="alert">
               {nameError}
             </span>
           )}

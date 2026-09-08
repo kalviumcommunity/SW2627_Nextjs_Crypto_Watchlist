@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
     const available = !user;
     return NextResponse.json({ available, exists: !!user });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { available: false, error: "Failed to check email" },
       { status: 500 }

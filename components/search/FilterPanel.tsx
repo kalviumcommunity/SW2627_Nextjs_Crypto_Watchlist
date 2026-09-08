@@ -411,14 +411,16 @@ export default function FilterPanel({
               <button
                 type="button"
                 onClick={handleClearStaged}
-                className="text-[#9AA4B2] hover:text-white text-xs font-medium underline-offset-2 hover:underline cursor-pointer"
+                aria-label="Clear all active filters"
+                className="text-[#9AA4B2] hover:text-white text-xs font-medium underline-offset-2 hover:underline cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 rounded"
               >
                 Clear All
               </button>
               <button
                 type="button"
                 onClick={handleApply}
-                className="px-5 py-2 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-colors shadow-md cursor-pointer"
+                aria-label="Apply selected filters"
+                className="px-5 py-2 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-colors shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF5446]/60"
               >
                 Apply Filters
               </button>

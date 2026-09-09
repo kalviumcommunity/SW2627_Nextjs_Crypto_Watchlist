@@ -46,6 +46,9 @@ export default function RegisterPage() {
   }
 
   useEffect(() => {
+    let isCurrent = true;
+    const abortController = new AbortController();
+
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
@@ -61,9 +64,11 @@ export default function RegisterPage() {
       try {
         setIsCheckingEmail(true);
         const res = await fetch(
-          `/api/auth/check-email?email=${encodeURIComponent(trimmedEmail)}`
+          `/api/auth/check-email?email=${encodeURIComponent(trimmedEmail)}`,
+          { signal: abortController.signal }
         );
         const data = await res.json();
+        if (!isCurrent) return;
         setIsCheckingEmail(false);
 
         if (data.available) {
@@ -73,13 +78,17 @@ export default function RegisterPage() {
           setIsEmailAvailable(false);
           setEmailCheckMessage("An account with this email already exists");
         }
-      } catch {
+      } catch (err: unknown) {
+        if (!isCurrent) return;
+        if (err instanceof Error && err.name === "AbortError") return;
         setIsCheckingEmail(false);
         setIsEmailAvailable(null);
       }
     }, 500);
 
     return () => {
+      isCurrent = false;
+      abortController.abort();
       if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     };
   }, [email]);

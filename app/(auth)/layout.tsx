@@ -22,7 +22,7 @@ export default function AuthLayout({
         {/* Render mobile-only brand logo header at top of form when left panel is hidden (<1024px) */}
         <div className="lg:hidden mb-8 flex justify-center">
           {/* Clickable brand logo linking back to the main markets overview dashboard */}
-          <Link href="/markets" className="flex items-center">
+          <Link href="/markets" className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446] rounded" aria-label="CoinDCX Home">
             {/* Styled logo text split into 'Coin' (white) and 'DCX' (accent red) */}
             <span className="text-2xl font-bold tracking-tight">
               <span className="text-white">Coin</span>

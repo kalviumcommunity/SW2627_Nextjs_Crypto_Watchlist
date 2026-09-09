@@ -63,7 +63,7 @@ function GlobalNavSearch({
   };
 
   return (
-    <div className={`relative items-center ${containerClassName}`}>
+    <div className={`relative flex items-center ${containerClassName}`}>
       <Search className="w-4 h-4 text-[#9AA4B2] absolute left-3 pointer-events-none z-10" aria-hidden="true" />
       <input
         ref={inputRef}

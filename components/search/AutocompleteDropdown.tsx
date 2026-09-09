@@ -36,26 +36,30 @@ export default function AutocompleteDropdown({
     }
   }
 
-  // Fetch up to 8 autocomplete suggestions when query changes
   useEffect(() => {
     if (!query.trim() || !isOpen) {
       return;
     }
 
     let isMounted = true;
+    const controller = new AbortController();
 
     const timer = setTimeout(async () => {
       try {
         if (isMounted) setLoading(true);
-        const res = await fetch(`/api/coins?q=${encodeURIComponent(query)}&limit=8`);
+        const res = await fetch(
+          `/api/coins?q=${encodeURIComponent(query)}&limit=8`,
+          { signal: controller.signal }
+        );
         if (!res.ok) throw new Error("Failed to fetch autocomplete");
         const data = await res.json();
         if (isMounted) {
           setSuggestions(data.items || []);
           setSelectedIndex(-1);
         }
-      } catch (err) {
-        console.error("Autocomplete fetch error:", err);
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") return;
+        if (isMounted) console.error("Autocomplete fetch error:", err);
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -63,6 +67,7 @@ export default function AutocompleteDropdown({
 
     return () => {
       isMounted = false;
+      controller.abort();
       clearTimeout(timer);
     };
   }, [query, isOpen]);

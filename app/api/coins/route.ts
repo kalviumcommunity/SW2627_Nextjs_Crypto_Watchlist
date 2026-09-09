@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Initialize Prisma query `where` filter object
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     // Filter by starred watchlist items when on watchlist tab or watchlist request
     if (tab === "watchlist" || (watchlistId && !searchParams.has("tab"))) {

@@ -42,7 +42,7 @@ export default function FilterTabs({
             <span>{tab.label}</span>
             {tab.count !== undefined && (
               <span
-                className={`text-[11px] font-semibold px-1.5 py-0.2 rounded-full tabular-nums transition-colors ${
+                className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-full tabular-nums transition-colors ${
                   isActive
                     ? "bg-[#FF5446]/20 text-white"
                     : "bg-[#1B2536] text-[#9AA4B2] group-hover:text-white"

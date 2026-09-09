@@ -10,13 +10,19 @@ export async function GET() {
       }
     );
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch market data" },
-        { status: response.status }
-      );
-    }
+  if (!response.ok) {
+  if (response.status === 429) {
+    return NextResponse.json(
+      { error: "Market data rate limit reached. Please try again later." },
+      { status: 429 }
+    );
+  }
 
+  return NextResponse.json(
+    { error: "Failed to fetch market data from CoinGecko." },
+    { status: response.status }
+  );
+}
     const data = await response.json();
 
     for (const coin of data) {

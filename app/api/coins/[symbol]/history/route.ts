@@ -67,6 +67,11 @@ export async function GET(
           orderBy: { recordedAt: "asc" },
           skip,
           take: limit,
+        select: {
+          recordedAt: true,
+          priceInr: true,
+          change24hPct: true,
+          },
         },
       },
     });

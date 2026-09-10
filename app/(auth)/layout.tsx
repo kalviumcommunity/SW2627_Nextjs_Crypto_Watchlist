@@ -18,11 +18,11 @@ export default function AuthLayout({
       <AuthLeftPanel />
 
       {/* Main right panel container holding the form content, centered vertically and horizontally */}
-      <main className="flex-1 bg-[#050810] flex flex-col justify-center items-center px-4 py-12 lg:px-8 w-full min-h-screen">
+      <main className="flex-1 bg-[#050810] flex flex-col justify-center items-center px-4 py-8 sm:py-12 lg:px-8 w-full min-h-screen overflow-y-auto">
         {/* Render mobile-only brand logo header at top of form when left panel is hidden (<1024px) */}
-        <div className="lg:hidden mb-8 flex justify-center">
+        <div className="lg:hidden mb-6 sm:mb-8 flex justify-center">
           {/* Clickable brand logo linking back to the main markets overview dashboard */}
-          <Link href="/markets" className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446] rounded" aria-label="CoinDCX Home">
+          <Link href="/markets" className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446] rounded touch-manipulation" aria-label="CoinDCX Home">
             {/* Styled logo text split into 'Coin' (white) and 'DCX' (accent red) */}
             <span className="text-2xl font-bold tracking-tight">
               <span className="text-white">Coin</span>
@@ -32,7 +32,7 @@ export default function AuthLayout({
         </div>
 
         {/* Central form card shell restricting max width to 440px for optimal form readability */}
-        <div className="w-full max-w-[440px] flex flex-col bg-[#111827]/40 sm:bg-[#111827] sm:border sm:border-[#232B3A] p-4 sm:p-8 rounded-2xl shadow-xl">
+        <div className="w-full max-w-[440px] flex flex-col bg-[#111827]/40 sm:bg-[#111827] sm:border sm:border-[#232B3A] p-5 sm:p-8 rounded-2xl shadow-xl">
           {children}
         </div>
       </main>

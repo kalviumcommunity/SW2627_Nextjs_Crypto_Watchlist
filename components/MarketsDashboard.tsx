@@ -79,7 +79,7 @@ export default function MarketsDashboard({
 
         {/* Filter Bar: Left Pills, Right Search Filter Bar */}
         <div className="mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <FilterTabs
               activeTab={activeTab}
               onTabChange={handleTabChange}

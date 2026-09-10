@@ -23,30 +23,35 @@ export default function SearchFilterBar({
   onClearFilters,
 }: SearchFilterBarProps) {
   return (
-    <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto">
-      {/* Search Input (Flex-grow) */}
-      <SearchInput
-        value={filters.q}
-        onChange={(query) => onUpdateFilters({ q: query })}
-        placeholder="Search coin or pair..."
-      />
+    <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+      {/* Search Input (Flex-grow on mobile) */}
+      <div className="flex-1 min-w-[160px] sm:flex-initial">
+        <SearchInput
+          value={filters.q}
+          onChange={(query) => onUpdateFilters({ q: query })}
+          placeholder="Search coin or pair..."
+        />
+      </div>
 
-      {/* Filters Button & Popover/Bottom Sheet Panel */}
-      <FilterPanel
-        filters={filters}
-        activeFiltersCount={activeFiltersCount}
-        minDatasetPrice={minDatasetPrice}
-        maxDatasetPrice={maxDatasetPrice}
-        onApplyFilters={onUpdateFilters}
-        onClearFilters={onClearFilters}
-      />
+      {/* Action buttons wrapper for mobile */}
+      <div className="flex items-center gap-2 shrink-0">
+        {/* Filters Button & Popover/Bottom Sheet Panel */}
+        <FilterPanel
+          filters={filters}
+          activeFiltersCount={activeFiltersCount}
+          minDatasetPrice={minDatasetPrice}
+          maxDatasetPrice={maxDatasetPrice}
+          onApplyFilters={onUpdateFilters}
+          onClearFilters={onClearFilters}
+        />
 
-      {/* Sort Dropdown */}
-      <SortDropdown
-        activeSort={filters.sort}
-        activeDir={filters.dir}
-        onSortChange={(sort, dir) => onUpdateFilters({ sort, dir })}
-      />
+        {/* Sort Dropdown */}
+        <SortDropdown
+          activeSort={filters.sort}
+          activeDir={filters.dir}
+          onSortChange={(sort, dir) => onUpdateFilters({ sort, dir })}
+        />
+      </div>
     </div>
   );
 }

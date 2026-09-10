@@ -1,5 +1,5 @@
 "use client";
-
+import { useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Star } from "lucide-react";
 import { FilterTab, WatchlistResponseDTO } from "@/types/watchlist";
@@ -62,17 +62,27 @@ export default function MarketsDashboard({
   const handlePageChange = (page: number) => {
     updateFilters({ page });
   };
+  const isRefreshingRef = useRef(false);
 const handleRefresh = async () => {
+  if (isRefreshingRef.current) return;
+
+  isRefreshingRef.current = true;
+
   try {
     const response = await fetch("/api/markets");
 
     if (!response.ok) {
-      throw new Error("Failed to refresh market data");
+      const data = await response.json().catch(() => null);
+      throw new Error(
+        data?.error ?? "Failed to refresh market data"
+      );
     }
 
     await refetch();
   } catch (error) {
     console.error("Market refresh failed:", error);
+  } finally {
+    isRefreshingRef.current = false;
   }
 };
   return (

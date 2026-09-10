@@ -20,7 +20,7 @@ export default function TickerStrip({
   globalMarketPct = "+2.1%",
   onRefresh,
 }: TickerStripProps) {
-  const [countdown, setCountdown] = useState(4);
+  const [countdown, setCountdown] = useState(60);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -29,7 +29,7 @@ export default function TickerStrip({
           if (onRefresh) {
             onRefresh();
           }
-          return 4;
+          return 60;
         }
         return prev - 1;
       });

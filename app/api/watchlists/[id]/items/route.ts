@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
 export async function POST(
   request: NextRequest,
@@ -10,7 +11,15 @@ export async function POST(
     const watchlistId = id?.trim() || "default-watchlist";
     const body = await request.json();
     const { coinId } = body;
+    
+    const session = await auth();
 
+if (!session?.user?.id) {
+  return NextResponse.json(
+    { error: "Unauthorized" },
+    { status: 401 }
+  );
+}
    if (!coinId || typeof coinId !== "string" || !coinId.trim()) {
   return NextResponse.json(
     { error: "coinId is required" },

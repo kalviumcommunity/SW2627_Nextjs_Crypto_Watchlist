@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { CoinDTO, WatchlistResponseDTO } from "@/types/watchlist";
 
 export async function GET(
@@ -7,8 +8,33 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
-    const watchlistId = id || "default-watchlist";
+
+    let watchlist = await prisma.watchlist.findFirst({
+      where: {
+        userId: session.user.id,
+      },
+    });
+
+    if (!watchlist) {
+      watchlist = await prisma.watchlist.create({
+        data: {
+          name: "My Watchlist",
+          userId: session.user.id,
+        },
+      });
+    }
+
+    const watchlistId = watchlist.id;
 
     const { searchParams } = new URL(request.url);
     const tab = searchParams.get("tab") || "all";
@@ -16,11 +42,14 @@ export async function GET(
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const limit = Math.max(1, parseInt(searchParams.get("limit") || "40", 10));
 
-    // Fetch default watchlist items
+    // Fetch user's watchlist items
     const watchlistItems = await prisma.watchlistItem.findMany({
       where: { watchlistId },
     });
-    const starredCoinIds = new Set(watchlistItems.map((item) => item.coinId));
+
+    const starredCoinIds = new Set(
+      watchlistItems.map((item) => item.coinId)
+    );
 
     const coins = await prisma.coin.findMany({
       include: {
@@ -34,7 +63,9 @@ export async function GET(
 
     let mappedItems: CoinDTO[] = coins.map((coin) => {
       const latestSnapshot = coin.priceSnapshots[0];
+
       let sparkline: number[] = [];
+
       if (latestSnapshot?.sparkline7d) {
         try {
           sparkline = JSON.parse(latestSnapshot.sparkline7d);
@@ -87,7 +118,10 @@ export async function GET(
 
     // Apply Pagination
     const startIndex = (page - 1) * limit;
-    const paginatedItems = mappedItems.slice(startIndex, startIndex + limit);
+    const paginatedItems = mappedItems.slice(
+      startIndex,
+      startIndex + limit
+    );
 
     const response: WatchlistResponseDTO & {
       page: number;
@@ -96,7 +130,7 @@ export async function GET(
       allMarketsCount: number;
     } = {
       id: watchlistId,
-      name: "My Watchlist",
+      name: watchlist.name,
       totalTracked: starredCoinIds.size,
       totalVolume: "₹6,45,230 Cr",
       btcDominance: "52.4%",
@@ -110,6 +144,7 @@ export async function GET(
     return NextResponse.json(response);
   } catch (error) {
     console.error("Error fetching watchlist:", error);
+
     return NextResponse.json(
       { error: "Failed to fetch watchlist data" },
       { status: 500 }

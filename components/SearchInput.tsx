@@ -60,7 +60,7 @@ export default function SearchInput({
         onChange={(e) => setLocalValue(e.target.value)}
         placeholder={placeholder}
         aria-label={placeholder || "Search coin or pair"}
-        className="w-full h-full bg-[#10131C] border border-[#232B3A] hover:border-[#374151] rounded-lg pl-9 pr-8 text-xs text-white placeholder-[#5B6472] focus:outline-none focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 transition-all shadow-xs"
+        className="w-full h-full bg-[#111827] border border-[#232B3A] hover:border-[#374151] rounded-lg pl-9 pr-8 text-xs text-white placeholder-[#5B6472] focus:outline-none focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 transition-all shadow-xs"
       />
 
       {/* Clear 'x' Button */}

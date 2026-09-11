@@ -65,7 +65,7 @@ export default function PriceChartCard({
   const maxPrice = historyData?.maxPrice ?? initialHistory.maxPrice;
 
   return (
-    <div className="bg-[#111827] border border-[#232B3A] rounded-[10px] p-5 md:p-6 w-full shadow-sm">
+    <div className="bg-[#111827] border border-[#232B3A] hover:border-[#374151] transition-colors rounded-[10px] p-5 md:p-6 w-full shadow-sm">
       {/* Top row: Price + Range Selector */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
         <div>

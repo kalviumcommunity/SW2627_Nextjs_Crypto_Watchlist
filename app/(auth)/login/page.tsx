@@ -216,7 +216,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-[#232B3A]" />
         </div>
-        <div className="relative px-3 bg-[#050810] text-[12px] font-medium text-[#9AA4B2]">
+        <div className="relative px-3 bg-[#050810] sm:bg-[#111827] text-[12px] font-medium text-[#9AA4B2]">
           OR
         </div>
       </div>

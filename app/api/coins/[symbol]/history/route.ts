@@ -33,6 +33,9 @@ export async function GET(
     let startDate: Date | undefined;
 
     switch (range) {
+      case "1H":
+        startDate = new Date(now.getTime() - 60 * 60 * 1000);
+        break;
       case "1D":
         startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
         break;

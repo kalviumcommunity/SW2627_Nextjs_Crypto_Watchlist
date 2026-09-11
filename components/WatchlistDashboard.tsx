@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Star } from "lucide-react";
 import { FilterTab, WatchlistResponseDTO } from "@/types/watchlist";
@@ -65,10 +66,40 @@ export default function WatchlistDashboard({
     updateFilters({ page });
   };
 
+  const isRefreshingRef = useRef(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+  const handleRefresh = async () => {
+    if (isRefreshingRef.current) return;
+    isRefreshingRef.current = true;
+    try {
+      const response = await fetch("/api/markets");
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(payload?.error ?? "Failed to refresh market data");
+      }
+      await refetch();
+      setRefreshError(null);
+    } catch (error) {
+      console.error("Watchlist market refresh failed:", error);
+      setRefreshError(error instanceof Error ? error.message : "Market refresh failed.");
+    } finally {
+      isRefreshingRef.current = false;
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-[#050810]">
       {/* Ticker Strip */}
-      <TickerStrip onRefresh={refetch} />
+      <TickerStrip
+        onRefresh={handleRefresh}
+        vol24h={displayData.totalVolume}
+        btcDom={displayData.btcDominance}
+      />
+      {refreshError && (
+        <div role="status" className="border-b border-[#6B2B2B] bg-[#3A1B22] px-4 py-2 text-center text-xs text-[#FFB4AB]">
+          {refreshError}
+        </div>
+      )}
 
       {/* Main Content Container */}
       <main className="max-w-[1280px] w-full mx-auto px-4 md:px-6 py-6 md:py-8 flex-1 flex flex-col">

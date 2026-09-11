@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 // Import singleton Prisma client instance for performing database queries
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/app/generated/prisma/client";
 // Import category filter enumeration and CoinDTO data transfer object interface
 import { CategoryFilter, CoinDTO } from "@/types/watchlist";
 
@@ -33,9 +34,17 @@ function normalizeCategory(raw: string): CategoryFilter | null {
 // Helper function to parse 24-hour volume string (e.g. '₹12,345 Cr') into a numeric value
 function parseVolCr(volStr: string): number {
   if (!volStr) return 0;
-  // Remove non-numeric characters except decimal points and parse float
   const num = parseFloat(volStr.replace(/[^0-9.]/g, ""));
-  return isNaN(num) ? 0 : num;
+  if (isNaN(num)) return 0;
+  if (volStr.includes("L Cr")) return num * 100000;
+  if (volStr.includes("Cr")) return num;
+  return num / 10_000_000;
+}
+
+function formatCr(value: number): string {
+  return `₹${value.toLocaleString("en-IN", {
+    maximumFractionDigits: 2,
+  })} Cr`;
 }
 
 // Export GET route handler processing cryptocurrency market listings, search, filtering, and sorting
@@ -97,7 +106,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Initialize Prisma query `where` filter object
-    const where: Record<string, unknown> = {};
+    const where: Prisma.CoinWhereInput = {};
 
     // Filter by starred watchlist items when on watchlist tab or watchlist request
     if (tab === "watchlist" || (watchlistId && !searchParams.has("tab"))) {
@@ -107,8 +116,8 @@ export async function GET(request: NextRequest) {
     // Apply search query filter against coin name or symbol (case-insensitive search)
     if (q) {
       where.OR = [
-        { name: { contains: q } },
-        { symbol: { contains: q } },
+        { name: { contains: q, mode: "insensitive" } },
+        { symbol: { contains: q, mode: "insensitive" } },
       ];
     }
 
@@ -254,14 +263,26 @@ export async function GET(request: NextRequest) {
 
     // Count total coins in database for summary header statistics
     const allMarketsCount = await prisma.coin.count();
+    const totalVolumeCr = mapped.reduce(
+      (total, coin) => total + parseVolCr(coin.volume24h),
+      0
+    );
+    const totalMarketCapCr = mapped.reduce(
+      (total, coin) => total + (coin.marketCapInrCr ?? 0),
+      0
+    );
+    const bitcoin = mapped.find((coin) => coin.symbol === "BTC");
+    const btcDominance = totalMarketCapCr > 0 && bitcoin
+      ? ((bitcoin.marketCapInrCr ?? 0) / totalMarketCapCr) * 100
+      : null;
 
     // Return JSON response payload containing paginated coins, metadata, and pagination stats
     return NextResponse.json({
       id: effectiveWatchlistId || "default-watchlist",
       name: "Crypto Markets",
       totalTracked: starredCoinIds.size,
-      totalVolume: "₹6,45,230 Cr",
-      btcDominance: "52.4%",
+      totalVolume: formatCr(totalVolumeCr),
+      btcDominance: btcDominance === null ? "Unavailable" : `${btcDominance.toFixed(2)}%`,
       items: paginatedItems,
       page,
       totalPages,

@@ -37,7 +37,22 @@ export async function GET() {
     { status: response.status }
   );
 }
-const data: MarketCoin[] = await response.json();
+    const payload: unknown = await response.json();
+    if (!Array.isArray(payload)) {
+      console.error("CoinGecko returned an unexpected market payload");
+      return NextResponse.json(
+        { error: "Market data service returned an invalid response." },
+        { status: 502 }
+      );
+    }
+
+    const data = payload as MarketCoin[];
+    if (data.length === 0) {
+      return NextResponse.json(
+        { error: "Market data service returned no coins." },
+        { status: 502 }
+      );
+    }
     await Promise.all(
   data.map(async (coin) => {
     const savedCoin = await prisma.coin.upsert({

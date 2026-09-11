@@ -1,6 +1,27 @@
 import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
+interface SeedCoin {
+  symbol: string;
+  name: string;
+  subtext: string;
+  rank: number;
+  priceInr: number;
+  change24hPct: number;
+  volume24h: string;
+  marketCap: string;
+  sparkline: number[];
+  isStarred: boolean;
+  network?: string;
+  low24h?: number;
+  high24h?: number;
+  circulatingSupply?: string;
+  maxSupply?: string;
+  description?: string;
+  websiteUrl?: string;
+  whitepaperUrl?: string;
+}
+
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
   ssl: {
@@ -284,7 +305,7 @@ async function main() {
     { name: "Siacoin", symbol: "SC", cat: "Storage" },
   ];
 
-  const allCoins = [...top10Coins];
+  const allCoins: SeedCoin[] = [...top10Coins];
 
   // Generate ranks 11–100
   for (let i = 11; i <= 100; i++) {

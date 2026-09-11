@@ -1,6 +1,27 @@
 import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
+interface SeedCoin {
+  symbol: string;
+  name: string;
+  subtext: string;
+  rank: number;
+  priceInr: number;
+  change24hPct: number;
+  volume24h: string;
+  marketCap: string;
+  sparkline: number[];
+  isStarred: boolean;
+  network?: string;
+  low24h?: number;
+  high24h?: number;
+  circulatingSupply?: string;
+  maxSupply?: string;
+  description?: string;
+  websiteUrl?: string;
+  whitepaperUrl?: string;
+}
+
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
   ssl: {
@@ -30,7 +51,7 @@ async function main() {
   });
 
   // Top 10 coins
-  const top10Coins = [
+  const top10Coins: SeedCoin[] = [
     {
       symbol: "BTC",
       name: "Bitcoin",
@@ -263,7 +284,7 @@ async function main() {
     { name: "Siacoin", symbol: "SC", cat: "Storage" },
   ];
 
-  const allCoins = [...top10Coins];
+  const allCoins: SeedCoin[] = [...top10Coins];
 
   // Generate ranks 11–100
   for (let i = 11; i <= 100; i++) {
@@ -362,7 +383,7 @@ async function main() {
   }
 
   // Create coins and price snapshots
-  for (const data of allCoins as any[]) {
+  for (const data of allCoins) {
     const category = mapCategory(data.subtext || "", data.symbol);
     const mcapCr = parseMarketCapCr(data.marketCap);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface MarketCoin {
   id: string;
@@ -17,8 +17,11 @@ export function useMarketData() {
   const [coins, setCoins] = useState<MarketCoin[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isRefreshingRef = useRef(false);
 
  const fetchMarketData = useCallback(async () => {
+  if (isRefreshingRef.current) return;
+  isRefreshingRef.current = true;
   try {
     const response = await fetch("/api/markets", {
       cache: "no-store",
@@ -31,21 +34,23 @@ export function useMarketData() {
 
       setCoins(data);
       setError(null);
-    } catch (err) {
+    } catch {
       setError("Unable to load market data");
     } finally {
       setLoading(false);
+    isRefreshingRef.current = false;
     }
   }, []);
 
   useEffect(() => {
-    fetchMarketData();
+    const initialFetch = window.setTimeout(() => void fetchMarketData(), 0);
 
     const interval = setInterval(() => {
-      fetchMarketData();
-    }, 5000);
+      void fetchMarketData();
+    }, 60000);
 
     return () => {
+      window.clearTimeout(initialFetch);
       clearInterval(interval);
     };
   }, [fetchMarketData]);

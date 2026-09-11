@@ -13,11 +13,11 @@ interface TickerStripProps {
 }
 
 export default function TickerStrip({
-  vol24h = "₹6,45,230 Cr",
-  btcDom = "52.4%",
-  ethDom = "17.1%",
-  totalMCap = "₹196L Cr",
-  globalMarketPct = "+2.1%",
+  vol24h = "Unavailable",
+  btcDom = "Unavailable",
+  ethDom = "Unavailable",
+  totalMCap = "Unavailable",
+  globalMarketPct = "Unavailable",
   onRefresh,
 }: TickerStripProps) {
   const [countdown, setCountdown] = useState(60);

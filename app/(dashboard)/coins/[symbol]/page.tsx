@@ -45,12 +45,26 @@ export default async function CoinDetailPage({
   }
 
   const latestSnapshot = coin.priceSnapshots[0];
-  const priceInr = latestSnapshot?.priceInr ?? 284500;
-  const change24hPct = latestSnapshot?.change24hPct ?? 3.85;
-  const low24h = latestSnapshot?.low24h ?? 275400;
-  const high24h = latestSnapshot?.high24h ?? 290120;
-  const volume24h = latestSnapshot?.volume24h ?? "₹6,430.2 Cr";
-  const marketCap = latestSnapshot?.marketCap ?? "₹34.2 L Cr";
+  if (!latestSnapshot) {
+    return (
+      <main className="max-w-[1280px] mx-auto px-4 md:px-6 py-12 md:py-16">
+        <EmptyState
+          iconName="coins"
+          title="Market data unavailable"
+          description={`No price snapshot is available for ${coin.symbol} yet. Refresh the markets and try again.`}
+          action={{ label: "Back to Markets", href: "/markets", variant: "primary" }}
+          minHeight="min-h-[380px]"
+        />
+      </main>
+    );
+  }
+
+  const priceInr = latestSnapshot.priceInr;
+  const change24hPct = latestSnapshot.change24hPct;
+  const low24h = latestSnapshot.low24h ?? priceInr;
+  const high24h = latestSnapshot.high24h ?? priceInr;
+  const volume24h = latestSnapshot.volume24h;
+  const marketCap = latestSnapshot.marketCap;
   const circulatingSupply = coin.circulatingSupply || "120.4M";
   const maxSupply = coin.maxSupply || "Infinite";
 
@@ -65,21 +79,11 @@ export default async function CoinDetailPage({
 
   // Generate initial history payload for 1W range SSR
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const initialChartPoints = sparkline.length === 7
-    ? sparkline.map((price, idx) => ({
-        time: days[idx],
-        label: days[idx],
-        price,
-      }))
-    : [
-        { time: "Mon", label: "Mon", price: 275400 },
-        { time: "Tue", label: "Tue", price: 278000 },
-        { time: "Wed", label: "Wed", price: 281000 },
-        { time: "Thu", label: "Thu", price: 279500 },
-        { time: "Fri", label: "Fri", price: 282500 },
-        { time: "Sat", label: "Sat", price: 280000 },
-        { time: "Sun", label: "Sun", price: priceInr },
-      ];
+  const initialChartPoints = sparkline.map((price, idx) => ({
+    time: days[idx] ?? `Point ${idx + 1}`,
+    label: days[idx] ?? `Point ${idx + 1}`,
+    price,
+  }));
 
   const initialHistory = {
     symbol: upperSymbol,
@@ -87,8 +91,12 @@ export default async function CoinDetailPage({
     currentPrice: priceInr,
     changePct: change24hPct,
     isPositive: change24hPct >= 0,
-    minPrice: Math.min(...initialChartPoints.map((p) => p.price)),
-    maxPrice: Math.max(...initialChartPoints.map((p) => p.price)),
+    minPrice: initialChartPoints.length > 0
+      ? Math.min(...initialChartPoints.map((p) => p.price))
+      : priceInr,
+    maxPrice: initialChartPoints.length > 0
+      ? Math.max(...initialChartPoints.map((p) => p.price))
+      : priceInr,
     data: initialChartPoints,
   };
 

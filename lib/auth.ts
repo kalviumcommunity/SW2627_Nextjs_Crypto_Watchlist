@@ -1,5 +1,5 @@
-// Import main NextAuth initialization function from next-auth v5 / Auth.js package
-import NextAuth from "next-auth";
+// Import main NextAuth initialization function and NextAuthConfig type from next-auth v5 / Auth.js package
+import NextAuth, { type NextAuthConfig } from "next-auth";
 // Import Credentials provider for email/password sign in
 import Credentials from "next-auth/providers/credentials";
 // Import Google OAuth provider
@@ -17,7 +17,7 @@ import bcrypt from "bcryptjs";
 import { loginSchema } from "@/lib/validation/auth";
 
 // Declare mutable array to hold active authentication providers
-const providers: Provider[] = [];
+const providers: NextAuthConfig["providers"] = [];
 
 // Conditionally register Google OAuth provider if environment variables exist
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {

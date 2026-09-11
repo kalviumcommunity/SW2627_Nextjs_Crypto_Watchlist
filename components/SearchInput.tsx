@@ -45,7 +45,7 @@ export default function SearchInput({
   };
 
   return (
-    <div className="relative w-full sm:w-[260px] h-9 shrink-0">
+    <div className="relative w-full sm:w-[260px] h-9">
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9AA4B2] pointer-events-none" aria-hidden="true" />
       
       <input
@@ -55,7 +55,7 @@ export default function SearchInput({
         onFocus={() => setIsFocused(true)}
         onBlur={() => {
           // Delay blur slightly to allow click event on autocomplete suggestions
-          setTimeout(() => setIsFocused(false), 200);
+          setTimeout(() => setIsFocused(false), 250);
         }}
         onChange={(e) => setLocalValue(e.target.value)}
         placeholder={placeholder}
@@ -68,7 +68,7 @@ export default function SearchInput({
         <button
           type="button"
           onClick={handleClear}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-1 rounded-md hover:bg-[#1B2536]"
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-1.5 rounded-md hover:bg-[#1B2536] flex items-center justify-center min-w-[28px] min-h-[28px]"
           title="Clear search"
           aria-label="Clear search"
         >

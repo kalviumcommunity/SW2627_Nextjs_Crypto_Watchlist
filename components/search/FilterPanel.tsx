@@ -87,6 +87,18 @@ export default function FilterPanel({
     }
   }
 
+  // Lock body scroll on mobile when sheet is open
+  useEffect(() => {
+    if (isOpen && window.innerWidth < 768) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   // Click outside and Escape key listener
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -198,7 +210,7 @@ export default function FilterPanel({
         <>
           {/* Mobile Backdrop Dim Overlay */}
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden"
+            className="fixed inset-0 bg-black/70 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-150"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />
@@ -209,7 +221,7 @@ export default function FilterPanel({
             aria-modal="true"
             aria-label="Filter Crypto Markets"
             className="
-              fixed inset-x-0 bottom-0 z-50 rounded-t-[20px] max-h-[85vh] overflow-y-auto
+              fixed inset-x-0 bottom-0 z-50 rounded-t-[20px] max-h-[85dvh] overflow-y-auto overscroll-contain
               md:absolute md:inset-auto md:right-0 md:top-full md:mt-2 md:w-[360px] md:max-h-none md:rounded-xl md:shadow-[0_8px_24px_rgba(0,0,0,0.45)]
               bg-[#111827] border border-[#232B3A] p-5 text-xs text-white transition-all
             "
@@ -227,7 +239,7 @@ export default function FilterPanel({
                 type="button"
                 onClick={() => setIsOpen(false)}
                 aria-label="Close filter panel"
-                className="text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-1"
+                className="text-[#9AA4B2] hover:text-white transition-colors cursor-pointer p-1.5 min-w-[32px] min-h-[32px] flex items-center justify-center rounded-md"
               >
                 <X className="w-4 h-4" aria-hidden="true" />
               </button>
@@ -248,7 +260,7 @@ export default function FilterPanel({
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => toggleCategory(cat.key)}
-                        className={`px-2.5 py-1.5 rounded-md border text-[11px] font-medium transition-all cursor-pointer ${
+                        className={`px-3 py-2 rounded-md border text-[11px] font-medium transition-all cursor-pointer touch-manipulation min-h-[34px] ${
                           isSelected
                             ? "border-[#FF5446] bg-[#FF5446]/10 text-white font-semibold shadow-xs"
                             : "border-[#232B3A] bg-[#10131C] text-[#9AA4B2] hover:border-[#374151] hover:text-white"
@@ -280,6 +292,7 @@ export default function FilterPanel({
                     <input
                       id="filter-price-min"
                       type="number"
+                      inputMode="numeric"
                       placeholder="0"
                       aria-label="Minimum price in INR"
                       value={stagedPriceMin}
@@ -294,6 +307,7 @@ export default function FilterPanel({
                     <input
                       id="filter-price-max"
                       type="number"
+                      inputMode="numeric"
                       placeholder="No limit"
                       aria-label="Maximum price in INR"
                       value={stagedPriceMax}
@@ -323,7 +337,7 @@ export default function FilterPanel({
                       type="button"
                       aria-pressed={stagedChange === item.key}
                       onClick={() => handleQuickChange(item.key)}
-                      className={`py-1.5 px-2 rounded-md border text-[11px] font-medium text-center transition-all cursor-pointer ${
+                      className={`py-2 px-2 rounded-md border text-[11px] font-medium text-center transition-all cursor-pointer min-h-[34px] touch-manipulation ${
                         stagedChange === item.key
                           ? "border-[#FF5446] bg-[#FF5446]/10 text-white font-bold"
                           : "border-[#232B3A] bg-[#10131C] text-[#9AA4B2] hover:border-[#374151]"
@@ -358,7 +372,7 @@ export default function FilterPanel({
                           )
                         )
                       }
-                      className="w-full accent-[#FF5446] bg-[#10131C] h-1.5 rounded-lg cursor-pointer"
+                      className="w-full accent-[#FF5446] bg-[#10131C] h-2 rounded-lg cursor-pointer"
                     />
                     <input
                       type="range"
@@ -375,7 +389,7 @@ export default function FilterPanel({
                           )
                         )
                       }
-                      className="w-full accent-[#FF5446] bg-[#10131C] h-1.5 rounded-lg cursor-pointer"
+                      className="w-full accent-[#FF5446] bg-[#10131C] h-2 rounded-lg cursor-pointer"
                     />
                   </div>
                 </div>
@@ -393,7 +407,7 @@ export default function FilterPanel({
                       type="button"
                       aria-pressed={stagedCap === tier.key}
                       onClick={() => setStagedCap(tier.key)}
-                      className={`py-1.5 px-2 rounded-md border text-[11px] font-medium text-left truncate transition-all cursor-pointer ${
+                      className={`py-2 px-2.5 rounded-md border text-[11px] font-medium text-left truncate transition-all cursor-pointer min-h-[36px] touch-manipulation ${
                         stagedCap === tier.key
                           ? "border-[#FF5446] bg-[#FF5446]/10 text-white font-bold"
                           : "border-[#232B3A] bg-[#10131C] text-[#9AA4B2] hover:border-[#374151]"
@@ -407,18 +421,20 @@ export default function FilterPanel({
             </div>
 
             {/* Panel Footer */}
-            <div className="pt-4 mt-5 border-t border-[#232B3A] flex items-center justify-between sticky bottom-0 bg-[#111827]">
+            <div className="pt-4 mt-5 border-t border-[#232B3A] flex items-center justify-between sticky bottom-0 bg-[#111827] pb-safe">
               <button
                 type="button"
                 onClick={handleClearStaged}
-                className="text-[#9AA4B2] hover:text-white text-xs font-medium underline-offset-2 hover:underline cursor-pointer"
+                aria-label="Clear all active filters"
+                className="text-[#9AA4B2] hover:text-white text-xs font-medium underline-offset-2 hover:underline cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 rounded min-h-[36px] px-2"
               >
                 Clear All
               </button>
               <button
                 type="button"
                 onClick={handleApply}
-                className="px-5 py-2 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-colors shadow-md cursor-pointer"
+                aria-label="Apply selected filters"
+                className="px-5 py-2.5 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-colors shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#FF5446]/60 min-h-[40px] touch-manipulation"
               >
                 Apply Filters
               </button>

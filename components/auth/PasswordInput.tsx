@@ -223,7 +223,7 @@ export default function PasswordInput({
 
       {/* Render validation error text below strength meter if present */}
       {error && showStrengthMeter && (
-        <span id={`${id}-error`} className="text-xs text-[#E5484D]">
+        <span id={`${id}-error`} className="text-xs text-[#E5484D]" role="alert">
           {error}
         </span>
       )}

@@ -98,8 +98,9 @@ export function useWatchlist(watchlistId = "default-watchlist") {
       }
     },
     onSettled: () => {
-      // Revalidate watchlist queries across pages
+      // Revalidate watchlist and coin queries across pages
       queryClient.invalidateQueries({ queryKey: ["watchlist"] });
+      queryClient.invalidateQueries({ queryKey: ["coins"] });
     },
   });
 

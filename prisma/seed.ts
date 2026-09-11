@@ -50,8 +50,29 @@ async function main() {
     },
   });
 
+  interface SeedCoinItem {
+    symbol: string;
+    name: string;
+    subtext: string;
+    rank: number;
+    priceInr: number;
+    change24hPct: number;
+    volume24h: string;
+    marketCap: string;
+    sparkline: number[];
+    isStarred: boolean;
+    network?: string;
+    description?: string;
+    websiteUrl?: string;
+    whitepaperUrl?: string;
+    circulatingSupply?: string;
+    maxSupply?: string;
+    low24h?: number;
+    high24h?: number;
+  }
+
   // Top 10 coins
-  const top10Coins: SeedCoin[] = [
+  const top10Coins: SeedCoinItem[] = [
     {
       symbol: "BTC",
       name: "Bitcoin",

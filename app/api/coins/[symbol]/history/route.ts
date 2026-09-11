@@ -21,6 +21,13 @@ export async function GET(
     // Extract selected chart time range
     const range = searchParams.get("range") || "1W";
 
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.min(
+      100,
+      Math.max(1, Number(searchParams.get("limit")) || 50)
+    );
+    const skip = (page - 1) * limit;
+
     // Calculate the start date based on the selected time range
     const now = new Date();
     let startDate: Date | undefined;
@@ -61,6 +68,13 @@ export async function GET(
               }
             : undefined,
           orderBy: { recordedAt: "asc" },
+          skip,
+          take: limit,
+        select: {
+          recordedAt: true,
+          priceInr: true,
+          change24hPct: true,
+          },
         },
       },
     });
@@ -69,6 +83,18 @@ export async function GET(
     if (!coin) {
       return NextResponse.json({ error: "Coin not found" }, { status: 404 });
     }
+    const total = await prisma.priceSnapshot.count({
+      where: {
+        coinId: coin.id,
+        ...(startDate
+          ? {
+              recordedAt: {
+                gte: startDate,
+              },
+            }
+          : {}),
+      },
+    });
 
     // Extract latest price snapshot record
     const latest = coin.priceSnapshots[coin.priceSnapshots.length - 1];
@@ -95,6 +121,9 @@ export async function GET(
     return NextResponse.json({
       symbol: upperSymbol,
       range,
+      page,
+      limit,
+      total,
       currentPrice,
       changePct: change24hPct,
       isPositive,

@@ -42,7 +42,7 @@ export default function AuthLeftPanel() {
       {/* Foreground content container holding branding, headline, description, and feature list */}
       <div className="relative z-10 max-w-[440px] w-full flex flex-col items-start text-left space-y-6">
         {/* Brand logo header component */}
-        <Link href="/markets" className="flex items-center flex-shrink-0 mb-2">
+        <Link href="/markets" className="flex items-center flex-shrink-0 mb-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446] rounded" aria-label="CoinDCX Home">
           {/* Main logo text */}
           <span className="text-[32px] leading-none font-bold tracking-tight">
             <span className="text-white">Coin</span>

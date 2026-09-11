@@ -313,6 +313,7 @@ export function useCoinSearch(options?: {
         : undefined,
     staleTime: 1000 * 4,
     refetchOnWindowFocus: true,
+    refetchInterval: tab === "watchlist" ? 5000 : false,
   });
 
   // Calculate count of active non-default filters for displaying badge count

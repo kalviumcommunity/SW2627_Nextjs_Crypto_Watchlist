@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Import singleton Prisma client instance for performing database queries
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/app/generated/prisma/client";
+import { auth } from "@/lib/auth";
 // Import category filter enumeration and CoinDTO data transfer object interface
 import { CategoryFilter, CoinDTO } from "@/types/watchlist";
 
@@ -94,16 +95,26 @@ export async function GET(request: NextRequest) {
     const changeMin = changeMinParam !== null && changeMinParam !== "" ? parseFloat(changeMinParam) : null;
     const changeMax = changeMaxParam !== null && changeMaxParam !== "" ? parseFloat(changeMaxParam) : null;
 
-    // Retrieve starred coin IDs if watchlistId is provided or tab is set to watchlist
+    // Resolve the authenticated user's actual watchlist. The legacy
+    // default-watchlist value is only a frontend sentinel.
     let starredCoinIds = new Set<string>();
-    const effectiveWatchlistId = watchlistId || (tab === "watchlist" ? "default-watchlist" : null);
-    
-    if (effectiveWatchlistId) {
-      const watchlistItems = await prisma.watchlistItem.findMany({
-        where: { watchlistId: effectiveWatchlistId },
+    let effectiveWatchlistId = watchlistId || (tab === "watchlist" ? "default-watchlist" : null);
+    const session = await auth();
+    if (session?.user?.id && (!effectiveWatchlistId || effectiveWatchlistId === "default-watchlist")) {
+      const userWatchlist = await prisma.watchlist.findFirst({
+        where: { userId: session.user.id },
+        select: { id: true },
       });
-      starredCoinIds = new Set(watchlistItems.map((item) => item.coinId));
+      effectiveWatchlistId = userWatchlist?.id ?? null;
     }
+
+    const watchlistItems = effectiveWatchlistId
+      ? await prisma.watchlistItem.findMany({
+          where: { watchlistId: effectiveWatchlistId },
+          select: { coinId: true },
+        })
+      : [];
+    starredCoinIds = new Set(watchlistItems.map((item) => item.coinId));
 
     // Initialize Prisma query `where` filter object
     const where: Prisma.CoinWhereInput = {};
@@ -127,16 +138,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Query database for all coins matching filters along with their latest price snapshot
-    const coins = await prisma.coin.findMany({
-      where,
-      include: {
-        priceSnapshots: {
-          orderBy: { recordedAt: "desc" },
-          take: 1,
+    const [coins, allMarketsCount] = await Promise.all([
+      prisma.coin.findMany({
+        where,
+        include: {
+          priceSnapshots: {
+            orderBy: { recordedAt: "desc" },
+            take: 1,
+          },
         },
-      },
-      orderBy: { rank: "asc" },
-    });
+        orderBy: { rank: "asc" },
+      }),
+      prisma.coin.count(),
+    ]);
 
     // Initialize min and max price tracking for dynamic slider bounds
     let globalMinPrice = Infinity;
@@ -262,7 +276,6 @@ export async function GET(request: NextRequest) {
     const paginatedItems = mapped.slice(startIndex, startIndex + limit);
 
     // Count total coins in database for summary header statistics
-    const allMarketsCount = await prisma.coin.count();
     const totalVolumeCr = mapped.reduce(
       (total, coin) => total + parseVolCr(coin.volume24h),
       0

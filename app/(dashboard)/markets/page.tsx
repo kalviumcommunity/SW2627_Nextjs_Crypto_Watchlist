@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import MarketsDashboard from "@/components/MarketsDashboard";
 import DashboardSkeleton from "@/components/states/DashboardSkeleton";
 import { CoinDTO, WatchlistResponseDTO } from "@/types/watchlist";
@@ -7,12 +8,19 @@ import { CoinDTO, WatchlistResponseDTO } from "@/types/watchlist";
 export const revalidate = 0; // Server render on demand
 
 export default async function MarketsPage() {
-  const watchlistId = "default-watchlist";
+  const session = await auth();
+  const userWatchlist = session?.user?.id
+    ? await prisma.watchlist.findFirst({
+        where: { userId: session.user.id },
+        select: { id: true },
+      })
+    : null;
+  const watchlistId = userWatchlist?.id ?? "default-watchlist";
 
   // Fetch watchlist items
-  const watchlistItems = await prisma.watchlistItem.findMany({
-    where: { watchlistId },
-  });
+  const watchlistItems = userWatchlist
+    ? await prisma.watchlistItem.findMany({ where: { watchlistId } })
+    : [];
   const starredCoinIds = new Set(watchlistItems.map((item) => item.coinId));
 
   // Fetch total count of all coins
@@ -66,8 +74,8 @@ export default async function MarketsPage() {
     id: watchlistId,
     name: "My Watchlist",
     totalTracked: starredCoinIds.size,
-    totalVolume: "₹6,45,230 Cr",
-    btcDominance: "52.4%",
+    totalVolume: "Unavailable",
+    btcDominance: "Unavailable",
     items: mappedItems,
     page: 1,
     totalPages: Math.ceil(totalCoinsCount / 40) || 1,

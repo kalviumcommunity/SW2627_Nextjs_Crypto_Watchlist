@@ -83,21 +83,24 @@ export async function GET(
     if (!coin) {
       return NextResponse.json({ error: "Coin not found" }, { status: 404 });
     }
-    const total = await prisma.priceSnapshot.count({
-      where: {
-        coinId: coin.id,
-        ...(startDate
-          ? {
-              recordedAt: {
-                gte: startDate,
-              },
-            }
-          : {}),
-      },
-    });
+    const [total, latestSnapshot] = await Promise.all([
+      prisma.priceSnapshot.count({
+        where: {
+          coinId: coin.id,
+          ...(startDate
+            ? { recordedAt: { gte: startDate } }
+            : {}),
+        },
+      }),
+      prisma.priceSnapshot.findFirst({
+        where: { coinId: coin.id },
+        orderBy: { recordedAt: "desc" },
+        select: { priceInr: true, change24hPct: true },
+      }),
+    ]);
 
     // Extract latest price snapshot record
-    const latest = coin.priceSnapshots[coin.priceSnapshots.length - 1];
+    const latest = latestSnapshot ?? coin.priceSnapshots[coin.priceSnapshots.length - 1];
 
     // Extract current price in INR
     const currentPrice = latest?.priceInr ?? 0;

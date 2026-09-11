@@ -57,10 +57,16 @@ export function useWatchlist(watchlistId = "default-watchlist") {
     },
     onMutate: async ({ coinId, isStarred }) => {
       // Cancel any outgoing refetches so they don't overwrite our optimistic update
-      await queryClient.cancelQueries({ queryKey: ["watchlist"] });
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: ["watchlist"] }),
+        queryClient.cancelQueries({ queryKey: ["coins"] }),
+      ]);
 
       const previousQueries = queryClient.getQueriesData<WatchlistResponseDTO>({
         queryKey: ["watchlist"],
+      });
+      const previousCoinQueries = queryClient.getQueriesData<WatchlistResponseDTO>({
+        queryKey: ["coins"],
       });
 
       const nextStarred = !isStarred;
@@ -87,12 +93,34 @@ export function useWatchlist(watchlistId = "default-watchlist") {
         }
       );
 
-      return { previousQueries };
+      queryClient.setQueriesData<WatchlistResponseDTO>(
+        { queryKey: ["coins"] },
+        (oldData) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            items: oldData.items.map((coin) =>
+              coin.id === coinId
+                ? { ...coin, isStarred: nextStarred }
+                : coin
+            ),
+            totalTracked: Math.max(0, (oldData.totalTracked || 0) + delta),
+          };
+        }
+      );
+
+      return { previousQueries, previousCoinQueries };
     },
     onError: (_err, _variables, context) => {
       // Rollback to previous queries if error occurs
       if (context?.previousQueries) {
         context.previousQueries.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      if (context?.previousCoinQueries) {
+        context.previousCoinQueries.forEach(([queryKey, data]) => {
           queryClient.setQueryData(queryKey, data);
         });
       }
@@ -109,8 +137,10 @@ export function useWatchlist(watchlistId = "default-watchlist") {
     isLoading: watchlistQuery.isLoading,
     starredCoinIds,
     totalTracked: watchlistQuery.data?.totalTracked ?? 0,
-    toggleStar: (coinId: string, currentStarred: boolean) =>
-      toggleStarMutation.mutate({ coinId, isStarred: currentStarred }),
+    toggleStar: (coinId: string, currentStarred: boolean) => {
+      if (toggleStarMutation.isPending) return;
+      toggleStarMutation.mutate({ coinId, isStarred: currentStarred });
+    },
     isPending: toggleStarMutation.isPending,
   };
 }

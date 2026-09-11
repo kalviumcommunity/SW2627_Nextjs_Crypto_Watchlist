@@ -19,7 +19,7 @@ export default function DashboardSkeleton({
       className="flex flex-col min-h-screen bg-[#050810]"
     >
       {/* Top Ticker Strip Skeleton */}
-      <div className="w-full bg-[#10131C] border-b border-[#232B3A] px-4 md:px-6 py-2.5 h-[41px] flex items-center justify-between animate-pulse">
+      <div className="w-full bg-[#10131C] border-b border-[#232B3A] px-3 sm:px-4 md:px-6 h-[36px] flex items-center justify-between animate-pulse">
         <div className="flex items-center gap-6 overflow-hidden">
           <div className="w-36 h-3.5 bg-[#1B2536] rounded" />
           <div className="w-28 h-3.5 bg-[#1B2536] rounded hidden sm:block" />

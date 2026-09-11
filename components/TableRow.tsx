@@ -113,7 +113,7 @@ export default function TableRow({
               e.stopPropagation();
               onStarToggle(coin.id, coin.isStarred);
             }}
-            className="p-2 rounded-md hover:bg-[#232B3A] text-[#9AA4B2] hover:scale-110 active:scale-95 transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
+            className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-md hover:bg-[#232B3A] text-[#9AA4B2] hover:scale-110 active:scale-95 transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 touch-manipulation"
           >
             <Star
               aria-hidden="true"
@@ -132,7 +132,7 @@ export default function TableRow({
               e.stopPropagation();
               router.push(`/coins/${coin.symbol}`);
             }}
-            className="h-8 px-3.5 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
+            className="h-8 px-3.5 bg-[#FF5446] hover:bg-[#D63A2F] text-white font-bold text-xs rounded-lg transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs touch-manipulation"
           >
             Trade
           </button>
@@ -150,7 +150,7 @@ export default function TableRow({
       onKeyDown={handleKeyDown}
       className={`${
         variant === "card" ? "" : "md:hidden"
-      } p-3.5 sm:p-4 border-b border-[#232B3A] bg-[#111827] hover:bg-[#1B2536]/80 transition-colors flex flex-col gap-3 cursor-pointer active:bg-[#1B2536] focus:outline-none focus:bg-[#1B2536]`}
+      } p-3.5 sm:p-4 border-b border-[#232B3A] bg-[#111827] hover:bg-[#1B2536]/80 transition-colors flex flex-col gap-3 cursor-pointer active:bg-[#1B2536] focus:outline-none focus:bg-[#1B2536] touch-manipulation`}
     >
       {/* Row 1: Coin icon + coin name + symbol + price */}
       <div className="flex items-center justify-between gap-3">
@@ -186,7 +186,7 @@ export default function TableRow({
 
       {/* Row 2: 24h change badge + 7d sparkline (left) & Star toggle + Trade button (right) */}
       <div className="flex items-center justify-between gap-2 pt-2.5 border-t border-[#232B3A]/50">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3">
           <ChangeBadge changePct={coin.change24hPct} />
           <Sparkline
             data={coin.sparkline7d}
@@ -205,7 +205,7 @@ export default function TableRow({
               e.stopPropagation();
               onStarToggle(coin.id, coin.isStarred);
             }}
-            className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[#232B3A] active:scale-95 text-[#9AA4B2] transition-colors cursor-pointer border border-transparent hover:border-[#232B3A]"
+            className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-[#232B3A] active:scale-95 text-[#9AA4B2] transition-colors cursor-pointer border border-transparent hover:border-[#232B3A] touch-manipulation"
           >
             <Star
               aria-hidden="true"
@@ -224,7 +224,7 @@ export default function TableRow({
               e.stopPropagation();
               router.push(`/coins/${coin.symbol}`);
             }}
-            className="h-9 px-4 bg-[#FF5446] hover:bg-[#D63A2F] active:scale-95 text-white font-bold text-xs rounded-lg transition-all shadow-xs flex items-center justify-center"
+            className="h-10 px-4 bg-[#FF5446] hover:bg-[#D63A2F] active:scale-95 text-white font-bold text-xs rounded-lg transition-all shadow-xs flex items-center justify-center touch-manipulation"
           >
             Trade
           </button>

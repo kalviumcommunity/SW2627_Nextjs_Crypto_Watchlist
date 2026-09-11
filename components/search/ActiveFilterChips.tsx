@@ -102,7 +102,7 @@ export default function ActiveFilterChips({
     <div
       role="region"
       aria-label="Active filters"
-      className="flex items-center gap-2 overflow-x-auto pb-1 mt-3 scrollbar-none text-xs"
+      className="flex items-center gap-2 overflow-x-auto pb-1 mt-3 scrollbar-none text-xs touch-pan-x max-w-full"
     >
       <span className="text-[11px] text-[#9AA4B2] font-semibold shrink-0 uppercase tracking-wider">
         Active Filters:
@@ -112,11 +112,11 @@ export default function ActiveFilterChips({
           key={item.id}
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#1B2536] border border-[#232B3A] text-white text-[11px] font-medium shrink-0 shadow-xs"
         >
-          <span>{item.label}</span>
+          <span className="whitespace-nowrap">{item.label}</span>
           <button
             type="button"
             onClick={item.onRemove}
-            className="hover:bg-[#232B3A] p-0.5 rounded-full text-[#9AA4B2] hover:text-white transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
+            className="hover:bg-[#232B3A] p-1 rounded-full text-[#9AA4B2] hover:text-white transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 min-w-[20px] min-h-[20px] flex items-center justify-center"
             title={`Remove filter: ${item.label}`}
             aria-label={`Remove filter: ${item.label}`}
           >
@@ -130,7 +130,7 @@ export default function ActiveFilterChips({
           type="button"
           onClick={onClearAll}
           aria-label="Clear all active filters"
-          className="text-[#FF5446] hover:text-[#D63A2F] text-[11px] font-bold underline-offset-2 hover:underline ml-1 shrink-0 cursor-pointer focus:outline-none"
+          className="text-[#FF5446] hover:text-[#D63A2F] text-[11px] font-bold underline-offset-2 hover:underline ml-1 shrink-0 cursor-pointer focus:outline-none py-1 px-1.5"
         >
           Clear all ×
         </button>

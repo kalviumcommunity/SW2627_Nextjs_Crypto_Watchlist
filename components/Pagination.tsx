@@ -20,10 +20,10 @@ export default function Pagination({
   const startItem = totalCount > 0 ? (currentPage - 1) * pageSize + 1 : 0;
   const endItem = Math.min(currentPage * pageSize, totalCount);
 
-  // Generate page numbers array with ellipsis if needed
+  // Generate page numbers array with responsive window
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
-    if (totalPages <= 7) {
+    if (totalPages <= 5) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
     } else {
       pages.push(1);
@@ -40,7 +40,7 @@ export default function Pagination({
   return (
     <nav
       aria-label="Pagination Navigation"
-      className="h-[52px] bg-[#10131C]/60 border-t border-[#232B3A] px-4 md:px-6 flex items-center justify-between text-[13px] rounded-b-[10px]"
+      className="min-h-[52px] py-2.5 bg-[#10131C]/60 border-t border-[#232B3A] px-3 sm:px-4 md:px-6 flex flex-wrap items-center justify-between gap-2 text-[13px] rounded-b-[10px]"
     >
       {/* Left: Showing X-Y of N assets */}
       <div className="text-[#9AA4B2] text-xs">
@@ -56,14 +56,14 @@ export default function Pagination({
       </div>
 
       {/* Right: Prev Arrow, Numbered Pills, Next Arrow */}
-      <div className="flex items-center gap-1 sm:gap-1.5">
+      <div className="flex items-center gap-1 sm:gap-1.5 ml-auto">
         {/* Prev Arrow */}
         <button
           type="button"
           disabled={currentPage <= 1}
           onClick={() => onPageChange(currentPage - 1)}
           aria-label="Previous page"
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#9AA4B2] disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
+          className="w-8 h-8 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#9AA4B2] disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 touch-manipulation"
         >
           <ChevronLeft className="w-4 h-4" aria-hidden="true" />
         </button>
@@ -75,7 +75,7 @@ export default function Pagination({
               return (
                 <span
                   key={`ellipsis-${idx}`}
-                  className="w-6 text-center text-[#9AA4B2] font-bold select-none text-xs"
+                  className="w-5 sm:w-6 text-center text-[#9AA4B2] font-bold select-none text-xs"
                   aria-hidden="true"
                 >
                   …
@@ -91,7 +91,7 @@ export default function Pagination({
                 onClick={() => onPageChange(p)}
                 aria-label={`Page ${p}`}
                 aria-current={isActive ? "page" : undefined}
-                className={`w-8 h-8 rounded-lg text-xs font-bold transition-all tabular-nums cursor-pointer focus:outline-none ${
+                className={`w-8 h-8 sm:w-8 sm:h-8 rounded-lg text-xs font-bold transition-all tabular-nums cursor-pointer focus:outline-none touch-manipulation flex items-center justify-center ${
                   isActive
                     ? "bg-[#FF5446] text-white shadow-sm font-extrabold"
                     : "bg-transparent text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] border border-transparent"
@@ -109,7 +109,7 @@ export default function Pagination({
           disabled={currentPage >= totalPages}
           onClick={() => onPageChange(currentPage + 1)}
           aria-label="Next page"
-          className="w-8 h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#9AA4B2] disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
+          className="w-8 h-8 sm:w-8 sm:h-8 flex items-center justify-center rounded-lg border border-[#232B3A] text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-[#9AA4B2] disabled:cursor-not-allowed transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 touch-manipulation"
         >
           <ChevronRight className="w-4 h-4" aria-hidden="true" />
         </button>

@@ -134,12 +134,12 @@ export default function PriceChart({
     hoverPctChange = ((hoveredPt.data.price - startPrice) / startPrice) * 100;
   }
 
-  // Calculate horizontal tooltip alignment based on X position to avoid screen clipping
+  // Calculate horizontal tooltip alignment based on X position to avoid screen clipping on mobile
   const xRatio = hoveredPt ? hoveredPt.x / svgWidth : 0.5;
   const tooltipTransform =
-    xRatio < 0.15
+    xRatio < 0.2
       ? "translateX(0%)"
-      : xRatio > 0.85
+      : xRatio > 0.8
       ? "translateX(-100%)"
       : "translateX(-50%)";
 
@@ -151,9 +151,8 @@ export default function PriceChart({
       onMouseLeave={clearHover}
       onTouchStart={handleTouchMove}
       onTouchMove={handleTouchMove}
-      onTouchEnd={clearHover}
       onKeyDown={handleKeyDown}
-      className="relative w-full h-[240px] cursor-crosshair select-none touch-pan-x focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2B6CB0] rounded-lg"
+      className="relative w-full h-[240px] cursor-crosshair select-none touch-pan-y focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF5446]/60 rounded-lg"
       role="region"
       aria-label="Interactive price trend chart. Use left and right arrow keys to inspect data points across time."
     >

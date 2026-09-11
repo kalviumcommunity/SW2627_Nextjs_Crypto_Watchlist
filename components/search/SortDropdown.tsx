@@ -109,9 +109,10 @@ export default function SortDropdown({
         <div
           role="listbox"
           aria-label="Sort options"
-          className="absolute right-0 top-full mt-1.5 z-50 w-48 bg-[#111827] border border-[#232B3A] rounded-xl shadow-[0_12px_32px_rgba(0,0,0,0.6)] py-1.5 text-xs animate-in fade-in zoom-in-95 duration-100"
+          onMouseDown={(e) => e.preventDefault()}
+          className="absolute right-0 top-full mt-1.5 z-50 w-48 bg-[#111827] border border-[#232B3A] rounded-xl shadow-[0_12px_32px_rgba(0,0,0,0.6)] py-1.5 text-xs animate-in fade-in zoom-in-95 duration-100 touch-manipulation"
         >
-          <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#9AA4B2] border-b border-[#232B3A]/60 mb-1" aria-hidden="true">
+          <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#9AA4B2] border-b border-[#232B3A]/60 mb-1" aria-hidden="true">
             Sort By
           </div>
           {SORT_OPTIONS.map((option) => {
@@ -123,7 +124,7 @@ export default function SortDropdown({
                 role="option"
                 aria-selected={isActive}
                 onClick={() => handleOptionClick(option.key)}
-                className={`w-full px-3 py-2 text-left flex items-center justify-between transition-colors cursor-pointer ${
+                className={`w-full px-3 py-2.5 min-h-[38px] text-left flex items-center justify-between transition-colors cursor-pointer touch-manipulation ${
                   isActive
                     ? "bg-[#1B2536] text-white font-semibold"
                     : "text-[#9AA4B2] hover:bg-[#1B2536]/60 hover:text-white"

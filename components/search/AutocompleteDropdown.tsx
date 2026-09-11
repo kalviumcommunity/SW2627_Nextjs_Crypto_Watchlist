@@ -133,7 +133,8 @@ export default function AutocompleteDropdown({
       role="listbox"
       aria-label="Search suggestions"
       onKeyDown={handleKeyDown}
-      className="absolute top-full left-0 right-0 mt-1 z-50 bg-[#111827] border border-[#232B3A] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.45)] max-h-[300px] overflow-y-auto outline-none py-1 transition-all"
+      onMouseDown={(e) => e.preventDefault()}
+      className="absolute top-full left-0 right-0 mt-1 z-50 bg-[#111827] border border-[#232B3A] rounded-lg shadow-[0_8px_24px_rgba(0,0,0,0.45)] max-h-[300px] overflow-y-auto outline-none py-1 transition-all touch-pan-y"
     >
       {loading && suggestions.length === 0 ? (
         <div className="p-2 space-y-1.5 animate-pulse" role="status" aria-label="Loading suggestions">
@@ -176,7 +177,7 @@ export default function AutocompleteDropdown({
                 onClose();
               }}
               onMouseEnter={() => setSelectedIndex(index)}
-              className={`px-3 py-2.5 flex items-center justify-between cursor-pointer transition-colors text-xs border-b border-[#232B3A]/30 last:border-b-0 ${
+              className={`px-3 py-2.5 min-h-[44px] flex items-center justify-between cursor-pointer transition-colors text-xs border-b border-[#232B3A]/30 last:border-b-0 touch-manipulation ${
                 isSelected
                   ? "bg-[#1B2536] text-white"
                   : "hover:bg-[#1B2536]/60 text-[#D1D5DB]"

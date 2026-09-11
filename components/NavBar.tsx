@@ -119,6 +119,26 @@ export default function NavBar() {
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    if (isMobileMenuOpen) {
+      setIsMobileMenuOpen(false);
+    }
+  }
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
 
   // Close drawer on Escape key press or browser navigation
   useEffect(() => {
@@ -162,7 +182,7 @@ export default function NavBar() {
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-nav-menu"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
+            className="md:hidden flex items-center justify-center min-w-[40px] min-h-[40px] p-2 rounded-lg text-[#9AA4B2] hover:text-white hover:bg-[#1B2536] transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40 touch-manipulation"
           >
             {isMobileMenuOpen ? (
               <X className="w-5 h-5 text-[#FF5446]" aria-hidden="true" />
@@ -278,7 +298,7 @@ export default function NavBar() {
       {isMobileMenuOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+            className="fixed inset-0 bg-black/70 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
             onClick={() => setIsMobileMenuOpen(false)}
             aria-hidden="true"
           />
@@ -288,7 +308,7 @@ export default function NavBar() {
             role="dialog"
             aria-modal="true"
             aria-label="Navigation menu"
-            className="fixed top-[56px] left-0 right-0 max-h-[calc(100vh-56px)] overflow-y-auto bg-[#10131C] border-b border-[#232B3A] shadow-2xl p-4 md:hidden z-50 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200"
+            className="fixed top-[56px] left-0 right-0 max-h-[calc(100dvh-56px)] overflow-y-auto overscroll-contain bg-[#10131C] border-b border-[#232B3A] shadow-2xl p-4 pb-8 md:hidden z-50 flex flex-col gap-4 animate-in slide-in-from-top-2 duration-200"
           >
             <div className="w-full">
               <GlobalNavSearch
@@ -308,7 +328,7 @@ export default function NavBar() {
                   href={link.href}
                   aria-current={link.active ? "page" : undefined}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-between ${
+                  className={`px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-between min-h-[44px] touch-manipulation ${
                     link.active
                       ? "bg-[#FF5446]/10 text-[#FF5446] font-semibold"
                       : "text-[#9AA4B2] hover:bg-[#1B2536] hover:text-white"
@@ -334,21 +354,21 @@ export default function NavBar() {
                 <button
                   type="button"
                   aria-label="Notifications"
-                  className="text-[#9AA4B2] hover:text-white p-2 rounded-lg hover:bg-[#1B2536] transition-colors cursor-pointer"
+                  className="text-[#9AA4B2] hover:text-white p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg hover:bg-[#1B2536] transition-colors cursor-pointer"
                 >
                   <Bell className="w-4 h-4" aria-hidden="true" />
                 </button>
                 <button
                   type="button"
                   aria-label="Settings"
-                  className="text-[#9AA4B2] hover:text-white p-2 rounded-lg hover:bg-[#1B2536] transition-colors cursor-pointer"
+                  className="text-[#9AA4B2] hover:text-white p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg hover:bg-[#1B2536] transition-colors cursor-pointer"
                 >
                   <Settings className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#232B3A]/60">
+            <div className="pt-3 border-t border-[#232B3A]/60 pb-safe">
               {isAuthenticated ? (
                 <div className="flex items-center justify-between p-2.5 rounded-lg bg-[#111827] border border-[#232B3A]">
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -374,7 +394,7 @@ export default function NavBar() {
                       setIsMobileMenuOpen(false);
                       signOut({ callbackUrl: "/login" });
                     }}
-                    className="flex items-center gap-1.5 text-xs text-[#FF5446] hover:text-[#D63A2F] px-2.5 py-1.5 rounded-md hover:bg-[#FF5446]/10 transition-colors cursor-pointer"
+                    className="flex items-center gap-1.5 text-xs text-[#FF5446] hover:text-[#D63A2F] px-2.5 py-1.5 rounded-md hover:bg-[#FF5446]/10 transition-colors cursor-pointer min-h-[36px]"
                     aria-label="Log out"
                   >
                     <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
@@ -386,14 +406,14 @@ export default function NavBar() {
                   <Link
                     href="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="h-10 flex items-center justify-center text-sm font-semibold text-[#9AA4B2] hover:text-white bg-[#111827] border border-[#232B3A] rounded-lg transition-colors"
+                    className="h-11 flex items-center justify-center text-sm font-semibold text-[#9AA4B2] hover:text-white bg-[#111827] border border-[#232B3A] rounded-lg transition-colors touch-manipulation"
                   >
                     Login
                   </Link>
                   <Link
                     href="/register"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="h-10 flex items-center justify-center text-sm font-bold text-white bg-[#FF5446] hover:bg-[#D63A2F] rounded-lg transition-colors shadow-sm"
+                    className="h-11 flex items-center justify-center text-sm font-bold text-white bg-[#FF5446] hover:bg-[#D63A2F] rounded-lg transition-colors shadow-sm touch-manipulation"
                   >
                     Register
                   </Link>

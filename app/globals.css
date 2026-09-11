@@ -21,6 +21,13 @@
 :root {
   --background: #050810;
   --foreground: #F5F6F8;
+  scrollbar-color: #232B3A #10131C;
+  scrollbar-width: thin;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -30,13 +37,15 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-/* Custom subtle dark scrollbars */
+/* Custom subtle dark scrollbars for WebKit & Blink browsers (Chrome, Safari, Edge, Opera) */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -55,6 +64,12 @@ body {
   background: #374151;
 }
 
+/* Firefox scrollbars on all scrollable containers */
+* {
+  scrollbar-color: #232B3A #10131C;
+  scrollbar-width: thin;
+}
+
 /* Focus styles for keyboard navigation */
 :focus-visible {
   outline: 2px solid #FF5446;
@@ -71,13 +86,20 @@ body {
   animation: spin-slow 3s linear infinite;
 }
 
-/* Hide scrollbar utility used in ticker strip, filter chips, range selector */
+/* Hide scrollbar utility with cross-browser and smooth momentum touch support */
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* Safe area inset utilities for modern mobile browsers (notch, home bar) */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+}
+
 

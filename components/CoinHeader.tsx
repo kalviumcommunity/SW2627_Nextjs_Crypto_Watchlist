@@ -31,27 +31,28 @@ export default function CoinHeader({ coin, lastUpdated }: CoinHeaderProps) {
   return (
     <div className="w-full mb-6">
       {/* A. Breadcrumb */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <Link
           href="/markets"
-          className="inline-flex items-center gap-1.5 text-xs md:text-sm text-[#9AA4B2] hover:text-white transition-colors font-medium group"
+          className="inline-flex items-center gap-1.5 text-xs md:text-sm text-[#9AA4B2] hover:text-white transition-colors font-medium group min-h-[36px] touch-manipulation py-1"
           aria-label="Back to Markets & Watchlist"
         >
-          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
-          <span>Back to Markets & Watchlist</span>
+          <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1 shrink-0" aria-hidden="true" />
+          <span className="hidden sm:inline">Back to Markets & Watchlist</span>
+          <span className="sm:hidden">Back</span>
         </Link>
 
         {/* Live Market Pulse Indicator */}
         <div
           role="status"
           aria-label={`Live market feed active, last updated ${formattedLastUpdated}`}
-          className="flex items-center gap-2 text-[11px] text-[#9AA4B2] font-medium bg-[#10131C] px-2.5 py-1 rounded-full border border-[#232B3A]"
+          className="flex items-center gap-2 text-[11px] text-[#9AA4B2] font-medium bg-[#10131C] px-2.5 py-1 rounded-full border border-[#232B3A] shrink-0"
         >
-          <span className="relative flex h-2 w-2" aria-hidden="true">
+          <span className="relative flex h-2 w-2 shrink-0" aria-hidden="true">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1FB878] opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1FB878]"></span>
           </span>
-          <span suppressHydrationWarning>Live feed &middot; {formattedLastUpdated}</span>
+          <span suppressHydrationWarning className="truncate">Live feed &middot; {formattedLastUpdated}</span>
         </div>
       </div>
 

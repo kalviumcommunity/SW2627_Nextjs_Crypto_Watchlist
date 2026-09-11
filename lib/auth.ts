@@ -6,7 +6,6 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 // Import GitHub OAuth provider
 import GitHub from "next-auth/providers/github";
-import type { Provider } from "next-auth/providers";
 // Import PrismaAdapter to link NextAuth session and account management to Prisma database
 import { PrismaAdapter } from "@auth/prisma-adapter";
 // Import singleton Prisma client instance

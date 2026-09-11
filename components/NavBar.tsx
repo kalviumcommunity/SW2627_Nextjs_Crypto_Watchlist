@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Search, Bell, Settings, User, X, LogOut, Menu } from "lucide-react";
+import { Search, User, X, LogOut, Menu } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useSession, signOut } from "next-auth/react";
 import AutocompleteDropdown from "./search/AutocompleteDropdown";
@@ -167,9 +167,6 @@ export default function NavBar() {
     { label: "Markets", href: "/markets", active: isMarketsActive },
     { label: "Coins", href: "/coins/eth", active: isCoinsActive },
     { label: "Watchlist", href: "/watchlist", active: isWatchlistActive },
-    { label: "Futures", href: "#", active: false },
-    { label: "Options", href: "#", active: false },
-    { label: "Earn", href: "#", active: false },
   ];
 
   return (
@@ -236,21 +233,6 @@ export default function NavBar() {
             <span>BTC:&nbsp;</span>
             <span className="text-white font-semibold tabular-nums">$42,069.00</span>
           </div>
-
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="hidden sm:flex text-[#9AA4B2] hover:text-white transition-colors p-2 rounded-lg hover:bg-[#111827] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
-          >
-            <Bell className="w-4 h-4" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            aria-label="Settings"
-            className="hidden sm:flex text-[#9AA4B2] hover:text-white transition-colors p-2 rounded-lg hover:bg-[#111827] cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
-          >
-            <Settings className="w-4 h-4" aria-hidden="true" />
-          </button>
 
           {isAuthenticated ? (
             <div className="flex items-center gap-2 pl-1.5 sm:pl-2 sm:border-l sm:border-[#232B3A]">
@@ -350,22 +332,6 @@ export default function NavBar() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  aria-label="Notifications"
-                  className="text-[#9AA4B2] hover:text-white p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg hover:bg-[#1B2536] transition-colors cursor-pointer"
-                >
-                  <Bell className="w-4 h-4" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  aria-label="Settings"
-                  className="text-[#9AA4B2] hover:text-white p-2 min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg hover:bg-[#1B2536] transition-colors cursor-pointer"
-                >
-                  <Settings className="w-4 h-4" aria-hidden="true" />
-                </button>
-              </div>
             </div>
 
             <div className="pt-3 border-t border-[#232B3A]/60 pb-safe">

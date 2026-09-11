@@ -3,9 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { CoinDTO, WatchlistResponseDTO } from "@/types/watchlist";
 
+function parseMarketValue(value: string): number {
+  const amount = parseFloat(value.replace(/[^0-9.]/g, ""));
+  if (Number.isNaN(amount)) return 0;
+  return value.includes("L Cr") ? amount * 100000 : amount;
+}
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -16,8 +21,6 @@ export async function GET(
         { status: 401 }
       );
     }
-
-    const { id } = await params;
 
     let watchlist = await prisma.watchlist.findFirst({
       where: {
@@ -85,6 +88,7 @@ export async function GET(
         change24hPct: latestSnapshot?.change24hPct ?? 0,
         volume24h: latestSnapshot?.volume24h ?? "₹0 Cr",
         marketCap: latestSnapshot?.marketCap ?? "₹0 Cr",
+        marketCapInrCr: latestSnapshot?.marketCapInrCr ?? 0,
         sparkline7d: sparkline,
         isStarred: starredCoinIds.has(coin.id),
       };
@@ -123,6 +127,19 @@ export async function GET(
       startIndex + limit
     );
 
+    const totalVolumeCr = mappedItems.reduce(
+      (total, item) => total + parseMarketValue(item.volume24h),
+      0
+    );
+    const totalMarketCapCr = mappedItems.reduce(
+      (total, item) => total + (item.marketCapInrCr ?? 0),
+      0
+    );
+    const bitcoin = mappedItems.find((item) => item.symbol === "BTC");
+    const btcDominance = bitcoin && totalMarketCapCr > 0
+      ? `${(((bitcoin.marketCapInrCr ?? 0) / totalMarketCapCr) * 100).toFixed(2)}%`
+      : "Unavailable";
+
     const response: WatchlistResponseDTO & {
       page: number;
       totalPages: number;
@@ -132,8 +149,8 @@ export async function GET(
       id: watchlistId,
       name: watchlist.name,
       totalTracked: starredCoinIds.size,
-      totalVolume: "₹6,45,230 Cr",
-      btcDominance: "52.4%",
+      totalVolume: `₹${totalVolumeCr.toLocaleString("en-IN", { maximumFractionDigits: 2 })} Cr`,
+      btcDominance,
       items: paginatedItems,
       page,
       totalPages,

@@ -53,6 +53,7 @@ export default function PriceChartCard({
     },
     initialData: selectedRange === "1W" ? initialHistory : undefined,
     staleTime: 1000 * 30,
+    refetchOnMount: "always",
   });
 
   const chartData = historyData?.data ?? initialHistory.data ?? [];

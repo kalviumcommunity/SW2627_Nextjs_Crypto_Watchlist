@@ -25,7 +25,7 @@ export default function MarketsDashboard({
   const activeTab = (searchParams.get("tab") as FilterTab) || "all";
 
   // Custom hook managing shared star state across the app
-  const { starredCoinIds, totalTracked, toggleStar } = useWatchlist(watchlistId);
+  const { totalTracked, toggleStar } = useWatchlist(watchlistId);
 
   // Custom hook managing search, multi-category, range filter & sort state via URL
   const {
@@ -46,11 +46,8 @@ export default function MarketsDashboard({
 
   const displayData = data || initialData;
 
-  // Sync each item's starred status with the global React Query watchlist state
-  const itemsWithStarState = (displayData.items || []).map((coin) => ({
-    ...coin,
-    isStarred: starredCoinIds.has(coin.id),
-  }));
+  // The market response is the source of truth for each row's persisted star state.
+  const itemsWithStarState = displayData.items || [];
 
   const isEmptyWatchlist =
     activeTab === "watchlist" && totalTracked === 0 && activeFiltersCount === 0;

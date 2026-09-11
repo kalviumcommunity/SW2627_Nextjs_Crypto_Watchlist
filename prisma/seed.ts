@@ -91,7 +91,7 @@ async function main() {
         5810000,
         5840230,
       ],
-      isStarred: true,
+      isStarred: false,
     },
     {
       symbol: "ETH",
@@ -111,7 +111,7 @@ async function main() {
       websiteUrl: "https://ethereum.org",
       whitepaperUrl: "https://ethereum.org/en/whitepaper/",
       sparkline: [275400, 278000, 281000, 279500, 282500, 280000, 284500],
-      isStarred: true,
+      isStarred: false,
     },
     {
       symbol: "USDT",
@@ -123,7 +123,7 @@ async function main() {
       volume24h: "₹4,200 Cr",
       marketCap: "₹9,100 Cr",
       sparkline: [83.46, 83.45, 83.46, 83.45, 83.45, 83.46, 83.45],
-      isStarred: true,
+      isStarred: false,
     },
     {
       symbol: "BNB",
@@ -135,7 +135,7 @@ async function main() {
       volume24h: "₹450 Cr",
       marketCap: "₹7,200 Cr",
       sparkline: [49500, 49400, 49200, 49100, 49000, 48950, 48920],
-      isStarred: true,
+      isStarred: false,
     },
     {
       symbol: "SOL",
@@ -147,7 +147,7 @@ async function main() {
       volume24h: "₹509 Cr",
       marketCap: "₹24,574 Cr",
       sparkline: [12800, 12700, 12500, 12400, 12300, 12200, 12140.71],
-      isStarred: true,
+      isStarred: false,
     },
     {
       symbol: "XRP",
@@ -453,7 +453,7 @@ async function main() {
   }
 
   console.log(
-    `Seeding complete! ${allCoins.length} coins seeded, 5 added to default watchlist.`
+    `Seeding complete! ${allCoins.length} coins seeded, ${allCoins.filter((coin) => coin.isStarred).length} added to default watchlist.`
   );
 }
 

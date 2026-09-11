@@ -48,15 +48,15 @@ export default function WatchlistDashboard({
   const displayData = data || initialData;
 
   // Filter items and keep star state in sync with shared hook
-  const items = (displayData.items || [])
-    .filter((coin) => (activeTab === "watchlist" ? starredCoinIds.has(coin.id) : true))
-    .map((coin) => ({
-      ...coin,
-      isStarred: starredCoinIds.has(coin.id),
-    }));
+  const items = (displayData.items || []).map((coin) => ({
+    ...coin,
+    isStarred:
+      activeTab === "watchlist" ? coin.isStarred : starredCoinIds.has(coin.id),
+  }));
+  const trackedCount = displayData.totalTracked ?? totalTracked;
 
   const isEmptyWatchlist =
-    activeTab === "watchlist" && totalTracked === 0 && activeFiltersCount === 0;
+    activeTab === "watchlist" && trackedCount === 0 && activeFiltersCount === 0;
 
   const handleTabChange = (tab: FilterTab) => {
     updateFilters({ tab, page: 1 });
@@ -119,7 +119,7 @@ export default function WatchlistDashboard({
             <FilterTabs
               activeTab={activeTab}
               onTabChange={handleTabChange}
-              watchlistCount={totalTracked}
+              watchlistCount={trackedCount}
               allMarketsCount={displayData.allMarketsCount ?? 100}
             />
             <SearchFilterBar
@@ -161,7 +161,7 @@ export default function WatchlistDashboard({
             onStarToggle={toggleStar}
             searchQuery={filters.q}
             isWatchlistTab={activeTab === "watchlist"}
-            totalTracked={totalTracked}
+            totalTracked={trackedCount}
             currentPage={displayData.page ?? filters.page}
             totalPages={displayData.totalPages ?? 1}
             totalCount={displayData.totalCount ?? 0}

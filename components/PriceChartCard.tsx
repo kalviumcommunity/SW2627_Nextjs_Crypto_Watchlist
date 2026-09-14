@@ -47,7 +47,9 @@ export default function PriceChartCard({
   const { data: historyData, isLoading, isError, refetch } = useQuery<ChartHistoryDTO>({
     queryKey: ["coinHistory", symbol, selectedRange],
     queryFn: async () => {
-      const res = await fetch(`/api/coins/${symbol}/history?range=${selectedRange}`);
+      const res = await fetch(
+  `/api/coins/${symbol}/history?range=${selectedRange}&limit=500`
+);
       if (!res.ok) throw new Error("Failed to fetch history");
       return res.json();
     },

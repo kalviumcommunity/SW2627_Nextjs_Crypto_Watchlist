@@ -94,7 +94,6 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      isWatchlisted: true,
       item,
       totalTracked: count,
       coinId: coin.id,
@@ -180,7 +179,6 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      isWatchlisted: false,
       totalTracked: count,
       coinId,
     });

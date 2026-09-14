@@ -67,19 +67,10 @@ const handleRefresh = async () => {
   isRefreshingRef.current = true;
 
   try {
-    const response = await fetch("/api/markets");
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => null);
-      throw new Error(
-        data?.error ?? "Failed to refresh market data"
-      );
-    }
-
     await refetch();
     setRefreshError(null);
   } catch (error) {
-    console.error("Market refresh failed:", error);
+    console.error("Market data refresh failed:", error);
     setRefreshError(
       error instanceof Error ? error.message : "Market data refresh failed."
     );

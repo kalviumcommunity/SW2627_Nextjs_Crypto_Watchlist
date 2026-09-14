@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { resolveCoinGeckoId } from "@/lib/coingeckoIds";
 
 export async function POST(
   request: NextRequest,
@@ -67,14 +66,6 @@ export async function POST(
       );
     }
 
-    const coinGeckoId = resolveCoinGeckoId(coin);
-    if (coinGeckoId && coinGeckoId !== coin.coinGeckoId) {
-      await prisma.coin.update({
-        where: { id: coin.id },
-        data: { coinGeckoId },
-      });
-    }
-
     const item = await prisma.watchlistItem.upsert({
       where: {
         watchlistId_coinId: {
@@ -97,7 +88,6 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      isWatchlisted: true,
       item,
       totalTracked: count,
       coinId,
@@ -183,7 +173,6 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      isWatchlisted: false,
       totalTracked: count,
       coinId,
     });

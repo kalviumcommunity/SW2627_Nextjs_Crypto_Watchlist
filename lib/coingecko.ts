@@ -1,7 +1,17 @@
 const COINGECKO_BASE_URL =
   "https://api.coingecko.com/api/v3";
 
-interface CoinMarketData {
+export class CoinGeckoError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number
+  ) {
+    super(message);
+    this.name = "CoinGeckoError";
+  }
+}
+
+export interface CoinMarketData {
   id: string;
   symbol: string;
   name: string;
@@ -31,11 +41,11 @@ export async function fetchCoinMarketData(
   );
 
   if (response.status === 429) {
-    throw new Error("CoinGecko rate limit reached");
+    throw new CoinGeckoError("CoinGecko rate limit reached", 429);
   }
 
   if (!response.ok) {
-    throw new Error("Failed to fetch CoinGecko market data");
+    throw new CoinGeckoError("Failed to fetch CoinGecko market data", 502);
   }
 
   return response.json();

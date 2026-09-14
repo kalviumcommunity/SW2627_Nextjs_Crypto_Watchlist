@@ -290,20 +290,25 @@ export async function GET(request: NextRequest) {
       : null;
 
     // Return JSON response payload containing paginated coins, metadata, and pagination stats
-    return NextResponse.json({
-      id: effectiveWatchlistId || "default-watchlist",
-      name: "Crypto Markets",
-      totalTracked: starredCoinIds.size,
-      totalVolume: formatCr(totalVolumeCr),
-      btcDominance: btcDominance === null ? "Unavailable" : `${btcDominance.toFixed(2)}%`,
-      items: paginatedItems,
-      page,
-      totalPages,
-      totalCount,
-      allMarketsCount,
-      minPrice: globalMinPrice,
-      maxPrice: globalMaxPrice,
-    });
+    return NextResponse.json(
+      {
+        id: effectiveWatchlistId || "default-watchlist",
+        name: "Crypto Markets",
+        totalTracked: starredCoinIds.size,
+        totalVolume: formatCr(totalVolumeCr),
+        btcDominance: btcDominance === null ? "Unavailable" : `${btcDominance.toFixed(2)}%`,
+        items: paginatedItems,
+        page,
+        totalPages,
+        totalCount,
+        allMarketsCount,
+        minPrice: globalMinPrice,
+        maxPrice: globalMaxPrice,
+      },
+      {
+        headers: { "Cache-Control": "no-store, max-age=0" },
+      }
+    );
   } catch (error) {
     // Log API route exceptions to server log
     console.error("Error in /api/coins route:", error);

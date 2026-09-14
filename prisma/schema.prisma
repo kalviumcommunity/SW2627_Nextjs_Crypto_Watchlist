@@ -66,6 +66,7 @@ model Watchlist {
 
 model Coin {
   id                String          @id @default(cuid())
+  coinGeckoId       String?         @unique
   symbol            String          @unique
   name              String
   subtext           String

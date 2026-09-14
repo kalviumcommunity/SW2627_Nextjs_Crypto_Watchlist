@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 interface MarketCoin {
+  id: string;
   symbol: string;
   name: string;
   market_cap_rank: number | null;
@@ -60,11 +61,13 @@ export async function GET() {
         symbol: coin.symbol.toUpperCase(),
       },
       update: {
+        coinGeckoId: coin.id,
         name: coin.name,
         rank: coin.market_cap_rank ?? 0,
         iconUrl: coin.image,
       },
       create: {
+        coinGeckoId: coin.id,
         symbol: coin.symbol.toUpperCase(),
         name: coin.name,
         subtext: coin.name,

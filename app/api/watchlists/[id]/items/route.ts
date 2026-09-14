@@ -55,13 +55,19 @@ export async function POST(
       );
     }
 
-    const coin = await prisma.coin.findUnique({
-      where: { id: coinId },
+    const coin = await prisma.coin.findFirst({
+      where: {
+        OR: [
+          { id: coinId },
+          { symbol: coinId.toUpperCase() },
+        ],
+      },
     });
 
     if (!coin) {
+      console.warn("Watchlist add rejected unknown coin:", { coinId });
       return NextResponse.json(
-        { error: "Coin not found" },
+        { error: "Coin not found", coinId },
         { status: 404 }
       );
     }
@@ -70,12 +76,12 @@ export async function POST(
       where: {
         watchlistId_coinId: {
           watchlistId: watchlist.id,
-          coinId,
+            coinId: coin.id,
         },
       },
       create: {
         watchlistId: watchlist.id,
-        coinId,
+        coinId: coin.id,
       },
       update: {},
     });
@@ -91,7 +97,7 @@ export async function POST(
       isWatchlisted: true,
       item,
       totalTracked: count,
-      coinId,
+      coinId: coin.id,
     });
   } catch (error) {
     console.error("Error adding watchlist item:", error);

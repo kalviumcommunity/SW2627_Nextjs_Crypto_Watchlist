@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { resolveCoinGeckoId } from "@/lib/coingeckoIds";
 
 export async function POST(
   request: NextRequest,
@@ -56,35 +55,33 @@ export async function POST(
       );
     }
 
-    const coin = await prisma.coin.findUnique({
-      where: { id: coinId },
+    const coin = await prisma.coin.findFirst({
+      where: {
+        OR: [
+          { id: coinId },
+          { symbol: coinId.toUpperCase() },
+        ],
+      },
     });
 
     if (!coin) {
+      console.warn("Watchlist add rejected unknown coin:", { coinId });
       return NextResponse.json(
-        { error: "Coin not found" },
+        { error: "Coin not found", coinId },
         { status: 404 }
       );
-    }
-
-    const coinGeckoId = resolveCoinGeckoId(coin);
-    if (coinGeckoId && coinGeckoId !== coin.coinGeckoId) {
-      await prisma.coin.update({
-        where: { id: coin.id },
-        data: { coinGeckoId },
-      });
     }
 
     const item = await prisma.watchlistItem.upsert({
       where: {
         watchlistId_coinId: {
           watchlistId: watchlist.id,
-          coinId,
+            coinId: coin.id,
         },
       },
       create: {
         watchlistId: watchlist.id,
-        coinId,
+        coinId: coin.id,
       },
       update: {},
     });
@@ -100,7 +97,7 @@ export async function POST(
       isWatchlisted: true,
       item,
       totalTracked: count,
-      coinId,
+      coinId: coin.id,
     });
   } catch (error) {
     console.error("Error adding watchlist item:", error);

@@ -55,6 +55,9 @@ export async function GET(
     );
 
     const coins = await prisma.coin.findMany({
+      where: tab === "watchlist"
+        ? { id: { in: Array.from(starredCoinIds) } }
+        : undefined,
       include: {
         priceSnapshots: {
           orderBy: { recordedAt: "desc" },
@@ -63,6 +66,10 @@ export async function GET(
       },
       orderBy: { rank: "asc" },
     });
+
+    const allMarketsCount = tab === "watchlist"
+      ? await prisma.coin.count()
+      : coins.length;
 
     let mappedItems: CoinDTO[] = coins.map((coin) => {
       const latestSnapshot = coin.priceSnapshots[0];
@@ -155,7 +162,7 @@ export async function GET(
       page,
       totalPages,
       totalCount,
-      allMarketsCount: coins.length,
+      allMarketsCount,
     };
 
     return NextResponse.json(response);

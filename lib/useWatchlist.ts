@@ -42,7 +42,10 @@ export function useWatchlist(watchlistId = "default-watchlist") {
             method: "DELETE",
           }
         );
-        if (!res.ok) throw new Error("Failed to remove coin from watchlist");
+        if (!res.ok) {
+          const payload = await res.json().catch(() => null);
+          throw new Error(payload?.error ?? "Failed to remove coin from watchlist");
+        }
         return res.json();
       } else {
         // POST item
@@ -51,7 +54,10 @@ export function useWatchlist(watchlistId = "default-watchlist") {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ coinId }),
         });
-        if (!res.ok) throw new Error("Failed to add coin to watchlist");
+        if (!res.ok) {
+          const payload = await res.json().catch(() => null);
+          throw new Error(payload?.error ?? "Failed to add coin to watchlist");
+        }
         return res.json();
       }
     },
@@ -125,6 +131,14 @@ export function useWatchlist(watchlistId = "default-watchlist") {
         });
       }
     },
+    onSuccess: (result) => {
+      queryClient.setQueriesData<WatchlistResponseDTO>(
+        { queryKey: ["watchlist", watchlistId] },
+        (oldData) => oldData
+          ? { ...oldData, totalTracked: result.totalTracked }
+          : oldData
+      );
+    },
     onSettled: () => {
       // Revalidate watchlist and coin queries across pages
       queryClient.invalidateQueries({ queryKey: ["watchlist"] });
@@ -142,5 +156,6 @@ export function useWatchlist(watchlistId = "default-watchlist") {
       toggleStarMutation.mutate({ coinId, isStarred: currentStarred });
     },
     isPending: toggleStarMutation.isPending,
+    mutationError: toggleStarMutation.error,
   };
 }

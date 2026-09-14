@@ -47,6 +47,8 @@ export default function WatchlistDashboard({
 
   const displayData = data || initialData;
 
+  const refreshQueryError = isError ? error?.message : null;
+
   // Filter items and keep star state in sync with shared hook
   const items = (displayData.items || []).map((coin) => ({
     ...coin,
@@ -72,16 +74,11 @@ export default function WatchlistDashboard({
     if (isRefreshingRef.current) return;
     isRefreshingRef.current = true;
     try {
-      const response = await fetch("/api/markets");
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        throw new Error(payload?.error ?? "Failed to refresh market data");
-      }
       await refetch();
       setRefreshError(null);
     } catch (error) {
-      console.error("Watchlist market refresh failed:", error);
-      setRefreshError(error instanceof Error ? error.message : "Market refresh failed.");
+      console.error("Watchlist data refresh failed:", error);
+      setRefreshError(error instanceof Error ? error.message : "Watchlist refresh failed.");
     } finally {
       isRefreshingRef.current = false;
     }
@@ -95,9 +92,9 @@ export default function WatchlistDashboard({
         vol24h={displayData.totalVolume}
         btcDom={displayData.btcDominance}
       />
-      {refreshError && (
+      {(refreshError || refreshQueryError) && (
         <div role="status" className="border-b border-[#6B2B2B] bg-[#3A1B22] px-4 py-2 text-center text-xs text-[#FFB4AB]">
-          {refreshError}
+          {refreshError || refreshQueryError}
         </div>
       )}
 
@@ -169,8 +166,7 @@ export default function WatchlistDashboard({
             onPageChange={handlePageChange}
             onClearFilters={clearAllFilters}
             isLoading={isLoading}
-            isError={isError}
-            errorMessage={error?.message}
+            isError={false}
             onRetry={refetch}
           />
         )}

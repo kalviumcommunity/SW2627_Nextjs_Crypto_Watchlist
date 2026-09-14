@@ -1,5 +1,7 @@
 import { PrismaClient } from "../app/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { resolveCoinGeckoId } from "../lib/coingeckoIds";
+import { getDatabaseUrl } from "../lib/databaseUrl";
 
 interface SeedCoin {
   symbol: string;
@@ -23,7 +25,7 @@ interface SeedCoin {
 }
 
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
+  connectionString: getDatabaseUrl(),
   ssl: {
     rejectUnauthorized: false,
   },
@@ -411,6 +413,7 @@ async function main() {
     const coin = await prisma.coin.create({
       data: {
         symbol: data.symbol,
+        coinGeckoId: resolveCoinGeckoId({ name: data.name }),
         name: data.name,
         subtext: data.subtext,
         category: category,

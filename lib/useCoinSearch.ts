@@ -296,7 +296,9 @@ export function useCoinSearch(options?: {
       if (tab) apiParams.set("tab", tab);
       if (watchlistId) apiParams.set("watchlistId", watchlistId);
 
-      const res = await fetch(`/api/coins?${apiParams.toString()}`);
+      const res = await fetch(`/api/coins?${apiParams.toString()}`, {
+        cache: "no-store",
+      });
       if (!res.ok) throw new Error("Failed to fetch coins data");
       return res.json();
     },
@@ -314,6 +316,8 @@ export function useCoinSearch(options?: {
     staleTime: 1000 * 4,
     refetchOnWindowFocus: true,
     refetchInterval: tab === "watchlist" ? 5000 : false,
+    refetchIntervalInBackground: false,
+    retry: tab === "watchlist" ? false : undefined,
   });
 
   // Calculate count of active non-default filters for displaying badge count

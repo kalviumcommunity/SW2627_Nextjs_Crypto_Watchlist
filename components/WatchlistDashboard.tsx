@@ -26,7 +26,7 @@ export default function WatchlistDashboard({
   const activeTab = (searchParams.get("tab") as FilterTab) || "watchlist";
 
   // Shared hook for star state synchronization across views
-  const { starredCoinIds, totalTracked, toggleStar } = useWatchlist(watchlistId);
+  const { starredCoinIds, totalTracked, toggleStar, mutationError } = useWatchlist(watchlistId);
 
   // Search & filter hook scoped to watchlist
   const {
@@ -95,6 +95,11 @@ export default function WatchlistDashboard({
       {(refreshError || refreshQueryError) && (
         <div role="status" className="border-b border-[#6B2B2B] bg-[#3A1B22] px-4 py-2 text-center text-xs text-[#FFB4AB]">
           {refreshError || refreshQueryError}
+        </div>
+      )}
+      {mutationError && (
+        <div role="alert" className="border-b border-[#6B2B2B] bg-[#3A1B22] px-4 py-2 text-center text-xs text-[#FFB4AB]">
+          {mutationError.message}
         </div>
       )}
 

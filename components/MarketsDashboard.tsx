@@ -25,7 +25,7 @@ export default function MarketsDashboard({
   const activeTab = (searchParams.get("tab") as FilterTab) || "all";
 
   // Custom hook managing shared star state across the app
-  const { totalTracked, toggleStar } = useWatchlist(watchlistId);
+  const { totalTracked, toggleStar, mutationError } = useWatchlist(watchlistId);
 
   // Custom hook managing search, multi-category, range filter & sort state via URL
   const {
@@ -98,6 +98,11 @@ const handleRefresh = async () => {
       {refreshError && (
         <div role="status" className="border-b border-[#6B2B2B] bg-[#3A1B22] px-4 py-2 text-center text-xs text-[#FFB4AB]">
           {refreshError}
+        </div>
+      )}
+      {mutationError && (
+        <div role="alert" className="border-b border-[#6B2B2B] bg-[#3A1B22] px-4 py-2 text-center text-xs text-[#FFB4AB]">
+          {mutationError.message}
         </div>
       )}
 

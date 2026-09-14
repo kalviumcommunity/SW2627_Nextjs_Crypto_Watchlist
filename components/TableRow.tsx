@@ -205,7 +205,7 @@ export default function TableRow({
               e.stopPropagation();
               onStarToggle(coin.id, coin.isStarred);
             }}
-            className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-[#232B3A] active:scale-95 text-[#9AA4B2] transition-colors cursor-pointer border border-transparent hover:border-[#232B3A] touch-manipulation"
+            className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[#232B3A] active:scale-95 text-[#9AA4B2] transition-colors cursor-pointer border border-transparent hover:border-[#232B3A] touch-manipulation focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
           >
             <Star
               aria-hidden="true"
@@ -224,7 +224,7 @@ export default function TableRow({
               e.stopPropagation();
               router.push(`/coins/${coin.symbol}`);
             }}
-            className="h-10 px-4 bg-[#FF5446] hover:bg-[#D63A2F] active:scale-95 text-white font-bold text-xs rounded-lg transition-all shadow-xs flex items-center justify-center touch-manipulation"
+            className="h-9 px-4 bg-[#FF5446] hover:bg-[#D63A2F] active:scale-95 text-white font-bold text-xs rounded-lg transition-all shadow-xs flex items-center justify-center touch-manipulation focus:outline-none focus:ring-1 focus:ring-[#FF5446]/40"
           >
             Trade
           </button>

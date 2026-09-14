@@ -14,7 +14,7 @@ export default function TableSkeleton({ rowCount = 8 }: TableSkeletonProps) {
       <div className="hidden md:block">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="h-[44px] bg-[#10131C]/60 border-b border-[#232B3A] text-[12px] font-semibold text-[#5B6472] uppercase tracking-wider">
+            <tr className="h-[44px] bg-[#10131C]/60 border-b border-[#232B3A] text-[12px] font-semibold text-[#9AA4B2] uppercase tracking-wider">
               <th className="w-12 px-3 text-center font-medium">#</th>
               <th className="px-4 font-medium">Asset</th>
               <th className="px-4 text-right font-medium">Price (INR)</th>

@@ -188,7 +188,7 @@ export default function FilterPanel({
         className={`h-9 px-3.5 rounded-lg flex items-center gap-2 text-xs font-semibold border transition-all cursor-pointer outline-none relative focus:ring-1 focus:ring-[#FF5446]/40 ${
           isFilterActive
             ? "bg-[#111827] border-[#FF5446] text-white shadow-[0_0_12px_rgba(255,84,70,0.25)]"
-            : "bg-[#10131C] border-[#232B3A] text-[#9AA4B2] hover:text-white hover:border-[#374151]"
+            : "bg-[#111827] border-[#232B3A] text-[#9AA4B2] hover:text-white hover:border-[#374151]"
         }`}
       >
         <SlidersHorizontal

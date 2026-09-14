@@ -75,7 +75,7 @@ export default function SortDropdown({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="h-9 px-3 bg-[#10131C] border border-[#232B3A] hover:border-[#374151] text-[#9AA4B2] hover:text-white rounded-lg flex items-center gap-2 text-xs font-medium transition-all cursor-pointer outline-none focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 shadow-xs"
+        className="h-9 px-3 bg-[#111827] border border-[#232B3A] hover:border-[#374151] text-[#9AA4B2] hover:text-white rounded-lg flex items-center gap-2 text-xs font-medium transition-all cursor-pointer outline-none focus:border-[#FF5446] focus:ring-1 focus:ring-[#FF5446]/30 shadow-xs"
         title={`Sort: ${currentOptionLabel} ${activeDir === "asc" ? "↑" : "↓"}`}
         aria-label={`Sort by ${currentOptionLabel}, ${activeDir === "asc" ? "ascending" : "descending"}`}
         aria-haspopup="listbox"
